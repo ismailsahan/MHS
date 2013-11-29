@@ -1,0 +1,1 @@
+{if debuginfo()}{lang time_now}, Processed in {$_G['debuginfo']['time']} second(s), {$_G['debuginfo']['queries']} queries{if isset($_G['gzipcompress'])}, Gzip On{/if}{if $_G['debuginfo']['memory']!==null}, {$_G['debuginfo']['memory']} On{/if}{if isset($_G['debuginfo']['mem'])}, Memory used {$_G['debuginfo']['mem']} bytes{/if}.{/if}
