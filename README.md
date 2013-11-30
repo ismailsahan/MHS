@@ -1,6 +1,13 @@
-说明
+说明和文档
 ===
-master 为项目的主要分支，最终应用的也是此分支
+建议使用 XAMPP 搭建本地 PHP+MySQL 环境，并使用 Sublime Text 开发
+这两套软件可在群共享里下载到
+
+第三方组件
+--------
+- UCenter
+- phpFastcache
+- PHPnew
 
 目录结构
 ===
