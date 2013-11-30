@@ -1,11 +1,5 @@
 <?php
 
-/**
- * 页面调试
- * 
- * 版本 v0.1.0
- */
-
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 function filter($val, $level = 0){

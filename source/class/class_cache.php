@@ -1,12 +1,5 @@
 <?php
 
-/**
- * 二级缓存封装类
- * 已废弃
- * 
- * 版本 v0.1.0
- */
-
 class Cache {
 	var $storage = 'auto';
 	var $gets = 0;

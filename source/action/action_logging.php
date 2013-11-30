@@ -55,14 +55,12 @@ if(submitcheck('Login')){
 }elseif(submitcheck('ForgotPwd')){
 	;
 }else{
-	if($seccode_err){
-		$errmsg = lang('template', 'verifycode_incorrect');
-	}elseif($secqaa_err){
-		$errmsg = lang('template', 'secqaa_incorrect');
-	}elseif(IS_POST || !empty($_POST)){
+	if(empty($errmsg) &&(IS_POST || !empty($_POST))){
 		$errmsg = lang('template', 'invalid_request');
 	}
 }
+
+$errmsg = empty($errmsg) ? '' : lang('template', $errmsg);
 
 setToken('Login');
 setToken('Register');

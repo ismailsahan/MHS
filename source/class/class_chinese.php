@@ -1,15 +1,8 @@
 <?php
 
-/**
- * 中文处理类库
- * DZ中文验证码会用到
- * 
- * 版本 v0.1.0
- */
+!defined('IN_WD') && exit('Access Denied');
 
-!defined('IN_APP_FRAMEWORK') && exit('Access Denied');
-
-define('CODETABLE_DIR', APP_FRAMEWORK_ROOT.'./source/include/table/');
+define('CODETABLE_DIR', WD_ROOT.'./source/include/table/');
 
 class Chinese {
 

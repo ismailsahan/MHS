@@ -1,13 +1,6 @@
 <?php
 
-/**
- * GIF 图像处理类库
- * DZ GIF验证码需要
- * 
- * 版本 v0.1.0
- */
-
-!defined('IN_APP_FRAMEWORK') && exit('Access Denied');
+!defined('IN_WD') && exit('Access Denied');
 
 class GifMerge {
 	var $ver			= '1.1';

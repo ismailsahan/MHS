@@ -1,0 +1,10 @@
+*,h1,h2,h3,h4,h5,h6,input,button{
+	font-family:'微软雅黑','\5FAE\8F6F\96C5\9ED1';
+	transition:all .25s ease;
+	-webkit-transition:all .25s ease;
+	-moz-transition:all .25s ease;
+	-o-transition:all .25s ease;
+	-ms-transition:all .25s ease;
+}
+/*a{transition:all 0.2s linear;-webkit-transition:all 0.2s linear;-moz-transition:all 0.2s linear;-o-transition:all 0.2s linear;}*/
+a:hover,a:visited:hover{text-shadow:#585858 0px 0px 3px !important;}

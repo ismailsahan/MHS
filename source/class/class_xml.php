@@ -1,12 +1,5 @@
 <?php
 
-/**
- * XML 处理类
- * 不推荐使用
- * 
- * 版本 v0.1.0
- */
-
 function xml2array(&$xml, $isnormal = FALSE) {
 	$xml_parser = new XMLparse($isnormal);
 	$data = $xml_parser->parse($xml);

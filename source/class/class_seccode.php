@@ -1,11 +1,5 @@
 <?php
 
-/**
- * DZ 验证码类库
- * 
- * 版本 v0.1.0
- */
-
 class seccode {
 
 	var $code;//验证码

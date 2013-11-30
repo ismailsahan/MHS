@@ -1,9 +1,5 @@
 <?php
 
-/**
- * 错误提示语言包（简体中文）
- */
-
 $lang = array(
 	'LIBRARY_FILE_LOAD_ERR'=>'无法加载必需组件 {str}！',
 	'CONFIG_NONEXISTENT'=>'配置文件不存在！',

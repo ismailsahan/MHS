@@ -1,11 +1,5 @@
 <?php
 
-/**
- * 核心语言包（简体中文）
- * 
- * 版本 v0.1.0
- */
-
 $lang = array(
 	'date' => array(
 		'before' => '前',

@@ -68,13 +68,16 @@ function make_secqaa($idhash){
 }
 
 function check_seccode($seccode = '', $tag = '__DEFAULT__'){
+	global $errmsg;
+	$time = 180;
 	if(empty($seccode)) $seccode = isset($_POST['verifycode']) ? $_POST['verifycode'] : $_POST['seccode'];
 	$seccode = strtoupper($seccode);
 	$tag = isset($_SESSION['seccode'][$tag]) ? $tag : '__DEFAULT__';
 	$tmp = $_SESSION['seccode'][$tag];
 	unset($_SESSION['seccode'][$tag]);
 	//unset($_SESSION['seccodeauth']);
-	return $tmp['timestamp']<TIMESTAMP-180 ? false : ($seccode === $tmp['seccode']);
+	if($tmp['timestamp'] < TIMESTAMP-$time) $errmsg = 'seccode_expired';
+	return $tmp['timestamp']<TIMESTAMP-$time ? false : ($seccode === $tmp['seccode']);
 }
 
 function _substr($string, $start, $length) {

@@ -1,11 +1,5 @@
 <?php
 
-/**
- * 框架类库
- * 
- * 版本 v0.1.0
- */
-
 //define('IN_WHUT_CONN', TRUE);
 //define('CONN_ROOT', substr(dirname(__FILE__), 0, -13));
 define('IN_APP_FRAMEWORK', TRUE);

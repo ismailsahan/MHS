@@ -1,11 +1,5 @@
 <?php
 
-/**
- * 验证码模块
- * 
- * 版本 v0.1.0
- */
-
 error_reporting(0);
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');

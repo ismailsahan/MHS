@@ -1,12 +1,5 @@
 <?php
 
-/**
- * 项目入口
- * 
- * 版本 v0.1.0
- * 
- */
-
 require_once './source/class/class_core.php';
 
 $actions = array('logging', 'main', 'admin', 'seccode');//允许的ACTION

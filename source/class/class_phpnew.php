@@ -1,12 +1,4 @@
 <?php
-
-/**
- * 模板类库
- * 源自PHPnew，已深入修改和定制，语法和功能接近DZ
- * 
- * 版本 v0.1.0
- */
-
 /*
 # @copyright: 分享工作室 Yuan 2013 08 08
 # @filename; PHPnew.class.php

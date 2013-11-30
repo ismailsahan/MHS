@@ -1,11 +1,4 @@
 <?php
-
-/**
- * 数据库操作类库
- * 
- * 版本 v0.1.0
- */
-
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 /**

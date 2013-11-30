@@ -1,40 +1,32 @@
 <?php
-
-/**
- * UCenter ä¸Žæœ¬é¡¹ç›®çš„é€šä¿¡æŽ¥å£
- * 
- * ç‰ˆæœ¬ v0.1.0
- */
 error_reporting(0);
 set_magic_quotes_runtime(0);
 
 define('IN_API', TRUE);
 
-define('UC_CLIENT_VERSION', '1.6.0');	//note UCenter ç‰ˆæœ¬æ ‡è¯†
+define('UC_CLIENT_VERSION', '1.6.0');	//note UCenter °æ±¾±êÊ¶
 define('UC_CLIENT_RELEASE', '20110501');
 
-define('API_DELETEUSER', 0);		//note ç”¨æˆ·åˆ é™¤ API æŽ¥å£å¼€å…³
-define('API_RENAMEUSER', 0);		//note ç”¨æˆ·æ”¹å API æŽ¥å£å¼€å…³
-define('API_GETTAG', 0);		//note èŽ·å–æ ‡ç­¾ API æŽ¥å£å¼€å…³
-define('API_SYNLOGIN', 0);		//note åŒæ­¥ç™»å½• API æŽ¥å£å¼€å…³
-define('API_SYNLOGOUT', 0);		//note åŒæ­¥ç™»å‡º API æŽ¥å£å¼€å…³
-define('API_UPDATEPW', 0);		//note æ›´æ”¹ç”¨æˆ·å¯†ç  å¼€å…³
-define('API_UPDATEBADWORDS', 0);	//note æ›´æ–°å…³é”®å­—åˆ—è¡¨ å¼€å…³
-define('API_UPDATEHOSTS', 0);		//note æ›´æ–°åŸŸåè§£æžç¼“å­˜ å¼€å…³
-define('API_UPDATEAPPS', 0);		//note æ›´æ–°åº”ç”¨åˆ—è¡¨ å¼€å…³
-define('API_UPDATECLIENT', 0);		//note æ›´æ–°å®¢æˆ·ç«¯ç¼“å­˜ å¼€å…³
-define('API_UPDATECREDIT', 0);		//note æ›´æ–°ç”¨æˆ·ç§¯åˆ† å¼€å…³
-define('API_GETCREDITSETTINGS', 0);	//note å‘ UCenter æä¾›ç§¯åˆ†è®¾ç½® å¼€å…³
-define('API_GETCREDIT', 0);		//note èŽ·å–ç”¨æˆ·çš„æŸé¡¹ç§¯åˆ† å¼€å…³
-define('API_UPDATECREDITSETTINGS', 0);	//note æ›´æ–°åº”ç”¨ç§¯åˆ†è®¾ç½® å¼€å…³
+define('API_DELETEUSER', 0);		//note ÓÃ»§É¾³ý API ½Ó¿Ú¿ª¹Ø
+define('API_RENAMEUSER', 0);		//note ÓÃ»§¸ÄÃû API ½Ó¿Ú¿ª¹Ø
+define('API_GETTAG', 0);		//note »ñÈ¡±êÇ© API ½Ó¿Ú¿ª¹Ø
+define('API_SYNLOGIN', 0);		//note Í¬²½µÇÂ¼ API ½Ó¿Ú¿ª¹Ø
+define('API_SYNLOGOUT', 0);		//note Í¬²½µÇ³ö API ½Ó¿Ú¿ª¹Ø
+define('API_UPDATEPW', 0);		//note ¸ü¸ÄÓÃ»§ÃÜÂë ¿ª¹Ø
+define('API_UPDATEBADWORDS', 0);	//note ¸üÐÂ¹Ø¼ü×ÖÁÐ±í ¿ª¹Ø
+define('API_UPDATEHOSTS', 0);		//note ¸üÐÂÓòÃû½âÎö»º´æ ¿ª¹Ø
+define('API_UPDATEAPPS', 0);		//note ¸üÐÂÓ¦ÓÃÁÐ±í ¿ª¹Ø
+define('API_UPDATECLIENT', 0);		//note ¸üÐÂ¿Í»§¶Ë»º´æ ¿ª¹Ø
+define('API_UPDATECREDIT', 0);		//note ¸üÐÂÓÃ»§»ý·Ö ¿ª¹Ø
+define('API_GETCREDITSETTINGS', 0);	//note Ïò UCenter Ìá¹©»ý·ÖÉèÖÃ ¿ª¹Ø
+define('API_GETCREDIT', 0);		//note »ñÈ¡ÓÃ»§µÄÄ³Ïî»ý·Ö ¿ª¹Ø
+define('API_UPDATECREDITSETTINGS', 0);	//note ¸üÐÂÓ¦ÓÃ»ý·ÖÉèÖÃ ¿ª¹Ø
 
 define('API_RETURN_SUCCEED', '1');
 define('API_RETURN_FAILED', '-1');
 define('API_RETURN_FORBIDDEN', '-2');
 
-exit(API_RETURN_SUCCEED);
-
-//note æ™®é€šçš„ http é€šçŸ¥æ–¹å¼
+//note ÆÕÍ¨µÄ http Í¨Öª·½Ê½
 if(!defined('IN_UC')) {
 
 	defined('MAGIC_QUOTES_GPC') || define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
@@ -69,7 +61,7 @@ if(!defined('IN_UC')) {
 		exit(API_RETURN_FAILED);
 	}
 
-//note include é€šçŸ¥æ–¹å¼
+//note include Í¨Öª·½Ê½
 } else {
 	require '../source/class/class_core.php';
 	$QW = & QW_core::instance();
@@ -150,7 +142,7 @@ class uc_note {
 			return API_RETURN_FORBIDDEN;
 		}
 
-		//note åŒæ­¥ç™»å‡º API æŽ¥å£
+		//note Í¬²½µÇ³ö API ½Ó¿Ú
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
 		_setcookie('auth', '', -86400 * 365);
 	}
@@ -206,7 +198,7 @@ class uc_note {
 		}
 		$UC_API = $post['UC_API'];
 
-		//note å†™ app ç¼“å­˜æ–‡ä»¶
+		//note Ð´ app »º´æÎÄ¼þ
 		$cachefile = $this->appdir.'./uc_client/data/cache/apps.php';
 		$fp = fopen($cachefile, 'w');
 		$s = "<?php\r\n";
@@ -214,7 +206,7 @@ class uc_note {
 		fwrite($fp, $s);
 		fclose($fp);
 
-		//note å†™é…ç½®æ–‡ä»¶
+		//note Ð´ÅäÖÃÎÄ¼þ
 		if(is_writeable($this->appdir.'./config.inc.php')) {
 			$configfile = trim(file_get_contents($this->appdir.'./config.inc.php'));
 			$configfile = substr($configfile, -2) == '?>' ? substr($configfile, 0, -2) : $configfile;
@@ -286,7 +278,7 @@ class uc_note {
 	}
 }
 
-//note ä½¿ç”¨è¯¥å‡½æ•°å‰éœ€è¦ require_once $this->appdir.'./config.inc.php';
+//note Ê¹ÓÃ¸Ãº¯ÊýÇ°ÐèÒª require_once $this->appdir.'./config.inc.php';
 function _setcookie($var, $value, $life = 0) {
 	global $_G;
 	setcookie($_G['config']['cookie']['cookiepre'].$var, $value,
