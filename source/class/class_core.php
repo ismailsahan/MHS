@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * 核心类库
+ */
+
 //define('IN_WHUT_CONN', TRUE);
 //define('CONN_ROOT', substr(dirname(__FILE__), 0, -13));
 define('IN_APP_FRAMEWORK', TRUE);
@@ -117,7 +121,7 @@ class C {
 		$_G['siteroot'] = isset($url['path']) ? $url['path'] : '';
 		$_G['siteport'] = empty($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] == '80' ? '' : ':'.$_SERVER['SERVER_PORT'];
 
-		$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);
+		$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);//BUG
 
 		$this->var = &$_G;
 	}
