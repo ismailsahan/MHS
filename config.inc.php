@@ -89,10 +89,12 @@ $_config['cookie']['cookiedomain'] 		= ''; 		// COOKIE作用域
 $_config['cookie']['cookiepath'] 		= '/'; 		// COOKIE作用路径
 
 // 站点安全设置
-$_config['security']['authkey']			= '968B6CDC1A';	// 站点加密密钥
-$_config['security']['urlxssdefend']		= true;		// 自身 URL XSS 防御
-$_config['security']['attackevasive']		= 0;		// CC 攻击防御 1|2|4|8
-$_config['security']['allowedentrance'] = 'index.php';//允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
+$_config['security']['authkey']         = '968B6CDC1A';	// 站点加密密钥
+$_config['security']['urlxssdefend']    = true;         // 自身 URL XSS 防御
+$_config['security']['attackevasive']   = '1|2|4|8';    // CC 攻击防御级别，可防止大量的正常和非正常请求造成的拒绝服务攻击
+														// 0=关闭, 1=cookie 刷新限制, 2=限制代理访问, 4=二次请求, 8=回答问题（仅首次访问时需要回答问题）
+														// 允许设置组合，组合为: 1|2, 1|4, 2|8, 1|2|4 ...
+$_config['security']['allowedentrance'] = 'index.php';  //允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
 
 $_config['security']['querysafe']['status']	= 1;		// 是否开启SQL安全检测，可自动预防SQL注入攻击
 $_config['security']['querysafe']['dfunction']	= array('load_file','hex','substring','if','ord','char');
@@ -105,10 +107,9 @@ $_config['admincp']['admins']			= '1,11';		// 设置允许登录后台的用户
 														// 只能使用UID，多个创始人之间请使用英文半角逗号",”分开;
 // DEBUG 模式设置
 $_config['debug'] = 3;	// 1: 开启普通 DEBUG 模式
-												// 2: 错误级别 E_ALL
-												// 3: 错误级别 E_ALL(除E_NOTICE)
-												// 4: 错误级别 E_ERROR
-												// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
+						// 2: 错误级别 E_ALL
+						// 3: 错误级别 E_ALL(除E_NOTICE)
+						// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
 
 $_config['trace_disabled'] = array('seccode');//强制禁用调试的ACTION
 

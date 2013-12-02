@@ -227,7 +227,9 @@ function striexists($string, $find) {
 
 function daddslashes($string, $force = 1) {
 	if(is_array($string)) {
-		foreach($string as $key => $val) {
+		$keys = array_keys($string);
+		foreach($keys as $key) {
+			$val = $string[$key];
 			unset($string[$key]);
 			$string[addslashes($key)] = daddslashes($val, $force);
 		}
@@ -235,6 +237,43 @@ function daddslashes($string, $force = 1) {
 		$string = addslashes($string);
 	}
 	return $string;
+}
+
+function dhtmlspecialchars($string, $flags = null) {
+	if(is_array($string)) {
+		foreach($string as $key => $val) {
+			$string[$key] = dhtmlspecialchars($val, $flags);
+		}
+	} else {
+		if($flags === null) {
+			$string = str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string);
+			if(strpos($string, '&amp;#') !== false) {
+				$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1', $string);
+			}
+		} else {
+			if(PHP_VERSION < '5.4.0') {
+				$string = htmlspecialchars($string, $flags);
+			} else {
+				if(strtolower(CHARSET) == 'utf-8') {
+					$charset = 'UTF-8';
+				} else {
+					$charset = 'ISO-8859-1';
+				}
+				$string = htmlspecialchars($string, $flags, $charset);
+			}
+		}
+	}
+	return $string;
+}
+
+function checkrobot($useragent = '') {
+	static $kw_spiders = array('bot', 'crawl', 'spider' ,'slurp', 'sohu-search', 'lycos', 'robozilla');
+	static $kw_browsers = array('msie', 'netscape', 'opera', 'konqueror', 'mozilla');
+
+	$useragent = strtolower(empty($useragent) ? $_SERVER['HTTP_USER_AGENT'] : $useragent);
+	if(strpos($useragent, 'http://') === false && dstrpos($useragent, $kw_browsers)) return false;
+	if(dstrpos($useragent, $kw_spiders)) return true;
+	return false;
 }
 
 function setglobal($key , $value, $group = null) {
@@ -291,6 +330,21 @@ function dsetcookie($var, $value = '', $life = 0, $prefix = 1, $httponly = false
 	}
 }
 
+function dstrpos($string, $arr, $returnvalue = false) {
+	if(empty($string)) return false;
+	foreach((array)$arr as $v) {
+		if(strpos($string, $v) !== false) {
+			$return = $returnvalue ? $v : true;
+			return $return;
+		}
+	}
+	return false;
+}
+
+function isemail($email) {
+	return strlen($email) > 6 && strlen($email) <= 32 && preg_match("/^([A-Za-z0-9\-_.+]+)@([A-Za-z0-9\-]+[.][A-Za-z0-9\-.]+)$/", $email);
+}
+
 function dintval($int, $allowarray = false) {
 	$ret = intval($int);
 	if($int == $ret || !$allowarray && is_array($int)) return $ret;
@@ -307,6 +361,233 @@ function dintval($int, $allowarray = false) {
 		}
 	}
 	return $ret;
+}
+
+function dimplode($array) {
+	if(!empty($array)) {
+		$array = array_map('addslashes', $array);
+		return "'".implode("','", is_array($array) ? $array : array($array))."'";
+	} else {
+		return 0;
+	}
+}
+
+function dstrlen($str) {
+	if(strtolower(CHARSET) != 'utf-8') {
+		return strlen($str);
+	}
+	$count = 0;
+	for($i = 0; $i < strlen($str); $i++){
+		$value = ord($str[$i]);
+		if($value > 127) {
+			$count++;
+			if($value >= 192 && $value <= 223) $i++;
+			elseif($value >= 224 && $value <= 239) $i = $i + 2;
+			elseif($value >= 240 && $value <= 247) $i = $i + 3;
+	    	}
+    		$count++;
+	}
+	return $count;
+}
+
+function cutstr($string, $length, $dot = ' ...') {
+	if(strlen($string) <= $length) {
+		return $string;
+	}
+
+	$pre = chr(1);
+	$end = chr(1);
+	$string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), $string);
+
+	$strcut = '';
+	if(strtolower(CHARSET) == 'utf-8') {
+
+		$n = $tn = $noc = 0;
+		while($n < strlen($string)) {
+
+			$t = ord($string[$n]);
+			if($t == 9 || $t == 10 || (32 <= $t && $t <= 126)) {
+				$tn = 1; $n++; $noc++;
+			} elseif(194 <= $t && $t <= 223) {
+				$tn = 2; $n += 2; $noc += 2;
+			} elseif(224 <= $t && $t <= 239) {
+				$tn = 3; $n += 3; $noc += 2;
+			} elseif(240 <= $t && $t <= 247) {
+				$tn = 4; $n += 4; $noc += 2;
+			} elseif(248 <= $t && $t <= 251) {
+				$tn = 5; $n += 5; $noc += 2;
+			} elseif($t == 252 || $t == 253) {
+				$tn = 6; $n += 6; $noc += 2;
+			} else {
+				$n++;
+			}
+
+			if($noc >= $length) {
+				break;
+			}
+
+		}
+		if($noc > $length) {
+			$n -= $tn;
+		}
+
+		$strcut = substr($string, 0, $n);
+
+	} else {
+		$_length = $length - 1;
+		for($i = 0; $i < $length; $i++) {
+			if(ord($string[$i]) <= 127) {
+				$strcut .= $string[$i];
+			} else if($i < $_length) {
+				$strcut .= $string[$i].$string[++$i];
+			}
+		}
+	}
+
+	$strcut = str_replace(array($pre.'&'.$end, $pre.'"'.$end, $pre.'<'.$end, $pre.'>'.$end), array('&amp;', '&quot;', '&lt;', '&gt;'), $strcut);
+
+	$pos = strrpos($strcut, chr(1));
+	if($pos !== false) {
+		$strcut = substr($strcut,0,$pos);
+	}
+	return $strcut.$dot;
+}
+
+function dstripslashes($string) {
+	if(empty($string)) return $string;
+	if(is_array($string)) {
+		foreach($string as $key => $val) {
+			$string[$key] = dstripslashes($val);
+		}
+	} else {
+		$string = stripslashes($string);
+	}
+	return $string;
+}
+
+function dreferer($default = '') {
+	global $_G;
+
+	$default = empty($default) ? $GLOBALS['_t_curapp'] : '';
+	$_G['referer'] = !empty($_GET['referer']) ? $_GET['referer'] : $_SERVER['HTTP_REFERER'];
+	$_G['referer'] = substr($_G['referer'], -1) == '?' ? substr($_G['referer'], 0, -1) : $_G['referer'];
+
+	if(strpos($_G['referer'], 'member.php?mod=logging')) {
+		$_G['referer'] = $default;
+	}
+	$_G['referer'] = dhtmlspecialchars($_G['referer'], ENT_QUOTES);
+	$_G['referer'] = str_replace('&amp;', '&', $_G['referer']);
+	$reurl = parse_url($_G['referer']);
+	if(!empty($reurl['host']) && !in_array($reurl['host'], array($_SERVER['HTTP_HOST'], 'www.'.$_SERVER['HTTP_HOST'])) && !in_array($_SERVER['HTTP_HOST'], array($reurl['host'], 'www.'.$reurl['host']))) {
+		if(!in_array($reurl['host'], $_G['setting']['domain']['app']) && !isset($_G['setting']['domain']['list'][$reurl['host']])) {
+			$domainroot = substr($reurl['host'], strpos($reurl['host'], '.')+1);
+			if(empty($_G['setting']['domain']['root']) || (is_array($_G['setting']['domain']['root']) && !in_array($domainroot, $_G['setting']['domain']['root']))) {
+				$_G['referer'] = $_G['setting']['domain']['defaultindex'] ? $_G['setting']['domain']['defaultindex'] : 'index.php';
+			}
+		}
+	} elseif(empty($reurl['host'])) {
+		$_G['referer'] = $_G['siteurl'].'./'.$_G['referer'];
+	}
+
+	return strip_tags($_G['referer']);
+}
+
+function renum($array) {
+	$newnums = $nums = array();
+	foreach ($array as $id => $num) {
+		$newnums[$num][] = $id;
+		$nums[$num] = $num;
+	}
+	return array($nums, $newnums);
+}
+
+function sizecount($size) {
+	if($size >= 1073741824) {
+		$size = round($size / 1073741824 * 100) / 100 . ' GB';
+	} elseif($size >= 1048576) {
+		$size = round($size / 1048576 * 100) / 100 . ' MB';
+	} elseif($size >= 1024) {
+		$size = round($size / 1024 * 100) / 100 . ' KB';
+	} else {
+		$size = $size . ' Bytes';
+	}
+	return $size;
+}
+
+function swapclass($class1, $class2 = '') {
+	static $swapc = null;
+	$swapc = isset($swapc) && $swapc != $class1 ? $class1 : $class2;
+	return $swapc;
+}
+
+function ipaccess($ip, $accesslist) {
+	return preg_match("/^(".str_replace(array("\r\n", ' '), array('|', ''), preg_quote($accesslist, '/')).")/", $ip);
+}
+
+function ipbanned($onlineip) {
+	global $_G;
+
+	if($_G['setting']['ipaccess'] && !ipaccess($onlineip, $_G['setting']['ipaccess'])) {
+		return TRUE;
+	}
+
+	loadcache('ipbanned');
+	if(empty($_G['cache']['ipbanned'])) {
+		return FALSE;
+	} else {
+		if($_G['cache']['ipbanned']['expiration'] < TIMESTAMP) {
+			require_once libfile('function/cache');
+			updatecache('ipbanned');
+		}
+		return preg_match("/^(".$_G['cache']['ipbanned']['regexp'].")$/", $onlineip);
+	}
+}
+
+function strhash($string, $operation = 'DECODE', $key = '') {
+	$key = md5($key != '' ? $key : getglobal('authkey'));
+	if($operation == 'DECODE') {
+		$hashcode = gzuncompress(base64_decode(($string)));
+		$string = substr($hashcode, 0, -16);
+		$hash = substr($hashcode, -16);
+		unset($hashcode);
+	}
+
+	$vkey = substr(md5($string.substr($key, 0, 16)), 4, 8).substr(md5($string.substr($key, 16, 16)), 18, 8);
+
+	if($operation == 'DECODE') {
+		return $hash == $vkey ? $string : '';
+	}
+
+	return base64_encode(gzcompress($string.$vkey));
+}
+
+function dunserialize($data) {
+	if(($ret = unserialize($data)) === false) {
+		$ret = unserialize(stripslashes($data));
+	}
+	return $ret;
+}
+
+function browserversion($type) {
+	static $return = array();
+	static $types = array('ie' => 'msie', 'firefox' => '', 'chrome' => '', 'opera' => '', 'safari' => '', 'mozilla' => '', 'webkit' => '', 'maxthon' => '', 'qq' => 'qqbrowser');
+	if(!$return) {
+		$useragent = strtolower($_SERVER['HTTP_USER_AGENT']);
+		$other = 1;
+		foreach($types as $i => $v) {
+			$v = $v ? $v : $i;
+			if(strpos($useragent, $v) !== false) {
+				preg_match('/'.$v.'(\/|\s)([\d\.]+)/i', $useragent, $matches);
+				$ver = $matches[2];
+				$other = $ver !== 0 && $v != 'mozilla' ? 0 : $other;
+			} else {
+				$ver = 0;
+			}
+			$return[$i] = $ver;
+		}
+		$return['other'] = $other;
+	}
+	return $return[$type];
 }
 
 /**
@@ -942,7 +1223,7 @@ function setToken($formName){
 	//
 	//$setName = authcode($formName.'_Token', 'ENCODE', $Key);
 	$setName = md5($formName . '_Token_' . $_SERVER['HTTP_USER_AGENT'] . $_G['authkey'] . $_SERVER['HTTP_HOST'] . $_G['clientip']);
-	$setName = substr(md5($setName.TIMESTAMP.random(6)), 0, 6).crc32(TIMESTAMP.FORMHASH.$_G['sid'].random(3));
+	$setName = substr(md5($setName.TIMESTAMP.random(6)), 0, 6).crc32(TIMESTAMP.$_G['authkey'].$_G['sid'].random(3));
 	$_SESSION[$formName.'Token'] = array(
 		'name' => $setName,
 		'hash' => $codeStr,
@@ -1320,7 +1601,6 @@ function halt($error, $param=array()){
 			$e['message'] = is_array($error) ? $error['message'] : $error;
 		}
 		$e['message'] = lang('error', $e['message'], empty($param) ? null : (is_array($param) ? $param : array('str' => $param)));
-		;
 		process('错误：'.$e['message']);
 		if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
 		if(defined('PHPNEW_STATIC_TPL')) global $template;

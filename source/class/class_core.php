@@ -35,7 +35,7 @@ class C {
 		//'_SESSION' => 1,
 	);
 
-	public function &instance() {
+	public static function &instance() {
 		static $object;
 		if(empty($object)) {
 			$object = new C();
@@ -43,7 +43,7 @@ class C {
 		return $object;
 	}
 
-	function __construct() {
+	public function __construct() {
 		$this->_init_env();
 		$this->_init_config();
 		$this->_init_lib();
@@ -61,7 +61,7 @@ class C {
 	 * 初始化环境
 	 */
 	private function _init_env() {
-		if(phpversion() < '5.3.0') {
+		if(PHP_VERSION < '5.3.0') {
 			set_magic_quotes_runtime(0);
 		}
 
@@ -96,34 +96,44 @@ class C {
 			'starttime' => dmicrotime(),
 			'referer' => isset($_GET['referer']) ? urldecode($_GET['referer']) : (isset($_SERVER['REQUEST_REFERER']) ? urldecode($_SERVER['REQUEST_REFERER']) : ''),
 			'currenturl' => '',
+			'currenturl_encode' => '',
 			'charset' => '',
 			'gzipcompress' => '',
 			'authkey' => '',
-			'timenow' => array(),
-			'lang' => array(),
 			'language' => '',
+
+			'PHP_SELF' => '',
+			'siteurl' => '',
+			'siteroot' => '',
+			'siteport' => '',
+
+			'timenow' => array(),
 			'debug' => array(),
-
-			'PHP_SELF' => htmlspecialchars($_SERVER['SCRIPT_NAME'] ? $_SERVER['SCRIPT_NAME'] : $_SERVER['PHP_SELF']),
-			'siteurl' => htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].preg_replace("/\/+(api)?\/*$/i", '', substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'))).'/'),
-			'siteroot' => substr($_SERVER['PHP_SELF'], 0, -strlen(basename($_SERVER['PHP_SELF']))),
-
+			'cookie' => array(),
+			'lang' => array(),
 			'config' => array(),
 			'setting' => array(),
-			'cookie' => array()
 		);
+		$_G['PHP_SELF'] = dhtmlspecialchars($this->_get_script_url());
 		$_G['basescript'] = defined('CURSCRIPT') ? CURSCRIPT : '';
 		$_G['basefilename'] = basename($_G['PHP_SELF']);
 		$sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
-		$_G['siteurl'] = htmlspecialchars('http://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
+		$_G['isHTTPS'] = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
+		$_G['siteurl'] = dhtmlspecialchars('http'.($_G['isHTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
 
 		$url = parse_url($_G['siteurl']);
 		$_G['siteroot'] = isset($url['path']) ? $url['path'] : '';
-		$_G['siteport'] = empty($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] == '80' ? '' : ':'.$_SERVER['SERVER_PORT'];
+		$_G['siteport'] = empty($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] == '80' || $_SERVER['SERVER_PORT'] == '443' ? '' : ':'.$_SERVER['SERVER_PORT'];
 
-		$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);//BUG
+		//$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);//BUG
+		$_G['currenturl'] = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 
 		$this->var = &$_G;
+
+		define('IS_ROBOT', checkrobot());
+		define('IS_GET', $_SERVER['REQUEST_METHOD'] == 'GET');
+		define('IS_POST', $_SERVER['REQUEST_METHOD'] == 'POST');
+		define('IS_HTTPS', $this->var['isHTTPS']);
 	}
 
 	/**
@@ -133,26 +143,36 @@ class C {
 		$_config = array();
 		if(!@include(APP_FRAMEWORK_ROOT.'/config.inc.php')) halt('CONFIG_NONEXISTENT');
 
-		$_config['security']['authkey'] = empty($_config['security']['authkey']) ? md5($_config['cookie']['cookiepre'].$_config['db']['dbname']) : ($_config['security']['authkey']);
+		$_config['security']['authkey'] = empty($_config['security']['authkey']) ? md5($_config['cookie']['cookiepre'].$_config['db']['dbname']) : $_config['security']['authkey'];
 
 		$this->config = & $_config;
+
 
 		$this->config['security']['allowedentrance'] = is_string($this->config['security']['allowedentrance']) ? explode(',', $this->config['security']['allowedentrance']) : $this->config['security']['allowedentrance'];
 		if(!in_array($this->var['basefilename'], $this->config['security']['allowedentrance'])) halt('REQUEST_TAINTING');
 
-		if(!empty($this->config['debug']) && (in_array($this->config['debug'], array(1, 2, 3, 4), true) || !empty($_REQUEST['debug']) && $_REQUEST['debug'] === $this->config['debug'])) {
+		if(empty($this->config['debug']) || !$this->config['debug']) {
+			define('APP_FRAMEWORK_DEBUG', false);
+			error_reporting(0);
+		} elseif(in_array($this->config['debug'], array(1, 2, 3), true) || !empty($_REQUEST['debug']) && $_REQUEST['debug'] === $this->config['debug']) {
 			define('APP_FRAMEWORK_DEBUG', true);
+			error_reporting(E_ERROR);
 			switch($this->config['debug']) {
 				case 2: error_reporting(E_ALL); break;
 				case 3: error_reporting(E_ALL ^ E_NOTICE); break;
-				case 4: error_reporting(E_ERROR); break;
 			}
 		} else {
 			define('APP_FRAMEWORK_DEBUG', false);
+			error_reporting(0);
 		}
 
+		if(substr($this->config['cookie']['cookiepath'], 0, 1) != '/') {
+			$this->config['cookie']['cookiepath'] = '/'.$this->config['cookie']['cookiepath'];
+		}
+		$this->config['cookie']['cookiepre'] = $this->config['cookie']['cookiepre'].substr(md5($this->config['cookie']['cookiepath'].'|'.$this->config['cookie']['cookiedomain']), 0, 4).'_';
+
 		$this->var['config'] = & $this->config;
-		$this->var['authkey'] = md5($this->config['security']['authkey'].$_SERVER['HTTP_USER_AGENT']);
+		//$this->var['authkey'] = md5($this->config['security']['authkey'].$_SERVER['HTTP_USER_AGENT']);
 
 		define('STATICURL', !empty($this->config['output']['staticurl']) ? $this->config['output']['staticurl'] : '/');
 		$this->var['staticurl'] = STATICURL;
@@ -190,13 +210,17 @@ class C {
 				$this->var['cookie'][substr($key, $prelength)] = $val;
 			}
 		}
+
 		$this->var['cookie']['auth'] = str_replace(' ', '+', isset($this->var['cookie']['auth']) ? $this->var['cookie']['auth'] : '');//用于判断登录情况
 		$this->var['inajax'] = empty($_GET['inajax']) ? false : ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'/* && ($_SERVER['REQUEST_METHOD'] == 'GET' || $_SERVER['REQUEST_METHOD'] == 'POST')*/);//HTTP_ISAJAXREQUEST
-		$this->var['sid'] = $this->var['cookie']['sid'] = isset($this->var['cookie']['sid']) ? htmlspecialchars($this->var['cookie']['sid']) : random(6);
+		$this->var['sid'] = $this->var['cookie']['sid'] = isset($this->var['cookie']['sid']) ? dhtmlspecialchars($this->var['cookie']['sid']) : '';//random(6)
 		define('IS_AJAX', $this->var['inajax']);
-		define('IS_GET', $_SERVER['REQUEST_METHOD'] == 'GET');
-		define('IS_POST', $_SERVER['REQUEST_METHOD'] == 'POST');
-		define('IS_HTTPS', isset($_SERVER['HTTPS']) ? ($_SERVER['HTTPS'] == 'on') : false);
+
+		if(empty($this->var['cookie']['saltkey'])) {
+			$this->var['cookie']['saltkey'] = random(8);
+			dsetcookie('saltkey', $this->var['cookie']['saltkey'], 86400 * 30, 1, 1);
+		}
+		$this->var['authkey'] = md5($this->var['config']['security']['authkey'].$this->var['cookie']['saltkey']);
 
 		if(!empty($this->var['cookie']['language']) && is_dir(APP_FRAMEWORK_ROOT.'/source/language/'.$this->var['cookie']['language'])){
 			$this->var['language'] = $this->var['cookie']['language'];
@@ -211,11 +235,18 @@ class C {
 	 */
 	private function _init_output() {
 		//防范XSS攻击
-		if($this->config['security']['urlxssdefend'] && !empty($_SERVER['REQUEST_URI'])) {
+		if($this->config['security']['urlxssdefend'] && $_SERVER['REQUEST_METHOD'] == 'GET' && !empty($_SERVER['REQUEST_URI'])) {
+			$this->_xss_check();
+		}
+		/*if($this->config['security']['urlxssdefend'] && !empty($_SERVER['REQUEST_URI'])) {
 			$temp = urldecode($_SERVER['REQUEST_URI']);
 			if(strpos($temp, '<') !== false || strpos($temp, '"') !== false) {
 				halt('REQUEST_TAINTING');
 			}
+		}*/
+
+		if($this->config['security']['attackevasive'] && (!defined('CURSCRIPT') || !in_array($this->var['mod'], array('seccode', 'secqaa', 'swfupload')) && !defined('DISABLEDEFENSE'))) {
+			require_once libfile('misc/security', 'include');
 		}
 
 		//检查客户端是否支持GZIP
@@ -226,7 +257,9 @@ class C {
 		//检查并开启GZIP压缩
 		@$allowgzip = $this->config['output']['gzip'] && empty($this->var['inajax']) && EXT_OBGZIP;
 		setglobal('gzipcompress', $allowgzip);
-		ob_start($allowgzip ? 'ob_gzhandler' : null);
+		if(!ob_start($allowgzip ? 'ob_gzhandler' : null)) {
+			ob_start();
+		}
 
 		//设置编码
 		setglobal('charset', $this->config['output']['charset']);
@@ -267,7 +300,7 @@ class C {
 			foreach($tmp as $val){
 				$this->var['setting'][$val['skey']] = strexists($val['svalue'], 'a:') ? unserialize($val['svalue']) : $val['svalue'];
 			}
-			$cache->set('setting', $this->var['setting'], 3600*24);
+			$cache->set('setting', $this->var['setting'], 604800);
 		}
 
 		//初始化模板类PHPnew
@@ -307,8 +340,8 @@ class C {
 		);
 		
 		//表单令牌
-		$this->var['formhash'] = formhash();
-		define('FORMHASH', $this->var['formhash']);
+		//$this->var['formhash'] = formhash();
+		//define('FORMHASH', $this->var['formhash']);
 
 		//禁用客户端浏览器缓存
 		if(isset($this->var['setting']['nocacheheaders']) && $this->var['setting']['nocacheheaders']){
@@ -366,7 +399,7 @@ class C {
 	 *
 	 * @return string ip IP地址
 	 */
-	private function _get_client_ip() {
+	/*private function _get_client_ip() {
 		$clientip = '';
 		if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
 			$clientip = getenv('HTTP_CLIENT_IP');
@@ -381,6 +414,66 @@ class C {
 		preg_match("/[\d\.]{7,15}/", $clientip, $clientipmatches);
 		$clientip = $clientipmatches[0] ? $clientipmatches[0] : 'unknown';
 		return $clientip;
+	}*/
+
+	/**
+	 * 获取客户端IP
+	 *
+	 * @return string ip IP地址
+	 */
+	private function _get_client_ip() {
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif(isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND preg_match_all('#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s', $_SERVER['HTTP_X_FORWARDED_FOR'], $matches)) {
+			foreach ($matches[0] AS $xip) {
+				if (!preg_match('#^(10|172\.16|192\.168)\.#', $xip)) {
+					$ip = $xip;
+					break;
+				}
+			}
+		}
+		return $ip;
+	}
+
+	/**
+	 * 检查是否有 XSS 攻击
+	 * 
+	 * @return boolean
+	 */
+	private function _xss_check() {
+		$temp = strtoupper(urldecode(urldecode($_SERVER['REQUEST_URI'])));
+		if(strpos($temp, '<') !== false || strpos($temp, '"') !== false || strpos($temp, 'CONTENT-TRANSFER-ENCODING') !== false) {
+			halt('REQUEST_TAINTING');
+		}
+		return true;
+	}
+
+	public function reject_robot() {
+		if(IS_ROBOT) {
+			exit(header("HTTP/1.1 403 Forbidden"));
+		}
+	}
+
+	private function _get_script_url() {
+		if(!isset($this->var['PHP_SELF'])){
+			$scriptName = basename($_SERVER['SCRIPT_FILENAME']);
+			if(basename($_SERVER['SCRIPT_NAME']) === $scriptName) {
+				$this->var['PHP_SELF'] = $_SERVER['SCRIPT_NAME'];
+			} else if(basename($_SERVER['PHP_SELF']) === $scriptName) {
+				$this->var['PHP_SELF'] = $_SERVER['PHP_SELF'];
+			} else if(isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $scriptName) {
+				$this->var['PHP_SELF'] = $_SERVER['ORIG_SCRIPT_NAME'];
+			} else if(($pos = strpos($_SERVER['PHP_SELF'],'/'.$scriptName)) !== false) {
+				$this->var['PHP_SELF'] = substr($_SERVER['SCRIPT_NAME'],0,$pos).'/'.$scriptName;
+			} else if(isset($_SERVER['DOCUMENT_ROOT']) && strpos($_SERVER['SCRIPT_FILENAME'],$_SERVER['DOCUMENT_ROOT']) === 0) {
+				$this->var['PHP_SELF'] = str_replace('\\','/',str_replace($_SERVER['DOCUMENT_ROOT'],'',$_SERVER['SCRIPT_FILENAME']));
+				$this->var['PHP_SELF'][0] != '/' && $this->var['PHP_SELF'] = '/'.$this->var['PHP_SELF'];
+			} else {
+				system_error('request_tainting');
+			}
+		}
+		return $this->var['PHP_SELF'];
 	}
 
 	/**
