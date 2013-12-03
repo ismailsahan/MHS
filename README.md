@@ -6,23 +6,27 @@
 第三方组件
 --------
 - UCenter
+ - 需另外下载安装，UTF-8编码，压缩包里已附带使用文档和接口手册
+ - http://download.comsenz.com/UCenter/1.6.0/UCenter_1.6.0_SC_UTF8.zip
 - phpFastcache
+ - http://www.phpfastcache.com/
 - PHPnew
+ - http://phpnew.fenanr.com/
 
 目录结构
 ===
 - ./api 接口
 - ./cache 缓存
 - ./source 项目源码
-- ./source/action 动作（模块）
-- ./source/class 类库
-- ./source/function 函数库
-- ./source/include （未定）
-- ./source/language 语言包
-- ./source/plugin 插件
-- ./source/static 静态文件目录（无视即可）
-- ./source/template 模板
-- ./source/vendor 第三方组件或类库
+ - ./source/action 动作（模块）
+ - ./source/class 类库
+ - ./source/function 函数库
+ - ./source/include （未定）
+ - ./source/language 语言包
+ - ./source/plugin 插件
+ - ./source/static 静态文件目录（无视即可）
+ - ./source/template 模板
+ - ./source/vendor 第三方组件或类库
 - ./uc_client UCenter客户端
 
 发布笔记
