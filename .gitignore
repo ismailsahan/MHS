@@ -1,2 +1,7 @@
-cache/
-
+cache/**
+!cache/index.html
+*_bak
+*.bak
+*.log
+*.tmp
+Thumbs.db
