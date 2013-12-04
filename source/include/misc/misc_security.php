@@ -1,10 +1,13 @@
 <?php
 
 /**
- *      [Discuz!] (C)2001-2099 Comsenz Inc.
- *      This is NOT a freeware, use is subject to license terms
- *
- *      $Id: misc_security.php 25889 2011-11-24 09:52:20Z monkey $
+ * misc_security.php
+ * 杂项 CC防御组件
+ * 
+ * @author    gwc0721
+ * @copyright WHUT-SIA
+ * @version   0.1.1
+ * @package   function
  */
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');

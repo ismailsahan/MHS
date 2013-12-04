@@ -1,7 +1,13 @@
 <?php
 
 /**
+ * class_core.php
  * 核心类库
+ * 
+ * @author    gwc0721
+ * @copyright WHUT-SIA
+ * @version   0.1.1
+ * @package   function
  */
 
 //define('IN_WHUT_CONN', TRUE);

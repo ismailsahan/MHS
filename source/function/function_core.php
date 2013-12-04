@@ -1,9 +1,13 @@
 <?php
 
 /**
+ * function_core.php
  * 核心函数库
  * 
- * 最后修改 by gwc0721 @ 2013-12-01 13:06
+ * @author    gwc0721
+ * @copyright WHUT-SIA
+ * @version   0.1.1
+ * @package   function
  */
 
 define('APP_FRAMEWORK_CORE_FUNCTION', TRUE);
@@ -19,7 +23,7 @@ define('APP_FRAMEWORK_CORE_FUNCTION', TRUE);
  */
 function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
 	global $_G;
-	$string = ($operation == 'DECODE') ? str_replace(' ', '+', $string) : $string;
+	//$string = ($operation == 'DECODE') ? str_replace(' ', '+', $string) : $string;
 
 	$ckey_length = 4;// 随机密钥长度 取值 0-32;
 	// 加入随机密钥，可以令密文无任何规律，即便是原文和密钥完全相同，加密结果也会每次不同，增大破解难度。
@@ -95,6 +99,7 @@ function random($length, $numeric = 0) {
  * 计算表单HASH
  * 建议使用 setToken 替代
  * 
+ * @deprecated
  * @param string $specialadd 可选特征值，默认为空
  * @return string
  */
