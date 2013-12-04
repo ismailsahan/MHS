@@ -15,7 +15,8 @@ var Login = function () {
 				},
 				verifycode: {
 					required: true,
-					minlength: {$_G['setting']['seccodedata']['length']}
+					minlength: {$_G['setting']['seccodedata']['length']},
+					pattern: /^[0-9A-Za-z]{4}$/
 				}
 			},
 

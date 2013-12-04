@@ -15,7 +15,8 @@ var Login = function () {
 				},
 				verifycode: {
 					required: true,
-					minlength: 4
+					minlength: 4,
+					pattern: /^[0-9A-Za-z]{4}$/
 				}
 			},
 
