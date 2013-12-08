@@ -1,6 +1,8 @@
 cache/**
 assets/**
 !cache/index.html
+!cache/tpl/index.html
+!cache/cfg/index.html
 *_bak
 *.bak
 *.bak.php
