@@ -26,6 +26,8 @@ $lang = array(
 	'db_glue_not_allowed' => '',//Not allow this glue between field and value
 	'db_format_error' => '',//SQL string format error! This SQL need $count vars to replace into.
 	'system_init_ok' => '网站系统初始化完成，请<a href="index.php">点击这里</a>进入',
+	'method_undefined' => '{action} 的操作方法 {operation} 未定义！',
+	'default_method_undefined' => '未定义 {action} 的默认操作方法！',
 
 	'file_upload_error_-101' => '上传失败！上传文件不存在或不合法，请返回。',
 	'file_upload_error_-102' => '上传失败！非图片类型文件，请返回。',

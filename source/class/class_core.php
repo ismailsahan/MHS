@@ -26,7 +26,8 @@ class C {
 	var $cachelist = array();
 	var $libs = array(
 		'class/db',
-		'class/phpnew',
+		//'class/phpnew',
+		'class/template',
 		'plugin/phpfastcache/phpfastcache',
 	);
 	var $superglobal = array(
@@ -45,11 +46,17 @@ class C {
 		static $object;
 		if(empty($object)) {
 			$object = new C();
+			register_shutdown_function(array('C', 'shutdown'));//注册注销函数
+			$object->init();
 		}
 		return $object;
 	}
 
 	public function __construct() {
+		;
+	}
+
+	public function init() {
 		$this->_init_env();
 		$this->_init_config();
 		$this->_init_lib();
@@ -82,6 +89,8 @@ class C {
 			$this->error('function_core.php is missing');
 		}
 
+		self::sethandler();
+
 		//define('IS_ROBOT', checkrobot());
 
 		foreach ($GLOBALS as $key => $value) {
@@ -93,26 +102,27 @@ class C {
 
 		global $_G;
 		$_G = array(
-			'uid' => 0,
+			'uid' => 0,//用户ID
 			'username' => '',//用户名
 			'clientip' => $this->_get_client_ip(),//用户IP
 			'sid' => '',//用户SID
-			'formhash' => '',//表单令牌
-			'timestamp' => TIMESTAMP,
-			'starttime' => dmicrotime(),
-			'referer' => isset($_GET['referer']) ? urldecode($_GET['referer']) : (isset($_SERVER['REQUEST_REFERER']) ? urldecode($_SERVER['REQUEST_REFERER']) : ''),
-			'currenturl' => '',
-			'currenturl_encode' => '',
-			'charset' => '',
-			'gzipcompress' => '',
-			'authkey' => '',
-			'language' => '',
+			'formhash' => '',//表单令牌（已废弃）
+			'timestamp' => TIMESTAMP,//时间戳
+			'starttime' => dmicrotime(),//脚本开始执行的时间（精确到0.01s）
+			'referer' => isset($_GET['referer']) ? urldecode($_GET['referer']) : (isset($_SERVER['REQUEST_REFERER']) ? urldecode($_SERVER['REQUEST_REFERER']) : ''),//引用页链接
+			'currenturl' => '',//当前访问链接
+			'currenturl_encode' => '',//当前访问链接（加密）
+			'charset' => '',//项目编码
+			'gzipcompress' => false,//是否已开启GZIP压缩
+			'authkey' => '',//用户验证密钥
+			'language' => '',//语言标识符
 
 			'PHP_SELF' => '',
-			'siteurl' => '',
+			'siteurl' => '',//
 			'siteroot' => '',
 			'siteport' => '',
 
+			'member' => array(),
 			'timenow' => array(),
 			'debug' => array(),
 			'cookie' => array(),
@@ -124,7 +134,7 @@ class C {
 		$_G['basescript'] = defined('CURSCRIPT') ? CURSCRIPT : '';
 		$_G['basefilename'] = basename($_G['PHP_SELF']);
 		$sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
-		$_G['isHTTPS'] = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
+		//$_G['isHTTPS'] = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
 		$_G['siteurl'] = dhtmlspecialchars('http'.($_G['isHTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
 
 		$url = parse_url($_G['siteurl']);
@@ -139,7 +149,7 @@ class C {
 		define('IS_ROBOT', checkrobot());
 		define('IS_GET', $_SERVER['REQUEST_METHOD'] == 'GET');
 		define('IS_POST', $_SERVER['REQUEST_METHOD'] == 'POST');
-		define('IS_HTTPS', $this->var['isHTTPS']);
+		define('IS_HTTPS', ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false);
 	}
 
 	/**
@@ -160,12 +170,13 @@ class C {
 		if(empty($this->config['debug']) || !$this->config['debug']) {
 			define('APP_FRAMEWORK_DEBUG', false);
 			error_reporting(0);
-		} elseif(in_array($this->config['debug'], array(1, 2, 3), true) || !empty($_REQUEST['debug']) && $_REQUEST['debug'] === $this->config['debug']) {
+		} elseif(in_array($this->config['debug'], array(1, 2, 3, 4), true) || !empty($_REQUEST['debug']) && $_REQUEST['debug'] === $this->config['debug']) {
 			define('APP_FRAMEWORK_DEBUG', true);
 			error_reporting(E_ERROR);
 			switch($this->config['debug']) {
 				case 2: error_reporting(E_ALL); break;
 				case 3: error_reporting(E_ALL ^ E_NOTICE); break;
+				case 4: error_reporting(-1); break;
 			}
 		} else {
 			define('APP_FRAMEWORK_DEBUG', false);
@@ -226,7 +237,7 @@ class C {
 			$this->var['cookie']['saltkey'] = random(8);
 			dsetcookie('saltkey', $this->var['cookie']['saltkey'], 86400 * 30, 1, 1);
 		}
-		$this->var['authkey'] = md5($this->var['config']['security']['authkey'].$this->var['cookie']['saltkey']);
+		$this->var['authkey'] = md5($this->var['config']['security']['authkey'].$this->var['cookie']['saltkey'].$_SERVER['HTTP_USER_AGENT']);
 
 		if(!empty($this->var['cookie']['language']) && is_dir(APP_FRAMEWORK_ROOT.'/source/language/'.$this->var['cookie']['language'])){
 			$this->var['language'] = $this->var['cookie']['language'];
@@ -251,7 +262,8 @@ class C {
 			}
 		}*/
 
-		if($this->config['security']['attackevasive'] && (!defined('CURSCRIPT') || !in_array($this->var['mod'], array('seccode', 'secqaa', 'swfupload')) && !defined('DISABLEDEFENSE'))) {
+		//CC防御
+		if($this->config['security']['attackevasive'] && (/*!defined('CURSCRIPT') || */!in_array(/*$this->var['mod']*/$_GET['action'], array('seccode', 'secqaa', 'swfupload')) && !defined('DISABLEDEFENSE'))) {
 			require_once libfile('misc/security', 'include');
 		}
 
@@ -296,6 +308,7 @@ class C {
 		$this->var["setting"] = & $cache;
 		unset($cache);*/
 
+		//初始化缓存类
 		global $cache;
 		$cache = phpFastCache('auto');
 		//$this->cachengine = &$cache;
@@ -310,8 +323,8 @@ class C {
 		}
 
 		//初始化模板类PHPnew
-		global $template;
-		$template = new PHPnew();
+		//global $template;
+		/*$template = new PHPnew();
 		$template->templates_dir = array_unique(array(
 			APP_FRAMEWORK_ROOT.'/source/template/default/',//默认模板路径
 			APP_FRAMEWORK_ROOT.'/source/template/'.$this->var['setting']['template'].'/',//模板路径
@@ -322,10 +335,13 @@ class C {
 		$template->templates_ankey = true;
 		$template->templates_new = APP_FRAMEWORK_DEBUG ? true : false;
 		$template->templates_isdebug = APP_FRAMEWORK_DEBUG ? true : false;
-		$template->templates_depth = 4;
-		$template->templates_direxception = array('test', 'document', 'documention', 'temp', 'demo');
-		//$template->templates_source = APP_FRAMEWORK_ROOT.'/static/';//CSS JS目录
+		$template->templates_direxception = array('test', 'document', 'documention', 'temp', 'demo');*/
 
+		//初始化模板引擎Smarty
+		global $template;
+		$template = new template;
+
+		///站点关闭的处
 		if($this->var['setting']['closed']){
 			$template->display('closed');
 			exit;
@@ -365,6 +381,7 @@ class C {
 	 * 分配SESSION
 	 */
 	private function _init_session() {
+		//SESSION 初始化
 		session_set_cookie_params(0, $this->config['cookie']['cookiepath'], $this->config['cookie']['cookiedomain'], IS_HTTPS, true);
 		@ini_set('session.use_cookies', true);
 		@ini_set('session.use_only_cookies', false);
@@ -387,16 +404,22 @@ class C {
 	 * 初始化用户
 	 */
 	private function _init_user(){
+		//判断用户是否已登录
 		if(!empty($this->var['cookie']['auth'])){
-			@list($username, $auth) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
-			if($auth === $this->var['authkey']){
-				$this->var['username'] = $username;
+			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
+			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === intval($uid) && $_SESSION['user']['username'] === $username){
+				if($_SESSION['user']['expiry'] < TIMESTAMP + 600){
+					$this->var['uid'] = $_SESSION['user']['uid'];
+					$this->var['username'] = $_SESSION['user']['username'];
+					$this->var['member'] = $_SESSION['user'];
+					$_SESSION['user']['expiry'] = TIMESTAMP;
+				}else{//会话超时
+					dsetcookie('auth');
+					unset($_SESSION['user']);
+					redirect($_G['basefilename'].'?action=logging&operation=expired');
+					exit;
+				}
 			}
-		}
-
-		if(isset($_SESSION['user']) && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['authkey'] == $this->var['authkey']){
-			$this->var['uid'] = $_SESSION['user']['uid'];
-			$this->var['username'] = $_SESSION['user']['username'];
 		}
 	}
 
@@ -524,142 +547,154 @@ class C {
 	}
 
 	/**
-	 * 脚本结束时调用，关闭数据库，输出缓冲区内容
+	 * 设定错误和异常处理
 	 */
-	private function end($obj = null){
-		static $executed = false;
+	public function sethandler(){
+		//register_shutdown_function('fatalError');
+		set_error_handler('error_handler');
+		set_exception_handler('exception_handler');
+	}
+
+	/**
+	 * 脚本结束时调用，关闭数据库链接，输出缓冲区内容
+	 */
+	public static function shutdown($obj = null){
 		global $action;
+		if(function_exists('fatalError')) fatalError();
 		process('准备结束...');
-		if(!$executed){
-			if(empty($obj))
-				$obj = &$this;
-			if(APP_FRAMEWORK_DEBUG && !IS_AJAX  && file_exists(APP_FRAMEWORK_ROOT.'/source/PageTrace.php') && !in_array($action, $this->config['trace_disabled'])){
-				global $_G, $template;
-
-				//整理SQL
-				if(class_exists('DB')){
-					$db = DB::object();
-					$sqldebug = array();
-					$n = $discuz_table = 0;
-					$queryinfo = array(
-						'select' => 0,
-						'update' => 0,
-						'insert' => 0,
-						'replace' => 0,
-						'delete' => 0
-					);
-					$sqlw = array();
-					$queries = count($db->sqldebug);
-					$links = array();
-					foreach($db->link as $k => $link) {
-						$links[(string)$link] = $k;
-					}
-					$sqltime = 0;
-					foreach($db->sqldebug as $string) {
-						$sqltime += $string[1];
-						$extra = $dt = '';
-						$n++;
-						$sql = $string[0];
-						$sqldebugrow = '';
-						if(preg_match('/^SELECT /', $string[0])) {
-							$queryinfo['select']++;
-							$query = @mysql_query('EXPLAIN '.$string[0], $string[3]);
-							$i = 0;
-							$sqldebugrow .= '';
-							while($row = DB::fetch($query)) {
-								if(!$i) {
-									$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
-									$i++;
-								}
-								if(strexists($row['Extra'], 'Using filesort')) {
-									$sqlw['Using filesort']++;
-									$extra .= $row['Extra'];
-								}
-								if(strexists($row['Extra'], 'Using temporary')) {
-									$sqlw['Using temporary']++;
-									$extra .= $row['Extra'];
-								}
-								$sqldebugrow .= ''.implode('_SP_', $row).'';
-							}
-							$sqldebugrow .= '';
-						}elseif(preg_match('/^UPDATE /', $string[0])){
-							$queryinfo['update']++;
-						}elseif(preg_match('/^INSERT /', $string[0])){
-							$queryinfo['insert']++;
-						}elseif(preg_match('/^REPLACE /', $string[0])){
-							$queryinfo['replace']++;
-						}elseif(preg_match('/^DELETE /', $string[0])){
-							$queryinfo['delete']++;
-						}
-
-						$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
-						foreach($string[2] as $error) {
-							$error['file'] = str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']);
-							$error['class'] = isset($error['class']) ? $error['class'] : '';
-							$error['type'] = isset($error['type']) ? $error['type'] : '';
-							$error['function'] = isset($error['function']) ? $error['function'] : '';
-							$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
-							/*if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
-								$dt = ' • '.$error['file'];
-							}*/
-						}
-						$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';
-						$sqldebug[] = $string[1].'s • DBLink '.$links[(string)$string[3]].$dt.'[br][color=blue]'.$sql.'[/color][br]'.$sqldebugrow;
-					}
-				}
-
-				$trace = array();
-				$tmp = &trace();
-				$trace['base'] = array();
-				$trace['process'] = &$tmp['process'];
-				$trace['error'] = &$tmp['error'];
-				//$trace = $_G['debug'];
-				$trace['files'] = get_included_files();
-				$trace['template'] = isset($template) ? $template->get_debug_info() : array();
-				$trace['mapping'] = empty($template) ? array() : $template->templates_mapping();
-				$trace['sql'] = empty($sqldebug) ? array() : $sqldebug;
-				$trace['trace'] = &$tmp['trace'];
-				$trace['_G'] = &$_G;
-
-				//进一步处理文件信息
-				$t = array_keys($trace['mapping']);
-				foreach ($trace['files'] as $k => $file){
-					$temp = str_replace(APP_FRAMEWORK_ROOT, '.', $file);
-					$f = basename($file);
-					$trace['files'][$k] = $temp.' ( '.number_format(filesize($file)/1024, 2).' KB )';
-					if(in_array($f, $t)) $trace['files'][$k] .= ' -> '.$trace['mapping'][$f];
-				}
-				unset($t);
-				//echo '<pre>';print_r($this->cachengine->stats());echo '</pre>';
-
-				//处理基本调试信息
-				$temp = dmicrotime() - $_G['starttime'];
-				$trace['base'][] = lang('debug', 'base_request', array('str' => date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'])));
-				$trace['base'][] = lang('debug', 'base_runtime', array('str' => $temp));
-				$trace['base'][] = lang('debug', 'base_throughput', array('str' => number_format(1/$temp, 2)));
-				$trace['base'][] = lang('debug', 'base_mem', array('str' => number_format(memory_get_usage()/1024, 2).' KB'));
-				$trace['base'][] = lang('debug', 'base_sql', array('str' => (isset($db->querynum) ? "{$db->querynum} queries ({$queryinfo['select']} selects, {$queryinfo['update']} updates, {$queryinfo['delete']} deletes, {$queryinfo['insert']} inserts, {$queryinfo['replace']} replaces)" : 'Unknown')));
-				$trace['base'][] = lang('debug', 'base_files', array('str' => count($trace['mapping'])));
-				//$trace['base'][] = lang('debug', 'base_cache', array('str' => '?'));
-				$trace['base'][] = lang('debug', 'base_session', array('str' => session_id()));
-				//'time' => number_format((dmicrotime() - $_G['starttime']), 6),
-				//'queries' => $db->querynum,
-				//'memory' => $cache->option['storage']=='files' ? null : ucfirst($cache->option['storage']),
-
-				include_once APP_FRAMEWORK_ROOT.'/source/PageTrace.php';
-			}
-			class_exists('DB') && $db->curlink && $db->close();
-			ob_end_flush();
-			$executed = true;
+		if(empty($obj)){
+			//$obj = &$this;
+			$obj = C::instance();
 		}
-		exit;
+		if(APP_FRAMEWORK_DEBUG && !IS_AJAX  && file_exists(APP_FRAMEWORK_ROOT.'/source/PageTrace.php') && !in_array($action, $obj->config['trace_disabled'])){
+			global $_G, $template;
+
+			//整理SQL
+			if(class_exists('DB')){
+				$db = DB::object();
+				$sqldebug = array();
+				$n = $discuz_table = 0;
+				$queryinfo = array(
+					'select' => 0,
+					'update' => 0,
+					'insert' => 0,
+					'replace' => 0,
+					'delete' => 0
+				);
+				$sqlw = array();
+				$queries = count($db->sqldebug);
+				$links = array();
+				if(is_array($db->link))
+				foreach($db->link as $k => $link) {
+					$links[(string)$link] = $k;
+				}
+				$sqltime = 0;
+				if(is_array($db->sqldebug))
+				foreach($db->sqldebug as $string) {
+					$sqltime += $string[1];
+					$extra = $dt = '';
+					$n++;
+					$sql = $string[0];
+					$sqldebugrow = '';
+					if(preg_match('/^SELECT /', $string[0])) {
+						$queryinfo['select']++;
+						$query = @mysql_query('EXPLAIN '.$string[0], $string[3]);
+						$i = 0;
+						$sqldebugrow .= '';
+						while($row = DB::fetch($query)) {
+							if(!$i) {
+								$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
+								$i++;
+							}
+							if(strexists($row['Extra'], 'Using filesort')) {
+								$sqlw['Using filesort']++;
+								$extra .= $row['Extra'];
+							}
+							if(strexists($row['Extra'], 'Using temporary')) {
+								$sqlw['Using temporary']++;
+								$extra .= $row['Extra'];
+							}
+							$sqldebugrow .= ''.implode('_SP_', $row).'';
+						}
+						$sqldebugrow .= '';
+					}elseif(preg_match('/^UPDATE /', $string[0])){
+						$queryinfo['update']++;
+					}elseif(preg_match('/^INSERT /', $string[0])){
+						$queryinfo['insert']++;
+					}elseif(preg_match('/^REPLACE /', $string[0])){
+						$queryinfo['replace']++;
+					}elseif(preg_match('/^DELETE /', $string[0])){
+						$queryinfo['delete']++;
+					}
+
+					$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
+					foreach($string[2] as $error) {
+						$error['file'] = str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']);
+						$error['class'] = isset($error['class']) ? $error['class'] : '';
+						$error['type'] = isset($error['type']) ? $error['type'] : '';
+						$error['function'] = isset($error['function']) ? $error['function'] : '';
+						$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
+						/*if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
+							$dt = ' • '.$error['file'];
+						}*/
+					}
+					$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';
+					$sqldebug[] = $string[1].'s • DBLink '.$links[(string)$string[3]].$dt.'[br][color=blue]'.$sql.'[/color][br]'.$sqldebugrow;
+				}
+			}
+
+			$trace = array();
+			$tmp = &trace();
+			$trace['base'] = array();
+			$trace['process'] = &$tmp['process'];
+			$trace['error'] = &$tmp['error'];
+			//$trace = $_G['debug'];
+			$trace['files'] = get_included_files();
+			//$trace['template'] = isset($template) ? $template->get_debug_info() : array();
+			$trace['mapping'] = class_exists('StaticEngine') ? StaticEngine::$maps : array();
+			$trace['sql'] = empty($sqldebug) ? array() : $sqldebug;
+			$trace['trace'] = &$tmp['trace'];
+			$trace['_G'] = &$_G;
+
+			//进一步处理文件信息
+			$t = array_keys($trace['mapping']);
+			foreach ($trace['files'] as $k => $file){
+				$temp = str_replace(APP_FRAMEWORK_ROOT, '.', $file);
+				$f = basename($file);
+				$trace['files'][$k] = $temp.' ( '.number_format(filesize($file)/1024, 2).' KB )';
+				if(in_array($f, $t)) $trace['files'][$k] .= ' -> '.$trace['mapping'][$f];
+			}
+			unset($t);
+			//echo '<pre>';print_r($this->cachengine->stats());echo '</pre>';
+
+			//处理基本调试信息
+			$temp = dmicrotime() - $_G['starttime'];
+			$trace['base'][] = lang('debug', 'base_request', array('str' => date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'])));
+			$trace['base'][] = lang('debug', 'base_runtime', array('str' => $temp));
+			$trace['base'][] = lang('debug', 'base_throughput', array('str' => number_format(1/$temp, 2)));
+			$trace['base'][] = lang('debug', 'base_mem', array('str' => number_format(memory_get_usage()/1024, 2).' KB'));
+			$trace['base'][] = lang('debug', 'base_sql', array('str' => (isset($db->querynum) ? "{$db->querynum} queries ({$queryinfo['select']} selects, {$queryinfo['update']} updates, {$queryinfo['delete']} deletes, {$queryinfo['insert']} inserts, {$queryinfo['replace']} replaces)" : 'Unknown')));
+			$trace['base'][] = lang('debug', 'base_files', array('str' => count($trace['mapping'])));
+			//$trace['base'][] = lang('debug', 'base_cache', array('str' => '?'));
+			$trace['base'][] = lang('debug', 'base_session', array('str' => session_id()));
+			//'time' => number_format((dmicrotime() - $_G['starttime']), 6),
+			//'queries' => $db->querynum,
+			//'memory' => $cache->option['storage']=='files' ? null : ucfirst($cache->option['storage']),
+
+			include_once APP_FRAMEWORK_ROOT.'/source/PageTrace.php';
+		}
+		class_exists('DB') && $db->curlink && $db->close();
+		ob_end_flush();
+		//exit;
 	}
 
 	function __destruct(){
-		$this->end();
+		//$this->shutdown();
 	}
 }
 
 //$CORE = &C::instance();
-$CORE = new C();
+//$CORE = new C();
 //$CORE->init();
+
+C::instance();

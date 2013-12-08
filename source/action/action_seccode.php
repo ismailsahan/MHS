@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * 验证码
+ */
+
 error_reporting(0);
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');

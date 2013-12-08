@@ -65,6 +65,7 @@ if($attackevasive & 8) {
 			dsetcookie('visitcode', authcode(md5($answer).'|0|'.TIMESTAMP, 'ENCODE'), TIMESTAMP + 816400, 1, true);
 			securitymessage($question, '<input type="text" name="answer" size="8" maxlength="150" /><input type="submit" name="secqsubmit" class="button" value=" Submit " />', FALSE, TRUE);
 		} else {
+			define('CC_REQUEST', true);
 			dsetcookie('visitcode', authcode($visitcode.'|1|'.TIMESTAMP, 'ENCODE'), TIMESTAMP + 816400, 1, true);
 		}
 	}
@@ -98,6 +99,7 @@ function securitymessage($subject, $message, $reload = TRUE, $form = FALSE) {
 		echo '<html>';
 		echo '<head>';
 		echo '<title>'.$subject.'</title>';
+		echo isset($_G['config']['output']['charset']) ? '<meta http-equiv="Content-Type" content="text/html; charset='.$_G['config']['output']['charset'].'" />' : '';
 		echo '</head>';
 		echo '<body bgcolor="#FFFFFF">';
 		if($reload) {

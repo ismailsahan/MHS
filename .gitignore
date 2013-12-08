@@ -1,7 +1,11 @@
 cache/**
+assets/**
 !cache/index.html
 *_bak
 *.bak
+*.bak.php
+*_bak.php
 *.log
 *.tmp
 Thumbs.db
+config.inc.php

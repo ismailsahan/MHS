@@ -126,10 +126,10 @@ function is_utf8($string) {
  * @return boolean 是否显示调试信息
  */
 function debuginfo() {
-	global $_G, $cache;
+	global $_G, $cache, $template;
 	if(getglobal('setting/debug')) {
 		$db = DB::object();
-		$_G['debuginfo'] = array(
+		$debuginfo = array(
 			'time' => number_format((dmicrotime() - $_G['starttime']), 6),
 			'queries' => $db->querynum,
 			//'memory' => isset($_G['memory']) ? ucwords(@$_G['memory']) : null,
@@ -137,11 +137,13 @@ function debuginfo() {
 			//'mem' => (intval(ini_get('memory_limit')) > 0) ? memory_get_usage() : ''
 		);
 		if($db->slaveid) {
-			$_G['debuginfo']['queries'] = 'Total '.$db->querynum.', Slave '.$db->slavequery;
+			$debuginfo['queries'] = 'Total '.$db->querynum.', Slave '.$db->slavequery;
 		}
-		return TRUE;
+		$_G['debug'] = $debuginfo;
+		//$template->assign('debuginfo', $debuginfo, true);
+		return true;
 	} else {
-		return FALSE;
+		return false;
 	}
 }
 
@@ -313,7 +315,7 @@ function getglobal($key, $group = null) {
 function dsetcookie($var, $value = '', $life = 0, $prefix = 1, $httponly = false) {
 	global $_G;
 
-	$config = $_G['config']['cookie'];
+	$config = &$_G['config']['cookie'];
 
 	$_G['cookie'][$var] = $value;
 	$var = ($prefix ? $config['cookiepre'] : '').$var;
@@ -694,6 +696,7 @@ function lang($file, $langvar = null, $vars = array(), $default = null, $raw = f
 		}
 	}
 	$return = str_replace($searchs, $replaces, $return);
+	//trace("lang($file, $langvar) = $return");
 	return $return;
 }
 
@@ -706,7 +709,7 @@ function lang($file, $langvar = null, $vars = array(), $default = null, $raw = f
  * @param string|boolean
  */
 function libfile($libname, $folder = '', $chkExistence = true) {
-	$libpath = '/source'.($folder == '' ? '' : '/'.$folder);
+	$libpath = !empty($folder) && substr($folder, 0, 1) == '/' ? $folder : '/source'.($folder == '' ? '' : '/'.$folder);
 	if(strstr($libname, '/')) {
 		list($pre, $name, $ext) = explode('/', $libname);
 		$path = $ext ? "{$libpath}/{$pre}/{$name}/{$ext}" : "{$libpath}/{$pre}/{$pre}_{$name}";
@@ -714,7 +717,7 @@ function libfile($libname, $folder = '', $chkExistence = true) {
 		$path = "{$libpath}/{$libname}";
 
 	}
-	$return = preg_match('/^[\w\d\/_]+$/i', $path) ? realpath(APP_FRAMEWORK_ROOT.$path.'.php') : false;
+	$return = preg_match('/^[\w\d\/\._]+$/i', $path) ? realpath(APP_FRAMEWORK_ROOT.$path.'.php') : false;
 	//$chkExistence && !file_exists($path) && halt('LIBRARY_FILE_NONEXISTENT', $lib);
 	$chkExistence && !$return && halt('LIBRARY_FILE_NONEXISTENT', (empty($folder) ? '' : "{$folder}/").$libname);
 	return $return;
@@ -738,6 +741,10 @@ function need_seccode($mod){
  */
 function chklogin(){
 	global $_G;
+	if(isset($_SESSION['user']['activated']) && !$_SESSION['user']['activated']){
+		redirect($_G['basefilename'].'?action=logging&operation=activate');
+		exit;
+	}
 	return ($_G['uid'] > 0 && !empty($_G['username']));
 }
 
@@ -1214,7 +1221,7 @@ function ubb($Text) {
 /**
  * 设置表单令牌
  * 
- * @param string $formName 表单特征码/名字
+ * @param string $formName 表单标识符/特征码/名字
  * @return void
  */
 function setToken($formName){
@@ -1234,16 +1241,23 @@ function setToken($formName){
 		'hash' => $codeStr,
 		'time' => TIMESTAMP
 	);
-	$template->assign($formName.'Token', '<input type="hidden" name="'.$setName.'" value="'.$codeStr.'"/>');
-	$template->assign($formName.'TokenHash', md5($setName));
+	$template->assign($formName.'Token', '<input type="hidden" name="'.$setName.'" value="'.$codeStr.'"/>', true);
+	$template->assign($formName.'TokenHash', md5($setName), true);
 	//trace("setToken: {$setName} = {$codeStr}");
 }
 
 /**
  * 检查是否正确提交表单
+ * 
+ * @param string  $var          表单标识符
+ * @param string  $errmsg       错误信息
+ * @param integer $allowget     是否允许GET提交
+ * @param integer $seccodecheck 是否检查验证码
+ * @param integer $secqaacheck  是否检查安全问答（暂不可用）
+ * @return boolean
  */
-function submitcheck($var, $allowget = 0, $seccodecheck = null, $secqaacheck = 0) {
-	global $_G, $errmsg;
+function submitcheck($var, &$errmsg, $allowget = 0, $seccodecheck = null, $secqaacheck = 0) {
+	global $_G;
 	$time = 300;
 	$name = $var;
 	$session = $_SESSION[$name.'Token'];
@@ -1253,21 +1267,6 @@ function submitcheck($var, $allowget = 0, $seccodecheck = null, $secqaacheck = 0
 	if(empty($_REQUEST[$var])) return false;
 	$token = $allowget ? $_GET[$var] : $_POST[$var];
 	$seccodecheck = $seccodecheck === null ? need_seccode($name) : $seccodecheck;
-	/*$sessions = $cache->get($_G['sid'].'Tokens');
-	//trace($sessions);
-	$session = '';
-	if($sessions !== null){
-		$session = isset($sessions[$name.'Token']) ? $sessions[$name.'Token'] : '';
-		unset($sessions[$name.'Token']);
-		if(empty($sessions)){
-			$cache->delete($_G['sid'].'Tokens');
-		}else{
-			$cache->set($_G['sid'].'Tokens', $sessions, 0);
-		}
-	}*/
-	//$session = $_SESSION[$name.'Token'];
-	//unset($_SESSION[$name.'Token']);
-	//trace($session);
 	if($session['time'] < TIMESTAMP-$time){
 		$errmsg = 'token_expired';
 		return false;
@@ -1288,7 +1287,10 @@ function submitcheck($var, $allowget = 0, $seccodecheck = null, $secqaacheck = 0
 }
 
 /**
- * 取得文件后缀
+ * 取得文件后缀/类型
+ * 
+ * @param string $filename 文件名或文件路径
+ * @return string 文件后缀/类型
  */
 function fileext($filename) {
 	return addslashes(strtolower(substr(strrchr($filename, '.'), 1, 10)));
@@ -1595,7 +1597,7 @@ function halt($error, $param=array()){
 			}
 			foreach($e as $k => $v){
 				if(is_array($v)){
-					foreach($v as $ck => $cv){
+					foreach($v as $sk => $sv){
 						$e[$k][$sk] = str_replace(APP_FRAMEWORK_ROOT, '.', $sv);
 					}
 				}elseif(is_string($v)){
@@ -1610,7 +1612,7 @@ function halt($error, $param=array()){
 		if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
 		if(defined('PHPNEW_STATIC_TPL')) global $template;
 		if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
-			$template->assign('e', $e);
+			$template->assign('e', $e, true);
 			$template->display('error');
 		}else{
 			include APP_FRAMEWORK_ROOT.'/source/ErrorException.php';
@@ -1635,12 +1637,21 @@ function exception_handler($e) {
 	$error = array();
 	$error['message'] = $e->getMessage();
 	$trace = $e->getTrace();
-	if('throw_exception' == $trace[0]['function']){
-		$error['file'] = $trace[0]['file'];
-		$error['line'] = $trace[0]['line'];
-	}else{
-		$error['file'] = $e->getFile();
-		$error['line'] = $e->getLine();
+	if(APP_FRAMEWORK_DEBUG){
+		if('throw_exception' == $trace[0]['function']){
+			$error['file'] = $trace[0]['file'];
+			$error['line'] = $trace[0]['line'];
+		}else{
+			$error['file'] = $e->getFile();
+			$error['line'] = $e->getLine();
+		}
+		/*if(empty($trace)){
+			ob_start();
+			debug_print_backtrace();
+			$error['trace'] = ob_get_clean();
+		}else{
+			$error['trace'] = &$trace;
+		}*/
 	}
 	//Log::record($error['message'],Log::ERR);
 	halt($error);
@@ -1682,6 +1693,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 			err($errorStr);
 			break;
 	}
+	return true;
 }
 
 /**
@@ -1703,8 +1715,3 @@ function fatalError() {
 		}
 	}
 }
-
-//设定错误和异常处理
-register_shutdown_function('fatalError');
-set_error_handler('error_handler');
-set_exception_handler('exception_handler');

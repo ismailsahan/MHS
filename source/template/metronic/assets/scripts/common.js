@@ -1,5 +1,5 @@
-$(document).ready(function(){
-	if($.validator.messages) $.extend($.validator.messages, {
+$(document).ready(function() {
+	if(typeof $.validator != "undefined") $.extend($.validator.messages, {
 		required: "这一项不能为空！",
 		remote: "请修正该字段",
 		email: "请输入有效的电子邮箱(Email)地址",

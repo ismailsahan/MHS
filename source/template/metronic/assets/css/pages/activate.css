@@ -1,0 +1,163 @@
+/***
+Login page
+***/
+
+/* logo page */
+.logging {
+  background-color: #666 !important;
+}
+
+.logging .logo {
+  margin: 0 auto;   
+  margin-top:60px;
+  padding: 15px;
+  text-align: center;
+}
+
+.logging .content {
+  background: url(../../img/bg-white-lock.png) repeat;
+  width: 360px;
+  margin: 0 auto; 
+  margin-bottom: 0px;
+  padding: 30px;  
+  padding-top: 20px;  
+  padding-bottom: 15px;  
+}
+
+.logging .content h3, .logging .content h4 {
+  color: #eee;
+  text-shadow: 0 0 3px #000;
+}
+
+.logging .content p,
+.logging .content label {
+  color: #fff;
+  text-shadow: 0 0 3px #000;
+}
+
+.logging a {
+  text-shadow: 0 0 5px #FFF;
+}
+
+.logging .content .activate-form {
+    padding: 0px;
+    margin: 0px;
+}
+
+.logging .content .form-control {
+  background-color: #fff;
+}
+
+.logging .content .form-title {
+  font-weight: 300;
+  margin-bottom: 25px;
+}
+
+.logging .content .form-actions {
+  background-color: transparent;
+  clear: both;
+  border: 0px;
+  padding: 0px 30px 25px 30px;
+  margin-left: -30px;
+  margin-right: -30px;
+}
+
+.logging .content .form-actions .checkbox {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.logging .content .form-actions .checkbox {
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.logging .content .form-actions .btn {
+  margin-top: 1px;
+}
+
+.logging .content .create-account {
+  border-top: 1px dotted #eee;
+  padding-top: 10px;
+  margin-top: 15px;
+}
+
+.logging .content .create-account a {
+  display: inline-block;
+  margin-top: 5px;
+}
+
+/* select2 dropdowns */
+.logging .content .select2-container i {
+  display: inline-block;
+  position: relative;
+  color: #ccc;
+  z-index: 1;
+  top:1px;
+  margin: 4px 4px 0px 3px; 
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  text-align: center; 
+}
+
+.logging .content .has-error .select2-container i {
+  color: #b94a48;
+}
+
+.logging .content .select2-container a span {
+  font-size: 13px;
+}
+
+.logging .content .select2-container a span img {
+  margin-left: 4px;
+}
+
+.verifycode input {
+  padding-right: 90px;
+}
+
+.verifycode a {
+  position: relative;
+  float: right;
+  top: -30px;
+  right: 4px;
+}
+
+.logging .content .alert-danger, .logging .content .alert-danger h4, .logging .content .alert-danger p {
+  color: #B94A48;
+}
+.logging .content .alert-info, .logging .content .alert-info h4, .logging .content .alert-info p {
+  color: #3A87AD;
+}
+
+/* footer copyright */
+.logging .copyright {
+  text-align: center;
+  margin: 0 auto; 
+  padding: 10px;
+  color: #eee;
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  /***
+  Login page
+  ***/
+  .logging .logo {
+    margin-top:10px;
+  }
+
+  .logging .content {
+    padding: 30px; 
+    width: 222px;
+  }
+
+  .logging .content h3 {
+    font-size: 22px;
+  }
+
+  .logging .checkbox {
+    font-size: 13px;
+  }
+}

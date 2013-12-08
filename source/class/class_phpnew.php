@@ -95,7 +95,7 @@ class PHPnew {
 				
 				if($trues){
 					$clstr = '[b][color=#BAE7DD]'.$cls.':[/color][/b]';
-					$val = &str_replace(array(APP_FRAMEWORK_ROOT, str_replace('\\', '/', APP_FRAMEWORK_ROOT)), '.', $val);
+					$val = str_replace(array(APP_FRAMEWORK_ROOT, str_replace('\\', '/', APP_FRAMEWORK_ROOT)), '.', $val);
 					if($cls === 'Warning'){
 						$clstr = '[b][color=#FF8040]'.$cls.':[/color][/b]';
 						$val = '[color=#FF8040]'.$val.'[/color]';
@@ -1039,6 +1039,12 @@ class PHPnew {
 			$var = $type;
 			$type = 'template';
 		}
+		if(strexists($var, '$')){
+			$tmp = substr($var, 1);
+			/*$var = isset($this->templates_assign[$tmp]) ? $this->templates_assign[$tmp] : $$tmp;
+			global $$tmp;
+			trace($$tmp);*/
+		}
 		return lang($type, $var, null, null, true);
 	}
 
@@ -1055,6 +1061,7 @@ class PHPnew {
 			$math = $math[1];
 		if($math){
 			$varname = "<?={$math}?>";
+			$tmp = substr($math, 0, 1);
 			$returnstr = str_replace("\\\"", "\"", preg_replace("/\[([a-zA-Z0-9_\-\.\x7f-\xff]+)\]/s", "['\\1']", $varname));
 			return $returnstr;
 		}
