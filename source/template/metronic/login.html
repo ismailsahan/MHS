@@ -58,8 +58,8 @@
 				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
 				<div class="input-icon verifycode">
 					<i class="fa fa-picture-o"></i>
-					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" required />
-					<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>
+					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}" required />
+					<!--{*<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>*}-->
 				</div>
 			</div>
 			{/if}

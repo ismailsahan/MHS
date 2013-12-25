@@ -1,5 +1,6 @@
 cache/**
 assets/**
+development/**
 !cache/index.html
 !cache/tpl/index.html
 !cache/cfg/index.html

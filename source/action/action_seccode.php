@@ -22,6 +22,37 @@ switch($operation){
 	case 'check':
 		check_seccode($_GET['seccode'], $_GET['tag']);
 		break;
+	case 'html':
+		$html = '<div class="seccodeImg" onmouseenter="$.fn.seccode.list[$.fn.seccode.id(\'#'.$id.'\')]=true" onmouseout="$.fn.seccode.hideDelayed(\''.$id.'\')">';
+		$ani = $_G['setting']['seccodedata']['animator'] ? '_ani' : '';
+		$id = $_REQUEST['id'];
+		switch($_G['setting']['seccodedata']['type']){
+			case 4:
+				$_G['setting']['seccodedata']['width'] = 32;
+				$_G['setting']['seccodedata']['height'] = 24;
+			case 0:
+			case 1:
+				$html .= lang('core', 'seccode_image'.$ani.'_tips');
+				$html .= '<a href="javascript:;">';
+				$html .= '<img src="'.$_REQUEST['imgurl'].'&'.TIMESTAMP.'"';
+				$html .= ' width="'.$_G['setting']['seccodedata']['width'].'"';
+				$html .= ' height="'.$_G['setting']['seccodedata']['height'].'"';
+				$html .= ' onclick="$(\'#'.$id.'\').seccodeHTML(1)"';
+				//$html .= ' onblur="!$(\'#'.$id.'\').is(\':focus\')&&$(\'#'+$id+'\').poshytip(\'hide\')"';
+				$html .= ' /></a>';
+				break;
+			case 2:
+				$html .= extension_loaded('ming') ?
+						lang('core', 'seccode_image'.$ani.'_tips')."<script type='text/javascript'>AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl'].$_REQUEST['imgurl']."','quality', 'high', 'wmode', 'transparent', 'bgcolor', '#ffffff','align', 'middle', 'menu', 'false', 'allowScriptAccess', 'never');</script>" :
+						lang('core', 'seccode_image'.$ani.'_tips')."<script type='text/javascript'>AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl']."static/seccode/flash/flash2.swf', 'FlashVars', 'sFile=".rawurlencode("{$_G['siteurl']}{$_REQUEST['imgurl']}")."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent');</script>";
+				break;
+			case 3:
+				$html .= lang('core', 'seccode_sound_tips')."<script type='text/javascript'>AC_FL_RunContent('id', 'seccodeplayer_$id', 'name', 'seccodeplayer_$id', 'width', '0', 'height', '0', 'src', '".$_G['siteurl']."static/seccode/flash/flash1.swf', 'FlashVars', 'sFile=".rawurlencode("{$_G['siteurl']}{$_REQUEST['imgurl']}")."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent');</script>";
+				break;
+		}
+		$html .= '</div>';
+		exit($html);
+		break;
 	default:
 		//list($seccode, $seccodeauth) = make_seccode(isset($_GET['idhash']) ? $_GET['idhash'] : null, isset($_GET['key']) ? $_GET['key'] : null);
 		$seccode = empty($_GET['tag']) ? make_seccode() : make_seccode($_GET['tag']);

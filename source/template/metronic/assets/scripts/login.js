@@ -3,7 +3,7 @@ var Login = function () {
 		$('.login-form').validate({
 			errorElement: 'span', //default input error message container
 			errorClass: 'help-block', // default input error message class
-			focusInvalid: true, // do not focus the last invalid input
+			focusInvalid: false, // do not focus the last invalid input
 			rules: {
 				username: {
 					required: true
@@ -248,8 +248,9 @@ var Login = function () {
 		init: function () {
 			handleLogin();
 			handleForgetPassword();
-			handleRegister();		
-			$(".verifycode a img").seccode();
+			handleRegister();
+			$("#verifycode").seccode();
+			//$(".verifycode a img").seccode();
 		}
 
 	};

@@ -24,4 +24,9 @@ $lang = array(
 		7 => '周日',
 	),
 	'dot' => '、',
+
+	'seccode_image_tips' => '输入下图中的字符<br />',
+	'seccode_image_ani_tips' => '请输入下面动画图片中的字符<br />',
+	'seccode_sound_tips' => '输入您听到的字符<br />',
+	'secqaa_tips' => '输入下面问题的答案<br />',
 );

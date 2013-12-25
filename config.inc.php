@@ -84,7 +84,7 @@ $_config['output']['ajaxvalidate']		= 0;		// 是否严格验证 Ajax 页面的�
 $_config['output']['tplrefresh'] = 1;
 
 // COOKIE 设置
-$_config['cookie']['cookiepre'] 		= 'conn_'; 	// COOKIE前缀
+$_config['cookie']['cookiepre'] 		= 'mhs_'; 	// COOKIE前缀
 $_config['cookie']['cookiedomain'] 		= ''; 		// COOKIE作用域
 $_config['cookie']['cookiepath'] 		= '/'; 		// COOKIE作用路径
 
