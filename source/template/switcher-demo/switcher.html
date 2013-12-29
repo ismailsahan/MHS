@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Demo</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<link type="text/css" rel="stylesheet" href="css/font-awesome.min.css" />
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="css/bootstrap-theme.min.css" />
+<link type="text/css" rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="header">
+	<h1>Switcher&trade;</h1>
+	<div class="nav"><ul>
+		<li class="setting"><a href="javascript:;">跳转到: <input type="text" class="form-control input-sm input-url" value="http://127.0.0.1/MHS/" /></a></li>
+		<li class="setting"><a href="javascript:;"><input type="text" class="form-control input-sm input-size input-width" maxlength="4" value="1024" /> &times; <input type="text" class="form-control input-sm input-size input-height" maxlength="4" value="768" /></a></li>
+		<li class="active"><a href="javascript:;" title="以桌面的视图浏览网页" data-device="desktop"><i class="fa fa-desktop fa-2x"></i></a></li>
+		<li><a href="javascript:;" title="以笔记本的视图浏览网页" data-device="laptop"><i class="fa fa-laptop  fa-2x"></i></a></li>
+		<li><a href="javascript:;" title="以手机的视图浏览网页" data-device="mobile"><i class="fa fa-mobile  fa-2x"></i></a></li>
+		<li><a href="javascript:;" title="以平板的视图浏览网页" data-device="tablet"><i class="fa fa-tablet  fa-2x"></i></a></li>
+		<li><a href="javascript:;" title="以手机的横屏视图浏览网页" data-device="mobile-reverse"><i class="fa fa-mobile  fa-2x reverse"></i></a></li>
+		<li><a href="javascript:;" title="以平板的横屏视图浏览网页" data-device="tablet-reverse"><i class="fa fa-tablet  fa-2x reverse"></i></a></li>
+	</ul></div>
+</div>
+<table><tbody><tr><td align="center" vertical-align="middle"><div><iframe src="http://127.0.0.1/MHS/" frameborder="0" marginheight="0" marginwidth="0" width="100%" height="100%"></iframe></div></td></tr></tbody></table>
+<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/switcher.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+html,body{background:#727272;height:100%;width:100%;min-width:790px}
+html,body,h1,h2,h3,h4,h5,h6,p,span,form,input,ul,li,ol{font:12px/18px "Microsoft YaHei","微软雅黑","MicrosoftJhengHei","华文细黑",STHeiti,MingLiu,Arial,serif}
+html,body,h1,h2,h3,h4,h5,h6,p,span,form,input,ul,li,ol{margin:0;padding:0}
+h2{font-size:28px}
+h3{font-size:21px}
+h4{font-size:16px}
+h5{font-size:14px}
+h6{font-size:12px}
+table,tr,td{margin:0;padding:0;border-collapse:collapse}
+img{border:0}
+a{text-decoration:none;border:0}
+a:hover{text-decoration:underline}
+a:focus{outline:0}
+.header {z-index:1000;height:37px;width:100%;min-width:790px;line-height:37px;padding-bottom:2px;color:#ddd;text-shadow:0 -1px black;background:url("../img/topbar.png") repeat-x;position:fixed;box-shadow:0 0 6px #000}
+.header a {line-height:36px}
+.header ul{list-style:none}
+.header h1{float:left;font-size:16px;top:9px;position:relative}
+.header h1,.header h1 a{color:#eee;margin-left:12px}
+.header h1 a{display:block;text-decoration:none}
+.header h1 a:hover{color:#fff}
+.header .nav{float:right;border-left:1px solid #2f4b56;border-left:1px solid rgba(255,255,255,0.05);border-right:1px solid #111}
+.header .nav li{float:left}
+.header .nav a{height:36px;line-height:36px;display:block;padding:0 15px;color:#d0d9de;border-left:1px solid #191919;border-right:1px solid #2f4b56;border-right:1px solid rgba(255,255,255,0.05);text-decoration:none;cursor:pointer}
+.header .nav a i{height:36px;line-height:36px}
+.header .nav a:hover{background:url("../img/topbar-hover.png")}
+.header .nav a img{float:left;margin-right:12px;margin-top:11px}
+.header .nav li.active a,.header .nav a:active{background:url("../img/topbar-active.png");border-right:0;padding-right:16px}
+.header .nav span{display:inline-block;vertical-align:text-top;line-height:16px;font-size:11px;padding:0 5px;color:#fff;text-shadow:0 1px #902a27;border-radius:2px;margin-left:10px;background-color:#e93631;background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#f65d5f),color-stop(100%,#e93631));background-image:-webkit-linear-gradient(top,#f65d5f,#e93631);background-image:-moz-linear-gradient(top,#f65d5f,#e93631);background-image:-ms-linear-gradient(top,#f65d5f,#e93631);background-image:-o-linear-gradient(top,#f65d5f,#e93631);background-image:linear-gradient(top,#f65d5f,#e93631);-webkit-box-shadow:inset 0 1px rgba(255,255,255,0.2),0 1px rgba(0,0,0,0.2);-moz-box-shadow:inset 0 1px rgba(255,255,255,0.2),0 1px rgba(0,0,0,0.2);box-shadow:inset 0 1px rgba(255,255,255,0.2),0 1px rgba(0,0,0,0.2)}
+.header .nav span[Wilq32]{display:none;margin:0;padding:0;width:0;height:0}
+.header div img#logo{float:left}
+.header .nav img.ico{float:none;margin-left:12px;margin-right:0}
+.header .nav span.ico{float:none;margin-right:0;padding:0;background:url("../img/arrow.png") center center no-repeat;background-color:transparent;box-shadow:none;text-shadow:none;vertical-align:middle;line-height:normal;width:7px;height:7px;border-radius:0}
+.header .nav li ul{display:none}
+.header .nav li ul li{float:none;background:url("../img/ul.png") repeat-x}
+.header .nav li ul li a{border-bottom:1px solid #191919;color:#222;text-shadow:none}
+
+.fa.reverse{transform:rotate(90deg);-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);-o-transform:rotate(90deg);-ms-transform:rotate(90deg)}
+/*.setting {height:36px;line-height:36px;padding:0 6px;}*/
+.setting .form-control{display:inline;height:24px;text-align:center;vertical-align:middle;}
+.setting .form-control.input-url{width:14em;text-align:left}
+.setting .form-control.input-width{width:4.5em}
+.setting .form-control.input-height{width:4.5em}
+
+table,tbody,tr,td,iframe,table div{width:100%;height:100%;padding:0;margin:0}
+td{padding-top:37px}
+table div{transition:width .4s ease,height .4s ease;box-shadow:0 0 32px #000;overflow:hidden;background:#FFF}
