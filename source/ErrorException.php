@@ -5,11 +5,11 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
 <style>
 *{
-	transition:all .2s ease;
-	-webkit-transition:all .2s ease;
-	-moz-transition:all .2s ease;
-	-o-transition:all .2s ease;
-	-ms-transition:all .2s ease;
+	transition:color .2s ease,background .2s ease,border .2s ease;
+	-webkit-transition:color .2s ease,background .2s ease,border .2s ease;
+	-moz-transition:color .2s ease,background .2s ease,border .2s ease;
+	-o-transition:color .2s ease,background .2s ease,border .2s ease;
+	-ms-transition:color .2s ease,background .2s ease,border .2s ease;
 }
 html{
 	font-family: '\5FAE\8F6F\96C5\9ED1','Microsoft Yahei', Verdana, arial, sans-serif;

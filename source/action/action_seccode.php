@@ -16,16 +16,20 @@ switch($operation){
 			define('IN_ADMINCP', TRUE);
 			$_G['formhash'] = formhash();
 		}*/
-		make_seccode();
+		make_seccode(isset($_REQUEST['tag']) ? $_REQUEST['tag'] : null);
 		//exit($sec[1]);
 		break;
 	case 'check':
 		check_seccode($_GET['seccode'], $_GET['tag']);
 		break;
 	case 'html':
-		$html = '<div class="seccodeImg" onmouseenter="$.fn.seccode.list[$.fn.seccode.id(\'#'.$id.'\')]=true" onmouseout="$.fn.seccode.hideDelayed(\''.$id.'\')">';
-		$ani = $_G['setting']['seccodedata']['animator'] ? '_ani' : '';
 		$id = $_REQUEST['id'];
+		$hash = $_REQUEST['hash'];
+		$tag = $_REQUEST['tag'];
+		if(in_array($_G['setting']['seccodedata']['type'], array(2, 3))) make_seccode(empty($_REQUEST['tag']) ? null : $tag);
+		//$html = '<div class="seccodeImg" onmouseenter="$.fn.seccode.list[$.fn.seccode.id(\'#'.$id.'\')]=true" onmouseout="$.fn.seccode.hideDelayed(\''.$id.'\')">';
+		$html = '<div class="seccodeImg" onmouseenter="$.fn.seccode.list[\''.$hash.'\']=true" onmouseout="$.fn.seccode.hideDelayed(\''.$id.'\')" onclick="$.fn.seccode.list[\''.$hash.'\']=true">';
+		$ani = $_G['setting']['seccodedata']['animator'] ? '_ani' : '';
 		switch($_G['setting']['seccodedata']['type']){
 			case 4:
 				$_G['setting']['seccodedata']['width'] = 32;
@@ -43,11 +47,11 @@ switch($operation){
 				break;
 			case 2:
 				$html .= extension_loaded('ming') ?
-						lang('core', 'seccode_image'.$ani.'_tips')."<script type='text/javascript'>AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl'].$_REQUEST['imgurl']."','quality', 'high', 'wmode', 'transparent', 'bgcolor', '#ffffff','align', 'middle', 'menu', 'false', 'allowScriptAccess', 'never');</script>" :
-						lang('core', 'seccode_image'.$ani.'_tips')."<script type='text/javascript'>AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl']."static/seccode/flash/flash2.swf', 'FlashVars', 'sFile=".rawurlencode("{$_G['siteurl']}{$_REQUEST['imgurl']}")."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent');</script>";
+						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl'].$_REQUEST['imgurl']."','quality', 'high', 'wmode', 'transparent', 'bgcolor', '#ffffff','align', 'middle', 'menu', 'false', 'allowScriptAccess', 'never')" :
+						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl']."static/seccode/flash/flash2.swf', 'FlashVars', 'sFile=".rawurlencode($_G['siteurl'].$_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
 				break;
 			case 3:
-				$html .= lang('core', 'seccode_sound_tips')."<script type='text/javascript'>AC_FL_RunContent('id', 'seccodeplayer_$id', 'name', 'seccodeplayer_$id', 'width', '0', 'height', '0', 'src', '".$_G['siteurl']."static/seccode/flash/flash1.swf', 'FlashVars', 'sFile=".rawurlencode("{$_G['siteurl']}{$_REQUEST['imgurl']}")."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent');</script>";
+				$html .= lang('core', 'seccode_sound_tips', array('id'=>$id, 'hash'=>$hash)).lang('core', 'seccode_player', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('id', 'seccodeplayer_$hash', 'name', 'seccodeplayer_$hash', 'width', '0', 'height', '0', 'src', '".$_G['siteurl']."static/seccode/flash/flash1.swf', 'FlashVars', 'sFile=".rawurlencode($_G['siteurl'].$_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
 				break;
 		}
 		$html .= '</div>';
@@ -55,7 +59,7 @@ switch($operation){
 		break;
 	default:
 		//list($seccode, $seccodeauth) = make_seccode(isset($_GET['idhash']) ? $_GET['idhash'] : null, isset($_GET['key']) ? $_GET['key'] : null);
-		$seccode = empty($_GET['tag']) ? make_seccode() : make_seccode($_GET['tag']);
+		$seccode = empty($_GET['tag']) ? make_seccode() : ($_REQUEST['fromFlash'] && in_array($_G['setting']['seccodedata']['type'], array(2, 3)) && isset($_SESSION['seccode'][$_GET['tag']]) ? $_SESSION['seccode'][$_GET['tag']]['seccode'] : make_seccode($_GET['tag']));
 
 		if(!$_G['setting']['nocacheheaders']) {
 			@header("Expires: -1");
@@ -82,8 +86,8 @@ switch($operation){
 		$code->animator = $_G['setting']['seccodedata']['animator'];
 		$code->seccodelength = $_G['setting']['seccodedata']['length'];
 		//$code->force = true;
-		$code->fontpath = APP_FRAMEWORK_ROOT.'/source/static/seccode/font/';
-		$code->datapath = APP_FRAMEWORK_ROOT.'/source/static/seccode/';
+		$code->fontpath = APP_FRAMEWORK_ROOT.'/static/font/';
+		$code->datapath = APP_FRAMEWORK_ROOT.'/static/seccode/';
 		$code->includepath = APP_FRAMEWORK_ROOT.'/source/class/';
 
 		$code->display();

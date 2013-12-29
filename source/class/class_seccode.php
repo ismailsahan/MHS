@@ -190,8 +190,13 @@ class seccode {
 				$cvt = new Chinese(CHARSET, 'utf8');
 				$seccode = $cvt->Convert($seccode);
 			}
-			$seccode = array(substr($seccode, 0, 3), substr($seccode, 3, 3));
-			$seccodelength = 2;
+			//$seccode = array(substr($seccode, 0, 3), substr($seccode, 3, 3));
+			//$seccodelength = 2;
+			$_sec = $seccode;
+			$seccode = array();
+			for($i = 0; $i < $seccodelength; $i++){
+				$seccode[] = substr($_sec, 3*$i, 3);
+			}
 		}
 		$widthtotal = 0;
 		for($i = 0; $i < $seccodelength; $i++) {

@@ -228,8 +228,8 @@ class C {
 			}
 		}
 
-		$this->var['cookie']['auth'] = str_replace(' ', '+', isset($this->var['cookie']['auth']) ? $this->var['cookie']['auth'] : '');//用于判断登录情况
-		$this->var['inajax'] = empty($_GET['inajax']) ? false : ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'/* && ($_SERVER['REQUEST_METHOD'] == 'GET' || $_SERVER['REQUEST_METHOD'] == 'POST')*/);//HTTP_ISAJAXREQUEST
+		//$this->var['cookie']['auth'] = str_replace(' ', '+', isset($this->var['cookie']['auth']) ? $this->var['cookie']['auth'] : '');//用于判断登录情况
+		$this->var['inajax'] = empty($_GET['inajax']) ? false : ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' && ($_SERVER['REQUEST_METHOD'] == 'GET' || $_SERVER['REQUEST_METHOD'] == 'POST'));//HTTP_ISAJAXREQUEST
 		$this->var['sid'] = $this->var['cookie']['sid'] = isset($this->var['cookie']['sid']) ? dhtmlspecialchars($this->var['cookie']['sid']) : '';//random(6)
 		define('IS_AJAX', $this->var['inajax']);
 
@@ -407,7 +407,7 @@ class C {
 		//判断用户是否已登录
 		if(!empty($this->var['cookie']['auth'])){
 			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
-			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === intval($uid) && $_SESSION['user']['username'] === $username){
+			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === $uid && $_SESSION['user']['username'] === $username){
 				if($_SESSION['user']['expiry'] < TIMESTAMP + 600){
 					$this->var['uid'] = $_SESSION['user']['uid'];
 					$this->var['username'] = $_SESSION['user']['username'];

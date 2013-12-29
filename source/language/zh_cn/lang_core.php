@@ -25,8 +25,14 @@ $lang = array(
 	),
 	'dot' => '、',
 
-	'seccode_image_tips' => '输入下图中的字符<br />',
-	'seccode_image_ani_tips' => '请输入下面动画图片中的字符<br />',
-	'seccode_sound_tips' => '输入您听到的字符<br />',
+	'seccode_image_tips' => '输入下图中的字符<br />单击图片可以更换验证码<br />',
+	'seccode_image_ani_tips' => '请输入下面动画图片中的字符<br />单击图片可以更换验证码<br />',
+	'seccode_swf_tips' => '输入下图中的字符<br /><a href="javascript:;" onmouseenter="$.fn.seccode.list[\'{hash}\']=true" onclick="$(\'#{id}\').focus().select();$(\'#{id}\').seccodeHTML(1)">单击这里可以更换验证码</a><br />',
+	'seccode_swf_ani_tips' => '请输入下面动画图片中的字符<br /><a href="javascript:;" onmouseenter="$.fn.seccode.list[\'{hash}\']=true" onclick="$(\'#{id}\').focus().select();$(\'#{id}\').seccodeHTML(1)">单击这里可以更换验证码</a><br />',
+	'seccode_sound_tips' => '输入您听到的字符<br /><a href="javascript:;" onmouseenter="$.fn.seccode.list[\'{hash}\']=true" onclick="$(\'#{id}\').focus().select();$(\'#{id}\').seccodeHTML(1)">单击这里可以更换验证码</a><br />',
 	'secqaa_tips' => '输入下面问题的答案<br />',
+	'seccode' => '验证码',
+	'seccode_update' => '换一个',
+	'seccode_player' => '<span style="padding:2px" onclick="$.fn.seccode.list[\'{hash}\']=true"><img border="0" style="vertical-align:middle" src="static/seccode/seccodeplayer.gif" /> <a href="javascript:;" onclick="$(\'#{id}\').focus().select();$(\'[name=\\\'seccodeplayer_{hash}\\\']\')[0].SetVariable(\'isPlay\', 1)">播放验证码</a></span>',
+	'secqaa' => '验证问答',
 );

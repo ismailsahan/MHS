@@ -2,7 +2,7 @@
 
 require_once './source/class/class_core.php';
 
-$actions = array('logging', 'main', 'admin', 'seccode');//允许的ACTION
+$actions = array('logging', 'main', 'admin', 'api', 'seccode');//允许的ACTION
 
 $action = isset($_GET['action']) ? strtolower(trim($_GET['action'])) : $actions[0];
 $operation = isset($_GET['operation']) ? strtolower(trim($_GET['operation'])) : '';

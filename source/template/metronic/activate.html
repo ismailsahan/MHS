@@ -1,12 +1,10 @@
 {extends 'common.html'}
 {block subtitle}{lang activate} - {/block}
-{block pagestyle}
-<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
-<link href="assets/css/pages/activate.css" rel="stylesheet" type="text/css"/>
-{/block}
+{block pagestyle}<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />{/block}
 {block pageplugins}
-<script type="text/javascript" src="assets/plugins/backstretch/jquery.backstretch.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
 	<script type="text/javascript" src="assets/scripts/seccode.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
@@ -21,122 +19,231 @@
 		});
 	</script>
 {/block}
-{block bodyextend} class="logging"{/block}
+{block bodyextend} class="page-full-width"{/block}
 {block body}
-	<!-- BEGIN LOGO --><div class="logo"><img src="{$_G['setting']['logopath']}" alt="{$_G['setting']['sitename']}" /></div><!-- END LOGO -->
-	<div class="content">
-		<!-- BEGIN ACTIVATE FORM -->
-		<form class="activate-form" action="{$_G['basefilename']}?action=logging&operation=activate" method="post">
-			{$ActivateToken}
-			<h3 class="form-title">{lang activate}</h3>
-			<p>{lang activate_complete_data}</p>
-			<div class="alert alert-danger display-hide">
-				<button class="close" data-close="alert"></button>
-				<span>{lang activate_invalid}</span>
+	<!-- BEGIN CONTAINER -->
+	<div class="page-container">
+		<!-- BEGIN PAGE -->  
+		<div class="page-content">
+			<!-- BEGIN SAMPLE PORTLET CONFIGURATION MODAL FORM-->               
+			<div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+							<h4 class="modal-title">Modal title</h4>
+						</div>
+						<div class="modal-body">
+							Widget settings form goes here
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn blue">Save changes</button>
+							<button type="button" class="btn default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+					<!-- /.modal-content -->
+				</div>
+				<!-- /.modal-dialog -->
 			</div>
-			<div class="form-group">
-				<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-				<label class="control-label visible-ie8 visible-ie9">{lang username}</label>
-				<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang username}" name="username" value="{$_G['username']}" readonly />
+			<!-- /.modal -->
+			<!-- END SAMPLE PORTLET CONFIGURATION MODAL FORM-->           
+			<!-- BEGIN PAGE HEADER-->   
+			<div class="row"><div class="col-md-12"><h3 class="page-title">{lang activate} <small>用户注册后还需补全信息才能使用本系统</small></h3></div></div>
+			<!-- END PAGE HEADER-->
+			<!-- BEGIN PAGE CONTENT-->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="portlet box blue" id="activate">
+						<div class="portlet-title"><div class="caption"><i class="fa fa-reorder"></i> {lang activate} - <span class="step-title">第1步(共4步)</span></div></div>
+						<div class="portlet-body form">
+							<form action="{$_G['basefilename']}?action=logging&operation=activate" method="post" class="form-horizontal" id="submit_form">
+								{$ActivateToken}
+								<div class="form-wizard">
+									<div class="form-body">
+										<ul class="nav nav-pills nav-justified steps">
+											<li><a href="#tab1" data-toggle="tab" class="step"><span class="number">1</span><span class="desc"><i class="fa fa-check"></i> 基本资料</span></a></li>
+											<li><a href="#tab2" data-toggle="tab" class="step"><span class="number">2</span><span class="desc"><i class="fa fa-check"></i> 学籍信息</span></a></li>
+											<li><a href="#tab3" data-toggle="tab" class="step"><span class="number">3</span><span class="desc"><i class="fa fa-check"></i> 社团资料</span></a></li>
+											<li><a href="#tab4" data-toggle="tab" class="step"><span class="number">4</span><span class="desc"><i class="fa fa-check"></i> 其他信息</span></a></li>
+											<li><a href="#tab5" data-toggle="tab" class="step"><span class="number">5</span><span class="desc"><i class="fa fa-check"></i> 确认信息</span></a></li>
+										</ul>
+										<div id="bar" class="progress progress-striped" role="progressbar"><div class="progress-bar progress-bar-success"></div></div>
+										<div class="tab-content">
+											<div class="alert alert-danger fade in display-none"><button class="close" data-dismiss="alert"></button>请按要求填写你的信息后再点击下一步</div>
+											<div class="alert alert-success fade in display-none"><button class="close" data-dismiss="alert"></button>Your form validation is successful!</div>
+											<div class="tab-pane active" id="tab1">
+												<h3 class="block">请补全您的基本资料</h3>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang username}</label>
+													<div class="col-md-4"><input type="text" class="form-control" name="username" value="{$_G['username']}" readonly /></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang email}</label>
+													<div class="col-md-4"><input type="text" class="form-control" name="email" value="{$_G['member']['email']}" readonly /></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang realname}<span class="required">*</span></label>
+													<div class="col-md-4">
+														<input type="text" class="form-control" name="realname" id="submit_form_password"  autocomplete="off" placeholder="{lang realname}" required />
+														<span class="help-block">请填写你的真实名字，方便管理员查看、更新和统计资料</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang gender}<span class="required">*</span></label>
+													<div class="col-md-4">
+														<div class="radio-list">
+															<label><input type="radio" name="gender" value="1" data-title="{lang male}" />{lang male}</label>
+															<label><input type="radio" name="gender" value="2" data-title="{lang female}"/>{lang female}</label>  
+														</div>
+														<div id="form_gender_error"></div>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang qq}<span class="required">*</span></label>
+													<div class="col-md-4">
+														<input type="text" class="form-control" name="qq" autocomplete="off" placeholder="{lang qq}" required />
+														<span class="help-block">请填写你的QQ号，以便管理员联系</span>
+													</div>
+												</div>
+											</div>
+											<div class="tab-pane" id="tab2">
+												<h3 class="block">请填写你的学籍信息</h3>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang studentid}<span class="required">*</span></label>
+													<div class="col-md-4">
+														<input type="text" class="form-control" name="studentid" autocomplete="off" placeholder="{lang studentid}" maxlength="13" required />
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang grade}<span class="required">*</span></label>
+													<div class="col-md-4"><select name="grade" id="grade" class="select2 form-control" required><option value=""></option></select></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang academy}<span class="required">*</span></label>
+													<div class="col-md-4"><select name="academy" id="academy" class="select2 form-control" required><option value=""></option></select></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang specialty}</label>
+													<div class="col-md-4"><select name="specialty" id="specialty" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的专业，若你确实没有专业，留空即可<br />若列表中没有你的专业或存在错误，<a href="javascript:;">请单击这里反馈</a></span></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang class}</label>
+													<div class="col-md-4"><select name="class" id="class" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的班级，若你确实没有班级，留空即可<br />若列表中没有你的班级或存在错误，<a href="javascript:;">请单击这里反馈</a></span></div>
+												</div>
+											</div>
+											<div class="tab-pane" id="tab3">
+												<h3 class="block">请填写你所加入的社团资料</h3>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang league}<span class="required">*</span></label>
+													<div class="col-md-4"><select name="league[]" id="league" class="select2 form-control" multiple required><option value=""></option></select><span class="help-block">请选择你加入的社团或组织，可以多选</span></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang department}<span class="required">*</span></label>
+													<div class="col-md-4"><select name="department[]" id="department" class="select2 form-control" multiple required><option value=""></option></select><span class="help-block">请选择你所加入社团或组织的部门，可以多选</span></div>
+												</div>
+											</div>
+											<div class="tab-pane" id="tab4">
+												<h3 class="block">请填写其他信息</h3>
+												<div class="form-group">
+													<label class="control-label col-md-3">留言</label>
+													<div class="col-md-4"><textarea class="form-control" rows="3" name="remarks"></textarea><span class="help-block">您可以在这里留言给审核员，以增大审核通过的几率<br />也可以在这里反馈你填写表单时遇到的问题，我们会尽快解决</span></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">其他选项<span class="required">*</span></label>
+													<div class="col-md-4"><div class="checkbox-list">
+														<label><input type="checkbox" name="agreement" value="1" data-title="我同意网站的服务条款" required /> 我确认已阅读并同意网站的服务条款</label>
+														<label><input type="checkbox" name="allowemail" value="2" data-title="允许通过 Email 向我发送信息" checked /> 允许通过 Email 向我发送信息</label>
+													</div><div id="form_extra_error"></div></div>
+												</div>
+												{if need_seccode('Login')}
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang verifycode}<span class="required">*</span></label>
+													<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{$_G['basefilename']}?action=seccode&tag={$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>
+												</div>
+												{/if}
+											</div>
+											<div class="tab-pane" id="tab5">
+												<h3 class="block">确认你的信息</h3>
+												<h4 class="form-section">基本资料</h4>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang username}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="username"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang email}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="email"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang gender}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="gender"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang qq}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="qq"></p></div>
+												</div>
+												<h4 class="form-section">学籍信息</h4>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang studentid}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="studentid"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang grade}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="grade"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang academy}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="academy"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang specialty}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="specialty"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang class}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="class"></p></div>
+												</div>
+												<h4 class="form-section">社团资料</h4>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang league}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="league[]"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang department}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="department[]"></p></div>
+												</div>
+												<h4 class="form-section">其他信息</h4>
+												<div class="form-group">
+													<label class="control-label col-md-3">留言:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="remarks"></p></div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">其他选项:</label>
+													<div class="col-md-4">
+														<p class="form-control-static" data-display="agreement"></p>
+														<p class="form-control-static" data-display="allowemail"></p>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">{lang verifycode}:</label>
+													<div class="col-md-4"><p class="form-control-static" data-display="verifycode"></p></div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-actions fluid"><div class="row"><div class="col-md-12"><div class="col-md-offset-3 col-md-9">
+										<a href="javascript:;" class="btn default button-previous"><i class="m-icon-swapleft"></i> {lang back}</a>
+										<a href="javascript:;" class="btn blue button-next">{lang nextstep} <i class="m-icon-swapright m-icon-white"></i></a>
+										<a href="javascript:;" class="btn green button-submit">{lang submit} <i class="m-icon-swapright m-icon-white"></i></a>                            
+									</div></div></div></div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang email}</label>
-				<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" value="{$_G['member']['email']}" readonly />
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang realname}</label>
-				<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang realname}" name="realname"/>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang gender}</label>
-				<select name="gender" id="gender" class="select2 form-control">
-					<option value=""></option>
-					<option value="1">{lang male}</option>
-					<option value="2">{lang female}</option>
-				</select>
-			</div>
-
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang qq}</label>
-				<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang qq}" name="qq"/>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang studentid}</label>
-				<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang studentid}" name="studentid"/>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang grade}</label>
-				<select name="grade" id="grade" class="select2 form-control">
-					<option value=""></option>
-					<option value="2010">2010</option>
-					<option value="2011">2011</option>
-					<option value="2012">2012</option>
-					<option value="2013">2013</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang academy}</label>
-				<select name="academy" id="academy" class="select2 form-control">
-					<option value=""></option>
-					<option value="2010">计算机科学与技术学院</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang specialty}</label>
-				<select name="specialty" id="specialty" class="select2 form-control">
-					<option value=""></option>
-					<option value="2010">计算机科学与技术学院</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang class}</label>
-				<select name="class" id="class" class="select2 form-control">
-					<option value=""></option>
-					<option value="2010">计算机科学与技术学院</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang league_organization}</label>
-				<select name="league" id="league" class="select2 form-control" multiple>
-					<option value=""></option>
-					<option value="2010">计算机科学与技术学院</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label class="control-label visible-ie8 visible-ie9">{lang department}</label>
-				<select name="department" id="department" class="select2 form-control" multiple>
-					<option value=""></option>
-					<option value="2010">计算机科学与技术学院</option>
-				</select>
-			</div>
-			{if need_seccode('Activate')}
-			<div class="form-group verifycode">
-				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
-				<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" required />
-				<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$ActivateTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>
-			</div>
-			{/if}
-			<div class="form-actions"><button type="submit" class="btn blue pull-right"> {lang activate}<i class="m-icon-swapright m-icon-white"></i></button></div>
-			<div class="forget-password">
-				<h4>Forgot your password ?</h4>
-				<p>
-					no worries, click <a href="javascript:;"  id="forget-password">here</a>
-					to reset your password.
-				</p>
-			</div>
-			<div class="create-account">
-				<p>
-					Don't have an account yet ?&nbsp; 
-					<a href="javascript:;" id="register-btn" >Create an account</a>
-				</p>
-			</div>
-		</form>
-		<!-- END ACTIVATE FORM -->
+			<!-- END PAGE CONTENT-->    
+		</div>
+		<!-- END PAGE -->  
 	</div>
-	<!-- END LOGIN -->
-	<!-- BEGIN COPYRIGHT -->
-	<div class="copyright">
-		2013 &copy; Metronic - Admin Dashboard Template.
-	</div>
-	<!-- END COPYRIGHT -->
+	<!-- END CONTAINER -->
 {/block}

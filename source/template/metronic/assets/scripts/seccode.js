@@ -46,7 +46,8 @@ $.fn.seccodeHTML = function(callback) {
 	var id = $(this).prop("id"), imgurl = $(this).attr('imgurl');
 	//$.fn.seccode.list[$.fn.seccode.id(this)] = true;
 	if(callback){
-		$.post('index.php?action=seccode&operation=html', {id:id, imgurl:imgurl}, function(data) {
+		$.post('index.php?action=seccode&operation=html', {id:id, imgurl:imgurl, hash:id, tag:$(this).attr("tag")}, function(data) {
+			if(/AC_FL_RunContent/.test(data)) data = data.replace(/AC_FL_RunContent\(.+\)/, function(s){return eval(s)});
 			return typeof callback=="function" ? callback(data) : $("#"+id).poshytip('update', data);
 		});
 		callback==1 && $(this).focus().select();
@@ -64,6 +65,7 @@ $.fn.seccode.update = function(obj) {
 $.fn.seccode.list = [];
 
 $.fn.seccode.id = function(e) {
+	if($(e).attr("tag")) return $(e).attr("tag");
 	e = $(e).parents("form");
 	if(e.length > 0){
 		e = $($(this).parents("form")[0]);

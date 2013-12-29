@@ -77,8 +77,11 @@ CREATE TABLE IF NOT EXISTS `conn_failedlogin` (
   UNIQUE KEY `ip` (`ip`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `conn_failedlogin` (`ip`, `username`, `count`, `lastupdate`) VALUES
-('127.0.0.1', 'ewfewfewfew', 1, 1386486733);
+CREATE TABLE IF NOT EXISTS `conn_group` (
+  `groupid` smallint(6) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户组ID',
+  `inheritance` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '继承于',
+  PRIMARY KEY (`groupid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组' AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `conn_profile_academies` (
   `id` tinyint(2) unsigned NOT NULL AUTO_INCREMENT COMMENT '学院ID',
@@ -118,15 +121,48 @@ CREATE TABLE IF NOT EXISTS `conn_profile_classes` (
   `aid` tinyint(2) unsigned NOT NULL COMMENT '学院ID',
   `sid` smallint(5) unsigned NOT NULL COMMENT '专业ID',
   `gid` tinyint(1) NOT NULL COMMENT '年级ID',
+  `name` varchar(32) NOT NULL COMMENT '班级名称',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='班级列表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='班级列表' AUTO_INCREMENT=19 ;
+
+INSERT INTO `conn_profile_classes` (`id`, `aid`, `sid`, `gid`, `name`) VALUES
+(1, 10, 4, 4, 'm1301'),
+(2, 10, 4, 4, 'm1302'),
+(3, 10, 4, 4, 'm1303'),
+(4, 10, 4, 4, 'm1304'),
+(5, 10, 4, 4, 'y1301'),
+(6, 10, 4, 4, 'y1302'),
+(7, 10, 4, 4, 'y1303'),
+(8, 10, 4, 4, 'y1304'),
+(9, 10, 4, 4, 'y1305'),
+(10, 10, 4, 4, 'y1306'),
+(11, 10, 4, 4, 'y1307'),
+(12, 10, 4, 4, 'y1308'),
+(13, 10, 4, 4, 'y1309'),
+(14, 10, 4, 4, 'y1310'),
+(15, 10, 1, 3, 'ZY1201'),
+(16, 10, 1, 3, 'ZY1202'),
+(17, 10, 1, 2, 'ZY1101'),
+(18, 10, 1, 2, 'ZY1102');
 
 CREATE TABLE IF NOT EXISTS `conn_profile_departments` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '部门ID',
   `lid` smallint(5) unsigned NOT NULL COMMENT '社团ID',
   `name` varchar(32) NOT NULL COMMENT '部门名称',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='部门列表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='部门列表' AUTO_INCREMENT=11 ;
+
+INSERT INTO `conn_profile_departments` (`id`, `lid`, `name`) VALUES
+(1, 2, '秘书部'),
+(2, 2, '组织部'),
+(3, 2, '外联部'),
+(4, 2, '策划部'),
+(5, 2, '宣传部'),
+(6, 2, '义工部'),
+(7, 2, '服务队'),
+(8, 1, '测试部门1'),
+(9, 1, '测试部门2'),
+(10, 2, '测试部门');
 
 CREATE TABLE IF NOT EXISTS `conn_profile_grades` (
   `id` tinyint(1) NOT NULL COMMENT '年级ID',
@@ -145,7 +181,16 @@ CREATE TABLE IF NOT EXISTS `conn_profile_leagues` (
   `aid` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '学院ID',
   `name` varchar(32) NOT NULL COMMENT '社团名称',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='社团列表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='社团列表' AUTO_INCREMENT=8 ;
+
+INSERT INTO `conn_profile_leagues` (`id`, `aid`, `name`) VALUES
+(1, 0, '自强社'),
+(2, 10, '自强社'),
+(3, 10, '马克思主义理论学习研究协会'),
+(4, 10, '青年志愿者协会'),
+(5, 0, '学生会'),
+(6, 10, '学生会'),
+(7, 10, '心理素质拓展协会');
 
 CREATE TABLE IF NOT EXISTS `conn_profile_organizations` (
   `id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '社团ID',
@@ -156,13 +201,20 @@ CREATE TABLE IF NOT EXISTS `conn_profile_organizations` (
 
 CREATE TABLE IF NOT EXISTS `conn_profile_specialties` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '专业ID',
+  `aid` tinyint(2) NOT NULL COMMENT '学院ID',
   `name` varchar(64) NOT NULL COMMENT '专业名称',
   `g1` tinyint(1) NOT NULL DEFAULT '0',
   `g2` tinyint(1) NOT NULL DEFAULT '0',
   `g3` tinyint(1) NOT NULL DEFAULT '0',
   `g4` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='专业列表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='专业列表' AUTO_INCREMENT=5 ;
+
+INSERT INTO `conn_profile_specialties` (`id`, `aid`, `name`, `g1`, `g2`, `g3`, `g4`) VALUES
+(1, 10, '软件工程', 1, 1, 1, 0),
+(2, 10, '物联网工程', 1, 1, 1, 0),
+(3, 10, '计算机科学与技术', 1, 1, 1, 0),
+(4, 10, '计算机类', 0, 0, 0, 1);
 
 CREATE TABLE IF NOT EXISTS `conn_setting` (
   `skey` varchar(255) NOT NULL DEFAULT '',
@@ -172,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `conn_setting` (
 
 INSERT INTO `conn_setting` (`skey`, `svalue`) VALUES
 ('closed', '0'),
-('closedreason', ''),
+('closedreason', '这里填关闭注册的原因'),
 ('copyright', '<script type="text/javascript">document.write((new Date()).getFullYear());</script> &copy; 武汉理工大学自强社'),
 ('dateconvert', '1'),
 ('dateformat', 'Y-n-j'),
@@ -180,8 +232,9 @@ INSERT INTO `conn_setting` (`skey`, `svalue`) VALUES
 ('failedlogin', 'a:2:{s:5:"count";i:5;s:4:"time";i:1;}'),
 ('logintip', 'a:2:{i:0;s:27:"用户名不等同于昵称";i:1;s:82:"若验证码图片里的文字不是4个，请点击验证码图片更换验证码";}'),
 ('logopath', 'source/template/metronic/assets/img/logo-big.png'),
+('nocacheheaders', '0'),
 ('reg', '1'),
-('seccodedata', 'a:14:{s:4:"type";i:0;s:5:"width";i:80;s:6:"height";i:26;s:10:"background";i:1;s:10:"adulterate";i:1;s:3:"ttf";i:1;s:5:"angle";i:1;s:7:"warping";i:0;s:7:"scatter";i:0;s:5:"color";i:1;s:4:"size";i:1;s:6:"shadow";i:1;s:8:"animator";i:0;s:6:"length";i:4;}'),
+('seccodedata', 'a:14:{s:4:"type";i:0;s:5:"width";i:150;s:6:"height";i:60;s:10:"background";i:1;s:10:"adulterate";i:1;s:3:"ttf";i:1;s:5:"angle";i:1;s:7:"warping";i:0;s:7:"scatter";i:0;s:5:"color";i:1;s:4:"size";i:1;s:6:"shadow";i:1;s:8:"animator";i:0;s:6:"length";i:4;}'),
 ('seccodestatus', 'a:4:{i:0;s:5:"Login";i:1;s:8:"Register";i:2;s:9:"ForgotPwd";i:3;s:8:"Activate";}'),
 ('sitename', '武理工自强社工时系统'),
 ('template', 'metronic'),
@@ -236,12 +289,12 @@ CREATE TABLE IF NOT EXISTS `conn_users_connect` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `conn_users_profile` (
-  `uid` mediumint(8) unsigned NOT NULL COMMENT '用户ID',
-  `realname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
-  `gender` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别',
-  `birthyear` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '出生年份',
-  `birthmonth` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '出生月份',
-  `birthday` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '出生日期',
+  `uid` mediumint(8) unsigned NOT NULL,
+  `realname` varchar(255) NOT NULL DEFAULT '',
+  `gender` tinyint(1) NOT NULL DEFAULT '0',
+  `birthyear` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `birthmonth` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `birthday` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `studentid` char(13) NOT NULL COMMENT '学号',
   `grade` smallint(4) unsigned NOT NULL COMMENT '入学年份',
   `academy` tinyint(3) unsigned NOT NULL COMMENT '学院ID',
@@ -280,7 +333,7 @@ CREATE TABLE IF NOT EXISTS `conn_users_profile` (
   `height` varchar(255) NOT NULL DEFAULT '',
   `weight` varchar(255) NOT NULL DEFAULT '',
   `alipay` varchar(255) NOT NULL DEFAULT '',
-  `qq` varchar(255) NOT NULL DEFAULT '' COMMENT 'QQ号',
+  `qq` varchar(255) NOT NULL DEFAULT '',
   `site` varchar(255) NOT NULL DEFAULT '',
   `bio` text NOT NULL,
   `interest` text NOT NULL,

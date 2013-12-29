@@ -20,7 +20,7 @@ class LoggingAction {
 	public function __construct(){
 		global $_G;
 
-		if(isset($_G['setting']['nocacheheaders']) && !$_G['setting']['nocacheheaders']) {
+		if(!$_G['setting']['nocacheheaders']) {
 			@header("Expires: -1");
 			@header("Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0", FALSE);
 			@header("Pragma: no-cache");
@@ -71,11 +71,13 @@ class LoggingAction {
 						$session['expiry'] = TIMESTAMP;
 						$session['activated'] = count($user) > 0 ? true : false;
 
+						dsetcookie('auth', authcode("{$uid}\t{$username}", 'ENCODE'), 0, 1, 1);
+
 						if(!empty($failedlogin)) DB::query("DELETE FROM %t WHERE `ip`=%s", array('failedlogin', $_G['clientip']), 'UNBUFFERED');
 
 						if($session['activated']){
 							$user = DB::fetch_first("SELECT * FROM %t WHERE `uid`=%d LIMIT 1", array('users_profile', $uid));
-							$_SESSION['user'] = $session;
+							$_SESSION['user'] = array_merge($user, $session);
 							redirect($_G['basefilename'].'?action=main');
 							exit;
 						}else{
@@ -114,6 +116,7 @@ class LoggingAction {
 
 		$template->assign('logintip', empty($_G['setting']['logintip']) ? '' : $_G['setting']['logintip'][array_rand($_G['setting']['logintip'])], true);
 		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
+		$template->assign('username', isset($_POST['username']) ? $_POST['username'] : '', true);
 
 		$template->display('login');
 	}
@@ -147,7 +150,13 @@ class LoggingAction {
 		$errmsg = '';
 
 		if(submitcheck('Activate', $errmsg)){
-
+			;
+		}
+		if(IS_AJAX){
+			echo $errmsg;
+			echo("\n");
+			print_r($_POST);
+			exit;
 		}
 
 		setToken('Activate');

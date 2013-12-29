@@ -112,7 +112,7 @@ $_config['debug'] = 4;	// 1: 开启普通 DEBUG 模式
 						// 4: 尽可能显示所有的错误信息
 						// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
 
-$_config['trace_disabled'] = array('seccode');//强制禁用调试的ACTION
+$_config['trace_disabled'] = array('seccode', 'api');//强制禁用调试的ACTION
 
 // UCenter 接口信息设置
 define('UC_CONNECT', 'mysql');
