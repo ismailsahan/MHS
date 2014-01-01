@@ -1,13 +1,20 @@
 {extends 'common.html'}
 {block subtitle}{lang activate} - {/block}
-{block pagestyle}<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />{/block}
+{block pagestyle}
+<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
+	<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+{/block}
 {block pageplugins}
 <script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
-	<script type="text/javascript" src="assets/scripts/seccode.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootbox/bootbox.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
 	<script type="text/javascript" src="assets/scripts/app.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/activate.js'}"></script>
 {/block}
@@ -24,31 +31,9 @@
 	<!-- BEGIN CONTAINER -->
 	<div class="page-container">
 		<!-- BEGIN PAGE -->  
-		<div class="page-content">
-			<!-- BEGIN SAMPLE PORTLET CONFIGURATION MODAL FORM-->               
-			<div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-							<h4 class="modal-title">Modal title</h4>
-						</div>
-						<div class="modal-body">
-							Widget settings form goes here
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn blue">Save changes</button>
-							<button type="button" class="btn default" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-					<!-- /.modal-content -->
-				</div>
-				<!-- /.modal-dialog -->
-			</div>
-			<!-- /.modal -->
-			<!-- END SAMPLE PORTLET CONFIGURATION MODAL FORM-->           
+		<div class="page-content">         
 			<!-- BEGIN PAGE HEADER-->   
-			<div class="row"><div class="col-md-12"><h3 class="page-title">{lang activate} <small>用户注册后还需补全信息才能使用本系统</small></h3></div></div>
+			<div class="row"><div class="col-md-12"><h3 class="page-title" style="font-family:'微软雅黑'">{lang activate} <small>用户注册后还需补全信息才能使用本系统</small></h3></div></div>
 			<!-- END PAGE HEADER-->
 			<!-- BEGIN PAGE CONTENT-->
 			<div class="row">
@@ -56,7 +41,7 @@
 					<div class="portlet box blue" id="activate">
 						<div class="portlet-title"><div class="caption"><i class="fa fa-reorder"></i> {lang activate} - <span class="step-title">第1步(共5步)</span></div></div>
 						<div class="portlet-body form">
-							<form action="{$_G['basefilename']}?action=logging&operation=activate" method="post" class="form-horizontal" id="submit_form">
+							<form action="{U logging/activate}" method="post" class="form-horizontal" id="submit_form">
 								{$ActivateToken}
 								<div class="form-wizard">
 									<div class="form-body">
@@ -67,7 +52,7 @@
 											<li><a href="#tab4" data-toggle="tab" class="step"><span class="number">4</span><span class="desc"><i class="fa fa-check"></i> 其他信息</span></a></li>
 											<li><a href="#tab5" data-toggle="tab" class="step"><span class="number">5</span><span class="desc"><i class="fa fa-check"></i> 确认信息</span></a></li>
 										</ul>
-										<div id="bar" class="progress progress-striped" role="progressbar"><div class="progress-bar progress-bar-success"></div></div>
+										<div id="bar" class="progress progress-striped active" role="progressbar"><div class="progress-bar progress-bar-success"></div></div>
 										<div class="tab-content">
 											<div class="alert alert-danger fade in display-none"><button class="close" data-dismiss="alert"></button>请按要求填写你的信息后再点击下一步</div>
 											<div class="alert alert-success fade in display-none"><button class="close" data-dismiss="alert"></button>Your form validation is successful!</div>
@@ -124,22 +109,22 @@
 												</div>
 												<div class="form-group">
 													<label class="control-label col-md-3">{lang specialty}</label>
-													<div class="col-md-4"><select name="specialty" id="specialty" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的专业，若你确实没有专业，留空即可<br />若列表中没有你的专业或存在错误，<a href="javascript:;">请单击这里反馈</a></span></div>
+													<div class="col-md-4"><select name="specialty" id="specialty" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的专业，若你确实没有专业，留空即可<br />若列表中没有你的专业或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈</span></div>
 												</div>
 												<div class="form-group">
 													<label class="control-label col-md-3">{lang class}</label>
-													<div class="col-md-4"><select name="class" id="class" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的班级，若你确实没有班级，留空即可<br />若列表中没有你的班级或存在错误，<a href="javascript:;">请单击这里反馈</a></span></div>
+													<div class="col-md-4"><select name="class" id="class" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的班级，若你确实没有班级，留空即可<br />若列表中没有你的班级或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈</span></div>
 												</div>
 											</div>
 											<div class="tab-pane" id="tab3">
 												<h3 class="block">请填写你所加入的社团资料</h3>
 												<div class="form-group">
-													<label class="control-label col-md-3">{lang league}<span class="required">*</span></label>
-													<div class="col-md-4"><select name="league[]" id="league" class="select2 form-control" multiple required><option value=""></option></select><span class="help-block">请选择你加入的社团或组织，可以多选</span></div>
+													<label class="control-label col-md-3">{lang league}</label>
+													<div class="col-md-4"><select name="league[]" id="league" class="select2 form-control" multiple><option value=""></option></select><span class="help-block">请选择你所有加入的社团或组织，若未加入任何社团或组织则请留空<br />若列表中没有你所加入的社团或组织或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈问题</span></div>
 												</div>
 												<div class="form-group">
-													<label class="control-label col-md-3">{lang department}<span class="required">*</span></label>
-													<div class="col-md-4"><select name="department[]" id="department" class="select2 form-control" multiple required><option value=""></option></select><span class="help-block">请选择你所加入社团或组织的部门，可以多选</span></div>
+													<label class="control-label col-md-3">{lang department}</label>
+													<div class="col-md-4"><select name="department[]" id="department" class="select2 form-control" multiple><option value=""></option></select><span class="help-block">请选择你所加入社团或组织的所有下属部门，若无则请留空<br />若列表中没有你所加入的下属部门或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈问题</span></div>
 												</div>
 											</div>
 											<div class="tab-pane" id="tab4">
@@ -151,14 +136,14 @@
 												<div class="form-group">
 													<label class="control-label col-md-3">其他选项<span class="required">*</span></label>
 													<div class="col-md-4"><div class="checkbox-list">
-														<label><input type="checkbox" name="agreement" value="1" data-title="我同意网站的服务条款" required /> 我确认已阅读并同意网站的服务条款</label>
+														<label><input type="checkbox" name="agreement" value="1" data-title="我同意网站的服务条款" required /> 我确认已阅读并接受网站的<a href="javascript:;" id="agreement-link">服务条款</a></label>
 														<label><input type="checkbox" name="allowemail" value="2" data-title="允许通过 Email 向我发送信息" checked /> 允许通过 Email 向我发送信息</label>
 													</div><div id="form_extra_error"></div></div>
 												</div>
 												{if need_seccode('Login')}
 												<div class="form-group">
 													<label class="control-label col-md-3">{lang verifycode}<span class="required">*</span></label>
-													<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{$_G['basefilename']}?action=seccode&tag={$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>
+													<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>
 												</div>
 												{/if}
 											</div>
@@ -237,6 +222,49 @@
 									</div></div></div></div>
 								</div>
 							</form>
+						</div>
+						<div id="alert-modal" class="modal fade" tabindex="-1">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+								<h4 class="modal-title">提示信息</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row"><div class="col-md-12"></div></div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+							</div>
+						</div>
+						<div id="agreement-modal" class="modal container fade modal-scroll" tabindex="-1">
+							<div class="modal-header">
+								<!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>-->
+								<h4 class="modal-title">服务条款</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row"><div class="col-md-12"></div></div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn red">我拒绝</button>
+								<button type="button" class="btn blue">我接受</button>
+							</div>
+						</div>
+						<div id="report" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+								<h4 class="modal-title">反馈</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-md-12">
+										<h4>问题反馈</h4>
+										<textarea class="col-md-12 form-control" rows="8"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" data-dismiss="modal" class="btn btn-default">关闭</button>
+								<button type="button" class="btn blue">提交</button>
+							</div>
 						</div>
 					</div>
 				</div>

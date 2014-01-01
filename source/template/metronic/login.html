@@ -7,7 +7,7 @@
 {block pageplugins}
 <script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="assets/scripts/seccode.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="assets/scripts/app.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/login.js'}"></script>
 {/block}
@@ -25,7 +25,7 @@
 	<!-- BEGIN LOGIN -->
 	<div class="content">
 		<!-- BEGIN LOGIN FORM -->
-		<form class="login-form" action="{$_G['basefilename']}?action=logging&operation=login" method="post">
+		<form class="login-form" action="{U logging/login}" method="post">
 			{$LoginToken}
 			<h3 class="form-title">{lang login_heading}</h3>
 			<div class="alert alert-danger alert-block fade in{if !$errmsg} display-hide{/if}">
@@ -58,7 +58,7 @@
 				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
 				<div class="input-icon verifycode">
 					<i class="fa fa-picture-o"></i>
-					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}" tag="{$LoginTokenHash}" required />
+					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$LoginTokenHash}" tag="{$LoginTokenHash}" required />
 					<!--{*<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>*}-->
 				</div>
 			</div>

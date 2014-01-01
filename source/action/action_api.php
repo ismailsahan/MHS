@@ -4,7 +4,7 @@
 
 class ApiAction {
 	public $default_method = 'def';
-	public $allowed_method = array('def', 'profile');
+	public $allowed_method = array('def', 'profile', 'tos', 'report');
 
 	public function __construct(){
 		global $_G;
@@ -24,12 +24,12 @@ class ApiAction {
 	}
 
 	public function profile(){
-		global $_G, $template, $cache;
+		global $_G, $template;
 
 		$type = $_REQUEST['type'];
 		$hash = crc32($type.$_REQUEST['grade'].$_REQUEST['academy'].$_REQUEST['specialty'].$_REQUEST['league'].$_REQUEST['organization']);
 
-		$data = $cache->get('mhs_profile_'.$hash);
+		$data = Cache::get('mhs_profile_'.$hash);
 		if($data === null || APP_FRAMEWORK_DEBUG){
 			include libfile('class/profile');
 			switch($type){
@@ -44,10 +44,20 @@ class ApiAction {
 			}
 			if($data){
 				$data = json_encode($data);
-				$cache->set('mhs_profile_'.$hash, $data, 604800);
+				Cache::set('mhs_profile_'.$hash, $data, 604800);
 			}
 		}
 
 		exit($data ? (isset($_REQUEST['callback']) ? $_REQUEST['callback'].'('.$data.')' : $data) : '');
+	}
+
+	public function report(){
+		$data = $_POST['data'];
+		exit('感谢你反馈信息，我们会尽快修复问题的<br/><br/>你提交的内容是：<br/>'.$data);
+	}
+
+	public function tos(){
+		global $_G, $template;
+		$template->display('tos');
 	}
 }

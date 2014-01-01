@@ -15,7 +15,7 @@
 define('IN_APP_FRAMEWORK', TRUE);
 define('APP_FRAMEWORK_ROOT', substr(dirname(__FILE__), 0, -13));
 
-class C {
+class core {
 
 	var $db = null;
 	var $mem = null;
@@ -25,10 +25,14 @@ class C {
 	var $var = array();
 	var $cachelist = array();
 	var $libs = array(
+		'class/error',
+		'class/dbexception',
 		'class/db',
+		'class/dispatcher',
 		//'class/phpnew',
 		'class/template',
-		'plugin/phpfastcache/phpfastcache',
+		'vendor/phpfastcache/phpfastcache',
+		'class/cache',
 	);
 	var $superglobal = array(
 		'GLOBALS' => 1,
@@ -57,17 +61,16 @@ class C {
 	}
 
 	public function init() {
-		$this->_init_env();
-		$this->_init_config();
-		$this->_init_lib();
-		$this->_init_input();
-		$this->_init_output();
-		$this->_init_db();
-		$this->_init_setting();
-		$this->_init_misc();
-		$this->_init_session();
-		$this->_init_user();
-		process('核心组件初始化完成！');
+		$this->_init_env();			process('加载框架配置...');
+		$this->_init_config();		process('加载框架运行库...');
+		$this->_init_lib();			process('初始化输入...');
+		$this->_init_input();		process('初始化输出...');
+		$this->_init_output();		process('初始化数据库支撑组件...');
+		$this->_init_db();			process('初始化设置选项...');
+		$this->_init_setting();		process('初始化杂项...');
+		$this->_init_misc();		process('初始化会话SESSION...');
+		$this->_init_session();		process('初始化用户...');
+		$this->_init_user();		process('已加载框架');
 	}
 
 	/**
@@ -134,8 +137,9 @@ class C {
 		$_G['basescript'] = defined('CURSCRIPT') ? CURSCRIPT : '';
 		$_G['basefilename'] = basename($_G['PHP_SELF']);
 		$sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
-		//$_G['isHTTPS'] = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
+		$_G['isHTTPS'] = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
 		$_G['siteurl'] = dhtmlspecialchars('http'.($_G['isHTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
+		//$_G['scripturl'] = $_G['siteurl'].$_G['basefilename'];
 
 		$url = parse_url($_G['siteurl']);
 		$_G['siteroot'] = isset($url['path']) ? $url['path'] : '';
@@ -149,7 +153,7 @@ class C {
 		define('IS_ROBOT', checkrobot());
 		define('IS_GET', $_SERVER['REQUEST_METHOD'] == 'GET');
 		define('IS_POST', $_SERVER['REQUEST_METHOD'] == 'POST');
-		define('IS_HTTPS', ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false);
+		define('IS_HTTPS', $_G['isHTTPS']);
 	}
 
 	/**
@@ -203,6 +207,8 @@ class C {
 			$path = libfile($lib);
 			(!@include_once($path)) && halt('LIBRARY_FILE_LOAD_ERR', $lib);
 		}
+
+		Dispatcher::dispatch();
 	}
 
 	/**
@@ -293,10 +299,15 @@ class C {
 	 * 加载DB操作类并连接数据库
 	 */
 	private function _init_db() {
-		/*$this->db = &DB::object();
-		$this->db->set_config($this->config['db']);
-		$this->db->connect();*/
-		DB::init($this->config['db']);
+		//DB::init($this->config['db']);
+		$driver = function_exists('mysql_connect') ? 'db_driver_mysql' : 'db_driver_mysqli';
+		//$driver = class_exists('mysqli') ? 'db_driver_mysqli' : 'db_driver_mysql';
+		require libfile($driver, 'class/db');
+		if(getglobal('config/db/slave')) {
+			$driver = function_exists('mysql_connect') ? 'db_driver_mysql_slave' : 'db_driver_mysqli_slave';
+			require libfile($driver, 'class/db');
+		}
+		DB::init($driver, $this->config['db']);
 	}
 
 	/**
@@ -309,17 +320,15 @@ class C {
 		unset($cache);*/
 
 		//初始化缓存类
-		global $cache;
-		$cache = phpFastCache('auto');
-		//$this->cachengine = &$cache;
-		$this->var['setting'] = $cache->get('setting');
+		Cache::init();
+		$this->var['setting'] = Cache::get('setting');
 		if($this->var['setting'] == null || APP_FRAMEWORK_DEBUG) {
 			$this->var['setting'] = array();
 			$tmp = DB::fetch_all('SELECT * FROM '.DB::table('setting'));
 			foreach($tmp as $val){
 				$this->var['setting'][$val['skey']] = strexists($val['svalue'], 'a:') ? unserialize($val['svalue']) : $val['svalue'];
 			}
-			$cache->set('setting', $this->var['setting'], 604800);
+			Cache::set('setting', $this->var['setting'], 604800);
 		}
 
 		//初始化模板类PHPnew
@@ -471,16 +480,35 @@ class C {
 	 * @return boolean
 	 */
 	private function _xss_check() {
-		$temp = strtoupper(urldecode(urldecode($_SERVER['REQUEST_URI'])));
-		if(strpos($temp, '<') !== false || strpos($temp, '"') !== false || strpos($temp, 'CONTENT-TRANSFER-ENCODING') !== false) {
-			halt('REQUEST_TAINTING');
+		static $check = array('"', '>', '<', '\'', '(', ')', 'CONTENT-TRANSFER-ENCODING');
+
+		if(isset($_GET['formhash']) && $_GET['formhash'] !== formhash()) {
+			system_error('REQUEST_TAINTING');
 		}
+
+		if($_SERVER['REQUEST_METHOD'] == 'GET' ) {
+			$temp = $_SERVER['REQUEST_URI'];
+		} elseif(empty($_GET['formhash'])) {
+			$temp = $_SERVER['REQUEST_URI'].file_get_contents('php://input');
+		} else {
+			$temp = '';
+		}
+
+		if(!empty($temp)) {
+			$temp = strtoupper(urldecode(urldecode($temp)));
+			foreach ($check as $str) {
+				if(strpos($temp, $str) !== false) {
+					halt('REQUEST_TAINTING');
+				}
+			}
+		}
+
 		return true;
 	}
 
 	public function reject_robot() {
 		if(IS_ROBOT) {
-			exit(header("HTTP/1.1 403 Forbidden"));
+			exit(send_http_status(403));
 		}
 	}
 
@@ -550,140 +578,125 @@ class C {
 	 * 设定错误和异常处理
 	 */
 	public function sethandler(){
-		//register_shutdown_function('fatalError');
-		set_error_handler('error_handler');
-		set_exception_handler('exception_handler');
+		//register_shutdown_function(array('core', 'fatalError'));
+		set_error_handler(array('core', 'error_handler'));
+		set_exception_handler(array('core', 'exception_handler'));
+	}
+
+	public static function handleException($exception) {
+		framework_error::exception_error($exception);
+	}
+
+
+	public static function handleError($errno, $errstr, $errfile, $errline) {
+		framework_error::system_error($errstr, false, true, false);
+	}
+
+	public static function handleShutdown() {
+		if(($error = error_get_last()) && $error['type']) {
+			framework_error::system_error($error['message'], false, true, false);
+		}
+	}
+
+	/**
+	 * 自定义异常处理
+	 * @param mixed $e 异常对象
+	 */
+	public static function exception_handler($e) {
+		$error = array();
+		$error['message'] = $e->getMessage();
+		$trace = $e->getTrace();
+		if(APP_FRAMEWORK_DEBUG){
+			if('throw_exception' == $trace[0]['function']){
+				$error['file'] = $trace[0]['file'];
+				$error['line'] = $trace[0]['line'];
+			}else{
+				$error['file'] = $e->getFile();
+				$error['line'] = $e->getLine();
+			}
+			/*if(empty($trace)){
+				ob_start();
+				debug_print_backtrace();
+				$error['trace'] = ob_get_clean();
+			}else{
+				$error['trace'] = &$trace;
+			}*/
+		}
+		//Log::record($error['message'],Log::ERR);
+		halt($error);
+	}
+
+	/**
+	 * 自定义错误处理
+	 * @param int $errno 错误类型
+	 * @param string $errstr 错误信息
+	 * @param string $errfile 错误文件
+	 * @param int $errline 错误行数
+	 * @return void
+	 */
+	public static function error_handler($errno, $errstr, $errfile, $errline) {
+		$errfile = str_replace(APP_FRAMEWORK_ROOT, '.', $errfile);
+		switch($errno){
+			case E_ERROR:
+			case E_PARSE:
+			case E_CORE_ERROR:
+			case E_COMPILE_ERROR:
+			case E_USER_ERROR:
+				//ob_end_clean();
+				// 页面压缩输出支持
+				/*if(C('OUTPUT_ENCODE')){
+					$zlib = ini_get('zlib.output_compression');
+					if(empty($zlib)) ob_start('ob_gzhandler');
+				}*/
+				$errorStr = "{$errstr} {$errfile} 第 {$errline} 行.";
+				err($errorStr);
+				//if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
+				function_exists('halt') ? halt($errorStr) : exit('ERROR:'.$errorStr);
+				break;
+			case E_STRICT:
+			case E_USER_WARNING:
+			case E_USER_NOTICE:
+			default:
+				$errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
+				//trace($errorStr,'','NOTIC');
+				err($errorStr);
+				break;
+		}
+		return true;
+	}
+
+	/**
+	 * 致命错误捕获
+	 */
+	public static function fatalError() {
+		//保存日志记录
+		//if(C('LOG_RECORD')) Log::save();
+		if ($e = error_get_last()) {
+			switch($e['type']){
+				case E_ERROR:
+				case E_PARSE:
+				case E_CORE_ERROR:
+				case E_COMPILE_ERROR:
+				case E_USER_ERROR:  
+					//ob_end_clean();
+					function_exists('halt') ? halt($e) : exit('ERROR:'.$e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>');
+					break;
+			}
+		}
 	}
 
 	/**
 	 * 脚本结束时调用，关闭数据库链接，输出缓冲区内容
 	 */
-	public static function shutdown($obj = null){
-		global $action;
-		if(function_exists('fatalError')) fatalError();
-		process('准备结束...');
-		if(empty($obj)){
-			//$obj = &$this;
-			$obj = C::instance();
+	public static function shutdown(){
+		define('APP_FRAMEWORK_SHUTTING_DOWN', TRUE);
+		process('注销中...');
+		if(($error = error_get_last()) && $error['type']) C::fatalError();
+		if(APP_FRAMEWORK_DEBUG && !IS_AJAX && !defined('DISABLE_TRACE') && !in_array(ACTION_NAME, C::instance()->config['trace_disabled']) && file_exists(APP_FRAMEWORK_ROOT.'/source/PageTrace.php')){
+			process('开启页面调试...');
+			require_once libfile('include/trace');
 		}
-		if(APP_FRAMEWORK_DEBUG && !IS_AJAX  && file_exists(APP_FRAMEWORK_ROOT.'/source/PageTrace.php') && !in_array($action, $obj->config['trace_disabled'])){
-			global $_G, $template;
-
-			//整理SQL
-			if(class_exists('DB')){
-				$db = DB::object();
-				$sqldebug = array();
-				$n = $discuz_table = 0;
-				$queryinfo = array(
-					'select' => 0,
-					'update' => 0,
-					'insert' => 0,
-					'replace' => 0,
-					'delete' => 0
-				);
-				$sqlw = array();
-				$queries = count($db->sqldebug);
-				$links = array();
-				if(is_array($db->link))
-				foreach($db->link as $k => $link) {
-					$links[(string)$link] = $k;
-				}
-				$sqltime = 0;
-				if(is_array($db->sqldebug))
-				foreach($db->sqldebug as $string) {
-					$sqltime += $string[1];
-					$extra = $dt = '';
-					$n++;
-					$sql = $string[0];
-					$sqldebugrow = '';
-					if(preg_match('/^SELECT /', $string[0])) {
-						$queryinfo['select']++;
-						$query = @mysql_query('EXPLAIN '.$string[0], $string[3]);
-						$i = 0;
-						$sqldebugrow .= '';
-						while($row = DB::fetch($query)) {
-							if(!$i) {
-								$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
-								$i++;
-							}
-							if(strexists($row['Extra'], 'Using filesort')) {
-								$sqlw['Using filesort']++;
-								$extra .= $row['Extra'];
-							}
-							if(strexists($row['Extra'], 'Using temporary')) {
-								$sqlw['Using temporary']++;
-								$extra .= $row['Extra'];
-							}
-							$sqldebugrow .= ''.implode('_SP_', $row).'';
-						}
-						$sqldebugrow .= '';
-					}elseif(preg_match('/^UPDATE /', $string[0])){
-						$queryinfo['update']++;
-					}elseif(preg_match('/^INSERT /', $string[0])){
-						$queryinfo['insert']++;
-					}elseif(preg_match('/^REPLACE /', $string[0])){
-						$queryinfo['replace']++;
-					}elseif(preg_match('/^DELETE /', $string[0])){
-						$queryinfo['delete']++;
-					}
-
-					$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
-					foreach($string[2] as $error) {
-						$error['file'] = str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']);
-						$error['class'] = isset($error['class']) ? $error['class'] : '';
-						$error['type'] = isset($error['type']) ? $error['type'] : '';
-						$error['function'] = isset($error['function']) ? $error['function'] : '';
-						$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
-						/*if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
-							$dt = ' • '.$error['file'];
-						}*/
-					}
-					$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';
-					$sqldebug[] = $string[1].'s • DBLink '.$links[(string)$string[3]].$dt.'[br][color=blue]'.$sql.'[/color][br]'.$sqldebugrow;
-				}
-			}
-
-			$trace = array();
-			$tmp = &trace();
-			$trace['base'] = array();
-			$trace['process'] = &$tmp['process'];
-			$trace['error'] = &$tmp['error'];
-			//$trace = $_G['debug'];
-			$trace['files'] = get_included_files();
-			//$trace['template'] = isset($template) ? $template->get_debug_info() : array();
-			$trace['mapping'] = class_exists('StaticEngine') ? StaticEngine::$maps : array();
-			$trace['sql'] = empty($sqldebug) ? array() : $sqldebug;
-			$trace['trace'] = &$tmp['trace'];
-			$trace['_G'] = &$_G;
-
-			//进一步处理文件信息
-			$t = array_keys($trace['mapping']);
-			foreach ($trace['files'] as $k => $file){
-				$temp = str_replace(APP_FRAMEWORK_ROOT, '.', $file);
-				$f = basename($file);
-				$trace['files'][$k] = $temp.' ( '.number_format(filesize($file)/1024, 2).' KB )';
-				if(in_array($f, $t)) $trace['files'][$k] .= ' -> '.$trace['mapping'][$f];
-			}
-			unset($t);
-			//echo '<pre>';print_r($this->cachengine->stats());echo '</pre>';
-
-			//处理基本调试信息
-			$temp = dmicrotime() - $_G['starttime'];
-			$trace['base'][] = lang('debug', 'base_request', array('str' => date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'].' : '.(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'])));
-			$trace['base'][] = lang('debug', 'base_runtime', array('str' => $temp));
-			$trace['base'][] = lang('debug', 'base_throughput', array('str' => number_format(1/$temp, 2)));
-			$trace['base'][] = lang('debug', 'base_mem', array('str' => number_format(memory_get_usage()/1024, 2).' KB'));
-			$trace['base'][] = lang('debug', 'base_sql', array('str' => (isset($db->querynum) ? "{$db->querynum} queries ({$queryinfo['select']} selects, {$queryinfo['update']} updates, {$queryinfo['delete']} deletes, {$queryinfo['insert']} inserts, {$queryinfo['replace']} replaces)" : 'Unknown')));
-			$trace['base'][] = lang('debug', 'base_files', array('str' => count($trace['mapping'])));
-			//$trace['base'][] = lang('debug', 'base_cache', array('str' => '?'));
-			$trace['base'][] = lang('debug', 'base_session', array('str' => session_id()));
-			//'time' => number_format((dmicrotime() - $_G['starttime']), 6),
-			//'queries' => $db->querynum,
-			//'memory' => $cache->option['storage']=='files' ? null : ucfirst($cache->option['storage']),
-
-			include_once APP_FRAMEWORK_ROOT.'/source/PageTrace.php';
-		}
-		class_exists('DB') && $db->curlink && $db->close();
+		class_exists('DB') && DB::$db->curlink && DB::$db->close();
 		ob_end_flush();
 		//exit;
 	}
@@ -693,8 +706,4 @@ class C {
 	}
 }
 
-//$CORE = &C::instance();
-//$CORE = new C();
-//$CORE->init();
-
-C::instance();
+class C extends core {}

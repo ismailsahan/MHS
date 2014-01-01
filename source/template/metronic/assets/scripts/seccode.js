@@ -46,7 +46,7 @@ $.fn.seccodeHTML = function(callback) {
 	var id = $(this).prop("id"), imgurl = $(this).attr('imgurl');
 	//$.fn.seccode.list[$.fn.seccode.id(this)] = true;
 	if(callback){
-		$.post('index.php?action=seccode&operation=html', {id:id, imgurl:imgurl, hash:id, tag:$(this).attr("tag")}, function(data) {
+		$.post("{U seccode/html}", {id:id, imgurl:imgurl, hash:id, tag:$(this).attr("tag")}, function(data) {
 			if(/AC_FL_RunContent/.test(data)) data = data.replace(/AC_FL_RunContent\(.+\)/, function(s){return eval(s)});
 			return typeof callback=="function" ? callback(data) : $("#"+id).poshytip('update', data);
 		});

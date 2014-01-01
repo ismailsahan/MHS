@@ -8,16 +8,11 @@ var Activate = function () {
 				return;
 			}
 
-			function format(state) {
-				if (!state.id) return state.text; // optgroup
-				return "<img class='flag' src='assets/img/flags/" + state.id.toLowerCase() + ".png'/>&nbsp;&nbsp;" + state.text;
-			}
-
 			function updateSpecialty(){
 				$("#specialty").select2("val",null).html('<option value=""></option>');
 				var p1=$('#grade').select2("val"), p2=$('#academy').select2("val");
 				if(p1 && p2)
-					$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"specialty",grade:p1,academy:p2}, function(data){
+					$.get("{U api/profile}", {type:"specialty",grade:p1,academy:p2}, function(data){
 						$('#specialty').append($.map(data, function(v, i){ return $('<option>', { val: i, text: v }); }));
 					}, 'json');
 			}
@@ -26,7 +21,7 @@ var Activate = function () {
 				$("#class").select2("val",null).html('<option value=""></option>');
 				var p1=$('#grade').select2("val"), p2=$('#specialty').select2("val");
 				if(p1 && p2)
-					$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"class",grade:p1,specialty:p2}, function(data){
+					$.get("{U api/profile}", {type:"class",grade:p1,specialty:p2}, function(data){
 						$('#class').append($.map(data, function(v, i){ return $('<option>', { val: i, text: v }); }));
 					}, 'json');
 			}
@@ -35,7 +30,7 @@ var Activate = function () {
 				$("#league").select2("val",null).html('');
 				var tmp=$('#academy').select2("val");
 				if(tmp)
-					$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"league",academy:tmp}, function(data){
+					$.get("{U api/profile}", {type:"league",academy:tmp}, function(data){
 						var i, j, s;
 						for(i in data){
 							s = '<optgroup label="'+i+'">';
@@ -52,7 +47,7 @@ var Activate = function () {
 				$("#department").select2("val",null).html('');
 				var tmp=$('#league').select2("val");
 				if(tmp)
-					$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"department",league:tmp.join(",")}, function(data){
+					$.get("{U api/profile}", {type:"department",league:tmp.join(",")}, function(data){
 						var i, j, s;
 						for(i in data){
 							s = '<optgroup label="'+i+'">';
@@ -65,15 +60,10 @@ var Activate = function () {
 					}, 'json');
 			}
 
-			$("#country_list").select2({
-				placeholder: "Select",
-				allowClear: true,
-				formatResult: format,
-				formatSelection: format,
-				escapeMarkup: function (m) {
-					return m;
-				}
-			});
+			function modalAlert(msg){
+				$("#alert-modal .modal-body .col-md-12").html(msg);
+				$("#alert-modal").modal("show");
+			}
 
 			$("#gender").select2({
 				placeholder: '{lang gender}',
@@ -99,12 +89,14 @@ var Activate = function () {
 				allowClear: false
 			}).change(function(){
 				updateSpecialty();
+				updateClass();
 			});
 			$("#academy").select2({
 				placeholder: '{lang academy}',
 				allowClear: false
 			}).change(function(){
 				updateSpecialty();
+				updateClass();
 				updateLeague();
 			});
 			$("#specialty").select2({
@@ -130,14 +122,50 @@ var Activate = function () {
 			$('#submit_form select').change(function () {
 				$('#submit_form').validate().element($(this));
 			});
+			$('#submit_form input').keyup(function(e){
+				if(e.which == 13) $("#activate .button-next").click();
+			});
+			$('#agreement-link').on('click', function(){
+				if($('#agreement-modal').data("inited")){
+					$("#agreement-modal").modal();
+				}else{
+					$('body').modalmanager('loading');
+					$("#agreement-modal .modal-body .col-md-12").load("{$_G['basefilename']}?action=api&operation=tos", '', function(){
+						$('#agreement-modal').data("inited", true);
+						$("#agreement-modal .modal-footer .red").click(function(){
+							$("#agreement-modal").modal("hide");
+							$("input[name='agreement']").prop("checked", false).uniform.update();
+						});
+						$("#agreement-modal .modal-footer .blue").click(function(){
+							$("#agreement-modal").modal("hide");
+							$("input[name='agreement']").prop("checked", true).uniform.update();
+						});
+						$("#agreement-modal").modal();
+					});
+				}
+			});
+			$("#report .blue").click(function(){
+				if($("#report textarea").val() == ''){
+					modalAlert("请写一点内容再反馈吧");
+					return;
+				}
+				$.post("{U api/report}", {data:$("#report textarea").val()}, function(data){
+					modalAlert(data);
+					$('#report').modal('hide');
+					$("#report textarea").val('');
+				});
+			});
+			$('.report-link').on('click', function(){
+				$("#report").modal();
+			});
 			$("#verifycode").seccode();
 
-			$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"grade"}, function(data){
+			$.get("{U api/profile}", {type:"grade"}, function(data){
 				$('#grade').append($.map(data, function(v, i){
 					return $('<option>', { val: i, text: v });
 				}));
 			}, 'json');
-			$.get("{$_G['basefilename']}?action=api&operation=profile", {type:"academy"}, function(data){
+			$.get("{U api/profile}", {type:"academy"}, function(data){
 				$('#academy').append($.map(data, function(v, i){
 					return $('<option>', { val: i, text: v });
 				}));
@@ -178,12 +206,8 @@ var Activate = function () {
 					},
 					specialty: {},
 					"class": {},
-					"league[]": {
-						required: true
-					},
-					"department[]": {
-						required: true
-					},
+					"league[]": {},
+					"department[]": {},
 					remarks: {},
 					agreement: {
 						required: true
@@ -200,10 +224,10 @@ var Activate = function () {
 						required: "请输入你的真实姓名！"
 					},
 					gender: {
-						required: "你没有性别或者是未知吗？如果真是这样的，那你真的是太英雄无敌了"
+						required: "你没有性别或者是未知吗？"
 					},
 					qq: {
-						required: "你难道没有QQ号吗？",
+						required: "真的没有QQ号吗？",
 						rangelength: "你输入的QQ号的长度不对哦",
 						digits: "QQ号由数字构成，你只能输入数字"
 					},
@@ -382,6 +406,14 @@ var Activate = function () {
 					alert("测试发送到服务器的数据：\n\n"+data);
 				});
 			}).hide();
+
+			$.fn.modal.defaults.spinner = $.fn.modalmanager.defaults.spinner = 
+				'<div class="loading-spinner" style="width: 200px; margin-left: -100px;">' +
+					'<div class="progress progress-striped active">' +
+						'<div class="progress-bar" style="width: 100%;"></div>' +
+					'</div>' +
+				'</div>';
+			$.fn.modalmanager.defaults.resize = true;
 		}
 
 	};

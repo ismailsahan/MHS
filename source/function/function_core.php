@@ -133,7 +133,7 @@ function debuginfo() {
 			'time' => number_format((dmicrotime() - $_G['starttime']), 6),
 			'queries' => $db->querynum,
 			//'memory' => isset($_G['memory']) ? ucwords(@$_G['memory']) : null,
-			'memory' => $cache->option['storage']=='files' ? null : ucfirst($cache->option['storage']),
+			'memory' => Cache::$storage=='files' ? null : Cache::$storage,
 			//'mem' => (intval(ini_get('memory_limit')) > 0) ? memory_get_usage() : ''
 		);
 		if($db->slaveid) {
@@ -717,6 +717,7 @@ function libfile($libname, $folder = '', $chkExistence = true) {
 		$path = "{$libpath}/{$libname}";
 
 	}
+	//trace("libfile({$libname}, '{$folder}') $= {$path}.php");
 	$return = preg_match('/^[\w\d\/\._]+$/i', $path) ? realpath(APP_FRAMEWORK_ROOT.$path.'.php') : false;
 	//$chkExistence && !file_exists($path) && halt('LIBRARY_FILE_NONEXISTENT', $lib);
 	$chkExistence && !$return && halt('LIBRARY_FILE_NONEXISTENT', (empty($folder) ? '' : "{$folder}/").$libname);
@@ -922,7 +923,7 @@ function send_http_status($code) {
 
 /**
  * URL组装 支持不同URL模式
- * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
+ * @param string $url URL表达式，格式：'[动作/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
  * @param string $suffix 伪静态后缀，默认为true表示获取配置值
  * @param boolean $redirect 是否跳转，如果设置为true则表示跳转到该URL地址
@@ -930,137 +931,8 @@ function send_http_status($code) {
  * @return string
  */
 function U($url='', $vars='', $suffix=true, $redirect=false, $domain=false) {
-	// 解析URL
-	$info = parse_url($url);
-	$url = !empty($info['path']) ? $info['path'] : ACTION_NAME;
-	if(isset($info['fragment'])) { // 解析锚点
-		$anchor = $info['fragment'];
-		if(false !== strpos($anchor,'?')) { // 解析参数
-			list($anchor,$info['query']) = explode('?',$anchor,2);
-		}		
-		if(false !== strpos($anchor,'@')) { // 解析域名
-			list($anchor,$host) = explode('@',$anchor, 2);
-		}
-	}elseif(false !== strpos($url,'@')) { // 解析域名
-		list($url,$host) = explode('@',$info['path'], 2);
-	}
-	// 解析子域名
-	if(isset($host)) {
-		$domain = $host.(strpos($host,'.')?'':strstr($_SERVER['HTTP_HOST'],'.'));
-	}elseif($domain===true){
-		$domain = $_SERVER['HTTP_HOST'];
-		if(C('APP_SUB_DOMAIN_DEPLOY') ) { // 开启子域名部署
-			$domain = $domain=='localhost'?'localhost':'www'.strstr($_SERVER['HTTP_HOST'],'.');
-			// '子域名'=>array('项目[/分组]');
-			foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
-				if(false === strpos($key, '*') && 0 === strpos($url, $rule[0])) {
-					$domain = $key.strstr($domain, '.'); // 生成对应子域名
-					$url = substr_replace($url, '', 0, strlen($rule[0]));
-					break;
-				}
-			}
-		}
-	}
-
-	// 解析参数
-	if(is_string($vars)) { // aaa=1&bbb=2 转换成数组
-		parse_str($vars,$vars);
-	}elseif(!is_array($vars)){
-		$vars = array();
-	}
-	if(isset($info['query'])) { // 解析地址里面参数 合并到vars
-		parse_str($info['query'],$params);
-		$vars = array_merge($params,$vars);
-	}
-	
-	// URL组装
-	$depr = C('URL_PATHINFO_DEPR');
-	if($url) {
-		if(0=== strpos($url,'/')) {// 定义路由
-			$route = true;
-			$url = substr($url,1);
-			if('/' != $depr) {
-				$url = str_replace('/',$depr,$url);
-			}
-		}else{
-			if('/' != $depr) { // 安全替换
-				$url = str_replace('/',$depr,$url);
-			}
-			// 解析分组、模块和操作
-			$url = trim($url,$depr);
-			$path = explode($depr,$url);
-			$var = array();
-			$var[C('VAR_ACTION')] = !empty($path) ? array_pop($path) : ACTION_NAME;
-			$var[C('VAR_MODULE')] = !empty($path) ? array_pop($path) : MODULE_NAME;
-			if($maps = C('URL_ACTION_MAP')) {
-				if(isset($maps[strtolower($var[C('VAR_MODULE')])])) {
-					$maps = $maps[strtolower($var[C('VAR_MODULE')])];
-					if($action = array_search(strtolower($var[C('VAR_ACTION')]), $maps)){
-						$var[C('VAR_ACTION')] = $action;
-					}
-				}
-			}
-			if($maps = C('URL_MODULE_MAP')) {
-				if($module = array_search(strtolower($var[C('VAR_MODULE')]), $maps)){
-					$var[C('VAR_MODULE')] = $module;
-				}
-			}			
-			if(C('URL_CASE_INSENSITIVE')) {
-				$var[C('VAR_MODULE')] = parse_name($var[C('VAR_MODULE')]);
-			}
-			if(!C('APP_SUB_DOMAIN_DEPLOY') && C('APP_GROUP_LIST')) {
-				if(!empty($path)) {
-					$group = array_pop($path);
-					$var[C('VAR_GROUP')] = $group;
-				}else{
-					if(GROUP_NAME != C('DEFAULT_GROUP')) {
-						$var[C('VAR_GROUP')] = GROUP_NAME;
-					}
-				}
-				if(C('URL_CASE_INSENSITIVE') && isset($var[C('VAR_GROUP')])) {
-					$var[C('VAR_GROUP')] = strtolower($var[C('VAR_GROUP')]);
-				}
-			}
-		}
-	}
-
-	if(C('URL_MODEL') == 0) { // 普通模式URL转换
-		$url = __APP__.'?'.http_build_query(array_reverse($var));
-		if(!empty($vars)) {
-			$vars = urldecode(http_build_query($vars));
-			$url .= '&'.$vars;
-		}
-	}else{ // PATHINFO模式或者兼容URL模式
-		if(isset($route)) {
-			$url = __APP__.'/'.rtrim($url,$depr);
-		}else{
-			$url = __APP__.'/'.implode($depr,array_reverse($var));
-		}
-		if(!empty($vars)) { // 添加参数
-			foreach ($vars as $var => $val){
-				if('' !== trim($val)) $url .= $depr . $var . $depr . urlencode($val);
-			}				
-		}
-		if($suffix) {
-			$suffix = $suffix===true ? C('URL_HTML_SUFFIX') : $suffix;
-			if($pos = strpos($suffix, '|')){
-				$suffix = substr($suffix, 0, $pos);
-			}
-			if($suffix && '/' != substr($url, -1)){
-				$url .= '.'.ltrim($suffix, '.');
-			}
-		}
-	}
-	if(isset($anchor)){
-		$url .= '#'.$anchor;
-	}
-	if($domain) {
-		$url = (is_ssl() ? 'https://' : 'http://').$domain.$url;
-	}
-	if($redirect) // 直接跳转URL
-		redirect($url);
-	else
-		return $url;
+	trace(func_get_args());
+	return Dispatcher::generate($url, $vars, $suffix, $redirect, $domain);
 }
 
 /**
@@ -1507,7 +1379,7 @@ function auto_charset($fContents, $from='gbk', $to='utf-8') {
 /**
  * 调试 自定义流程信息
  */
-function process($msg='[FRAMEWORK_DEBUG]', $label=''){
+function process($msg=null, $label=''){
 	/*global $_G;
 	if(APP_FRAMEWORK_DEBUG){
 		$_G['debug']['process'][] = $msg;
@@ -1518,11 +1390,11 @@ function process($msg='[FRAMEWORK_DEBUG]', $label=''){
 /**
  * 调试 自定义调试信息
  */
-function trace($value='[FRAMEWORK_DEBUG]', $label='', $level='trace', $record=false) {
+function trace($value=null, $label='', $level='trace', $record=false) {
 	static $_trace = array();
-	global $_G, $action;
-	if(!defined('APP_FRAMEWORK_DEBUG') || !APP_FRAMEWORK_DEBUG || empty($action) || in_array($action, $_G['config']['trace_disabled'])) return;
-	if($value === '[FRAMEWORK_DEBUG]'){//获取trace信息
+	global $_G;
+	if(!defined('APP_FRAMEWORK_DEBUG') || !APP_FRAMEWORK_DEBUG || defined('ACTION_NAME') && in_array('ACTION_NAME', $_G['config']['trace_disabled'])) return;
+	if($value === null){//获取trace信息
 		return $_trace;
 	}else{
 		$info = ($label ? $label.':' : '').print_r($value, true);
@@ -1543,7 +1415,7 @@ function trace($value='[FRAMEWORK_DEBUG]', $label='', $level='trace', $record=fa
 /**
  * 调试 自定义错误信息
  */
-function err($msg='[FRAMEWORK_DEBUG]', $label=''){
+function err($msg=null, $label=''){
 	/*global $_G;
 	if(APP_FRAMEWORK_DEBUG){
 		$_G['debug']['error'][] = $msg;
@@ -1576,142 +1448,5 @@ function error($message, $vars = array(), $return = false) {
  * 终止执行并抛出错误信息
  */
 function halt($error, $param=array()){
-	static $halted = false;
-	if(!$halted){
-		$e = array();
-		//ob_clean();
-		$halted = true;
-		ob_end_clean();
-		ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
-		if(APP_FRAMEWORK_DEBUG) {
-			if(!is_array($error)) {
-				$trace = debug_backtrace();
-				$e['message'] = $error;
-				$e['file'] = $trace[0]['file'];
-				$e['line'] = $trace[0]['line'];
-				ob_start();
-				debug_print_backtrace();
-				$e['trace'] = ob_get_clean();
-			} else {
-				$e = $error;
-			}
-			foreach($e as $k => $v){
-				if(is_array($v)){
-					foreach($v as $sk => $sv){
-						$e[$k][$sk] = str_replace(APP_FRAMEWORK_ROOT, '.', $sv);
-					}
-				}elseif(is_string($v)){
-					$e[$k] = str_replace(APP_FRAMEWORK_ROOT, '.', $v);
-				}
-			}
-		} else {
-			$e['message'] = is_array($error) ? $error['message'] : $error;
-		}
-		$e['message'] = lang('error', $e['message'], empty($param) ? null : (is_array($param) ? $param : array('str' => $param)));
-		process('错误：'.$e['message']);
-		if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
-		if(defined('PHPNEW_STATIC_TPL')) global $template;
-		if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
-			$template->assign('e', $e, true);
-			$template->display('error');
-		}else{
-			include APP_FRAMEWORK_ROOT.'/source/ErrorException.php';
-		}
-	}
-	exit;
-}
-
-/*function error_handler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()){
-	//echo("ERR$errno ");
-	$errfile = str_replace(APP_FRAMEWORK_ROOT, '.', $errfile);
-	err("PHP[{$errno}] {$errstr}[br]　　　　@ {$errfile}:{$errline}\n");
-	//if(in_array($errno, array(E_USER_ERROR, E_PARSE, E_COMPILE_ERROR))) halt("[{$errno}] {$errstr}");
-	return false;
-}*/
-
-/**
- * 自定义异常处理
- * @param mixed $e 异常对象
- */
-function exception_handler($e) {
-	$error = array();
-	$error['message'] = $e->getMessage();
-	$trace = $e->getTrace();
-	if(APP_FRAMEWORK_DEBUG){
-		if('throw_exception' == $trace[0]['function']){
-			$error['file'] = $trace[0]['file'];
-			$error['line'] = $trace[0]['line'];
-		}else{
-			$error['file'] = $e->getFile();
-			$error['line'] = $e->getLine();
-		}
-		/*if(empty($trace)){
-			ob_start();
-			debug_print_backtrace();
-			$error['trace'] = ob_get_clean();
-		}else{
-			$error['trace'] = &$trace;
-		}*/
-	}
-	//Log::record($error['message'],Log::ERR);
-	halt($error);
-}
-
-/**
- * 自定义错误处理
- * @param int $errno 错误类型
- * @param string $errstr 错误信息
- * @param string $errfile 错误文件
- * @param int $errline 错误行数
- * @return void
- */
-function error_handler($errno, $errstr, $errfile, $errline) {
-	$errfile = str_replace(APP_FRAMEWORK_ROOT, '.', $errfile);
-	switch($errno){
-		case E_ERROR:
-		case E_PARSE:
-		case E_CORE_ERROR:
-		case E_COMPILE_ERROR:
-		case E_USER_ERROR:
-			//ob_end_clean();
-			// 页面压缩输出支持
-			/*if(C('OUTPUT_ENCODE')){
-				$zlib = ini_get('zlib.output_compression');
-				if(empty($zlib)) ob_start('ob_gzhandler');
-			}*/
-			$errorStr = "{$errstr} {$errfile} 第 {$errline} 行.";
-			err($errorStr);
-			//if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
-			function_exists('halt') ? halt($errorStr) : exit('ERROR:'.$errorStr);
-			break;
-		case E_STRICT:
-		case E_USER_WARNING:
-		case E_USER_NOTICE:
-		default:
-			$errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
-			//trace($errorStr,'','NOTIC');
-			err($errorStr);
-			break;
-	}
-	return true;
-}
-
-/**
- * 致命错误捕获
- */
-function fatalError() {
-	//保存日志记录
-	//if(C('LOG_RECORD')) Log::save();
-	if ($e = error_get_last()) {
-		switch($e['type']){
-			case E_ERROR:
-			case E_PARSE:
-			case E_CORE_ERROR:
-			case E_COMPILE_ERROR:
-			case E_USER_ERROR:  
-				//ob_end_clean();
-				function_exists('halt') ? halt($e) : exit('ERROR:'.$e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>');
-				break;
-		}
-	}
+	exit(framework_error::halt($error, $param));
 }

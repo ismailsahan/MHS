@@ -38,7 +38,7 @@ switch($operation){
 			case 1:
 				$html .= lang('core', 'seccode_image'.$ani.'_tips');
 				$html .= '<a href="javascript:;">';
-				$html .= '<img src="'.$_REQUEST['imgurl'].'&'.TIMESTAMP.'"';
+				$html .= '<img src="'.U('seccode/show', array('tag'=>$tag, '_t'=>TIMESTAMP)).'"';
 				$html .= ' width="'.$_G['setting']['seccodedata']['width'].'"';
 				$html .= ' height="'.$_G['setting']['seccodedata']['height'].'"';
 				$html .= ' onclick="$(\'#'.$id.'\').seccodeHTML(1)"';

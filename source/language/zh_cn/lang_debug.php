@@ -16,6 +16,6 @@ $lang = array(
 	'base_mem' => '内存开销: {str}',
 	'base_sql' => '查询次数: {str}',
 	'base_files' => '文件加载: {str}',
-	'base_cache' => '缓存信息: {str}',
+	'base_cache' => '缓存信息: {get} get(s), {set} write(s), {delete} delete(s), {clean} cleaned',
 	'base_session' => '会话信息: SESSION_ID={str}',
 );

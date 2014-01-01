@@ -93,6 +93,7 @@ class StaticEngine {
 				$const_regexp = "([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)";
 				/*$template = preg_replace("/\{(\\\$[a-zA-Z0-9_\[\]\'\"\$\.\x7f-\xff]+)\}/s", '<?=$1?>', $template);*/
 				$template = preg_replace_callback("/\{lang\s+(.+?)\}/is", array('Smarty_Internal_Compile_Lang', 'lang'), $template);
+				$template = preg_replace_callback("/\{U\s+(.+?)\}/is", array('Dispatcher', 'generate'), $template);
 				$template = preg_replace_callback("/\{static\s+(?:[\"']*)(.+?)(?:[\"']*)\}/is", array(&$this, 'staticfile'), $template);
 				$template = preg_replace_callback("/url\((?:['\"]*)([^\(\)\"']+)(?:['\"]*)\)/", array(&$this, 'cssurl'), $template);
 				//$template = preg_replace_callback("/$varRegexp/is", array(&$this,'preg__var'), $template);

@@ -1,259 +1,18 @@
 <?php
+
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 /**
- * Discuz MySQL 类的支持 程序中不直接使用
- *
- */
-class db_mysql {
-	var $tablepre;
-	var $version = '';
-	var $querynum = 0;
-	var $slaveid = 0;
-	var $curlink;
-	var $link = array();
-	var $config = array();
-	var $sqldebug = array();
-	var $map = array();
-
-	function db_mysql($config = array()) {
-		if(!empty($config)) {
-			$this->set_config($config);
-		}
-	}
-
-	function set_config($config) {
-		$this->config = &$config;
-		$this->tablepre = $config[1]['tablepre'];
-		if(!empty($this->config['map'])) {
-			$this->map = $this->config['map'];
-		}
-	}
-
-	function connect($serverid = 1) {
-
-		if(empty($this->config) || empty($this->config[$serverid])) {
-			$this->halt('config_db_not_found');
-		}
-
-		$this->link[$serverid] = $this->_dbconnect(
-			$this->config[$serverid]['dbhost'],
-			$this->config[$serverid]['dbuser'],
-			$this->config[$serverid]['dbpw'],
-			$this->config[$serverid]['dbcharset'],
-			$this->config[$serverid]['dbname'],
-			$this->config[$serverid]['pconnect']
-		);
-		$this->curlink = $this->link[$serverid];
-
-	}
-
-	function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect) {
-		if($pconnect) {
-			$link = @mysql_pconnect($dbhost, $dbuser, $dbpw, MYSQL_CLIENT_COMPRESS);
-		} else {
-			$link = @mysql_connect($dbhost, $dbuser, $dbpw, 1, MYSQL_CLIENT_COMPRESS);
-		}
-		if(!$link) {
-			$this->halt('notconnect');
-		} else {
-			$this->curlink = $link;
-			if($this->version() > '4.1') {
-				$dbcharset = $dbcharset ? $dbcharset : $this->config[1]['dbcharset'];
-				$serverset = $dbcharset ? 'character_set_connection='.$dbcharset.', character_set_results='.$dbcharset.', character_set_client=binary' : '';
-				$serverset .= $this->version() > '5.0.1' ? ((empty($serverset) ? '' : ',').'sql_mode=\'\'') : '';
-				$serverset && mysql_query("SET $serverset", $link);
-			}
-			$dbname && @mysql_select_db($dbname, $link);
-		}
-		return $link;
-	}
-
-	function table_name($tablename) {
-		if(!empty($this->map) && !empty($this->map[$tablename])) {
-			$id = $this->map[$tablename];
-			if(!$this->link[$id]) {
-				$this->connect($id);
-			}
-			$this->curlink = $this->link[$id];
-		} else {
-			$this->curlink = $this->link[1];
-		}
-		//return '`'.$this->config[1]['dbname'].'`.`'.$this->tablepre.$tablename.'`';
-		return '`'.$this->tablepre.$tablename.'`';
-		//return $this->tablepre.$tablename;
-	}
-
-	function select_db($dbname) {
-		return mysql_select_db($dbname, $this->curlink);
-	}
-
-	function fetch_array($query, $result_type = MYSQL_ASSOC) {
-		return mysql_fetch_array($query, $result_type);
-	}
-
-	function fetch_all($sql, $id = null) {
-		$arr = array();
-		$query = $this->query($sql);
-		while($data = $this->fetch_array($query)) $id ? $arr[$data[$id]] = $data : $arr[] = $data;
-		return $arr;
-	}
-
-	function fetch_first($sql) {
-		return $this->fetch_array($this->query($sql));
-	}
-
-	function result_first($sql) {
-		return $this->result($this->query($sql), 0);
-	}
-
-	function query($sql, $silent = false, $unbuffered = false) {
-
-		if(defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) {
-			$starttime = microtime(true);
-		}
-
-		if('UNBUFFERED' === $silent) {
-			$silent = false;
-			$unbuffered = true;
-		} elseif('SILENT' === $silent) {
-			$silent = true;
-			$unbuffered = false;
-		}
-
-		$func = $unbuffered ? 'mysql_unbuffered_query' : 'mysql_query';
-
-		if(!($query = $func($sql, $this->curlink))) {
-			if(in_array($this->errno(), array(2006, 2013)) && substr($silent, 0, 5) != 'RETRY') {
-				$this->connect();
-				return $this->query($sql, 'RETRY'.$silent);
-			}
-			if(!$silent) {
-				$this->halt('query_error');
-			}
-		}
-
-		if(defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) {
-			$this->sqldebug[] = array($sql, number_format((microtime(true) - $starttime), 6), debug_backtrace());
-		}
-
-		$this->querynum++;
-		return $query;
-	}
-
-	function tbl_structure($table, $detail = false) {
-		$table = $this->table_name($table);
-		$arr = array();
-		$_arr = $this->fetch_all("SHOW FIELDS FROM `{$table}`");
-		foreach($_arr as $k) {
-			$arr[] = $detail ? $k : $k['Field'];
-		}
-		return $arr;
-	}
-
-	function tbl_keys($table, $detail = false) {
-		$table = $this->table_name($table);
-		$arr = array();
-		$_arr = $this->fetch_all("SHOW KEYS FROM `{$table}`");
-		foreach($_arr as $k) {
-			$arr[] = $detail ? $k : $k['Column_name'];
-		}
-		return count($arr)==1 ? $arr[0] : $arr;
-	}
-
-	function affected_rows() {
-		return mysql_affected_rows($this->curlink);
-	}
-
-	function error() {
-		return (($this->curlink) ? mysql_error($this->curlink) : mysql_error());
-	}
-
-	function errno() {
-		return intval(($this->curlink) ? mysql_errno($this->curlink) : mysql_errno());
-	}
-
-	function result($query, $row = 0) {
-		$query = @mysql_result($query, $row);
-		return $query;
-	}
-
-	function num_rows($query) {
-		$query = mysql_num_rows($query);
-		return $query;
-	}
-
-	function num_fields($query) {
-		return mysql_num_fields($query);
-	}
-
-	function free_result($query) {
-		return mysql_free_result($query);
-	}
-
-	function insert_id() {
-		return ($id = mysql_insert_id($this->curlink)) >= 0 ? $id : $this->result($this->query('SELECT last_insert_id()'), 0);
-	}
-
-	function fetch_row($query) {
-		$query = mysql_fetch_row($query);
-		return $query;
-	}
-
-	function fetch_fields($query) {
-		return mysql_fetch_field($query);
-	}
-
-	function version() {
-		if(empty($this->version)) {
-			$this->version = mysql_get_server_info($this->curlink);
-		}
-		return $this->version;
-	}
-
-	function close() {
-		return mysql_close($this->curlink);
-	}
-
-	function halt($message = '', $sql = '', $error = '') {
-		if($error){
-			$dberror = &$error;
-			$dberrno = 0;
-		}else{
-			$dberror = $this->error();
-			$dberrno = $this->errno();
-		}
-		if(in_array(mb_detect_encoding($dberror, array('GBK', 'UTF-8')), array('CP936', 'GBK'))) $dberror = mb_convert_encoding($dberror, 'UTF-8', 'GBK');
-		$errmsg = error('db_error', array(
-			'$message' => error(((empty($message) || strexists($message, ' ')) ? '' : 'db_').$message, array(), true),
-			'$info' => $dberror ? error('db_error_message', array('$dberror' => $dberror), true) : '',
-			'$sql' => $sql ? error('db_error_sql', array('$sql' => $sql), true) : '',
-			'$errorno' => $dberrno ? error('db_error_no', array('$dberrno' => $dberrno), true) : ''
-		), true);
-		$ext = array();
-		if(!APP_FRAMEWORK_DEBUG) $ext['__ERRMSG__'] = error('db_error', array(
-			'$message' => error(((empty($message) || strexists($message, ' ')) ? '' : 'db_').$message, array(), true),
-			'$info' => $dberror && !strexists($dberror, 'SELECT ') && !strexists($dberror, 'INSERT ') && !strexists($dberror, 'UPDATE ') && !strexists($dberror, 'DELETE ') && !strexists($dberror, 'FROM ') && !strexists($dberror, '`') && !strexists($dberror, $this->tablepre) && !strexists($dberror, 'WHERE ') && !strexists($dberror, '=') ? error('db_error_message', array('$dberror' => $dberror), true) : '',
-			'$sql' => '',
-			'$errorno' => $dberrno ? error('db_error_no', array('$dberrno' => $dberrno), true) : ''
-		), true);
-		halt($errmsg, $ext);
-	}
-
-}
-
-/**
  * 对Discuz CORE 中 DB Object中的主要方法进行二次封装，方便程序调用
- *
  */
 class DB {
 
 	public static $db;
-	public static $dbclass;
+	public static $driver;
 
-	public static function init($config, $dbclass = 'db_mysql') {
-		self::$dbclass = $dbclass;
-		self::$db = new $dbclass;
+	public static function init($driver, $config) {
+		self::$driver = $driver;
+		self::$db = new $driver;
 		self::$db->set_config($config);
 		self::$db->connect();
 	}
@@ -354,17 +113,6 @@ class DB {
 	}
 
 	/**
-	 * 格式化field字段和value，并组成一个字符串
-	 *
-	 * @param array $array 格式为 key=>value 数组
-	 * @param 分割符 $glue
-	 * @return string
-	 */
-	public static function implode_field_value($array, $glue = ',') {
-		return self::implode($array, $glue);
-	}
-
-	/**
 	 * 返回插入的ID
 	 *
 	 * @return int
@@ -379,14 +127,14 @@ class DB {
 	 * @param resourceID $resourceid
 	 * @return array
 	 */
-	public static function fetch($resourceid, $type = MYSQL_ASSOC) {
+	public static function fetch($resourceid, $type = 'MYSQL_ASSOC') {
 		return self::$db->fetch_array($resourceid, $type);
 	}
 
 	/**
 	 * 依据SQL文，返回一条查询结果
 	 *
-	 * @param string $query 查询语句
+	 * @param string $sql 查询语句
 	 * @return array
 	 */
 	public static function fetch_first($sql, $arg = array(), $silent = false) {
@@ -398,9 +146,12 @@ class DB {
 
 	/**
 	 * 依据查询语句，返回所有数据
+	 * 以数组方式返回查询多条记录数据，且可以设置数据的 KEY 值使用某字段值
 	 *
-	 * @param string $sql
-	 * @param ID $id
+	 * @param string	$sql
+	 * @param array		$arg format参数数组
+	 * @param string	$keyfield
+	 * @param boolean	$silent
 	 * @return array
 	 */
 	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent=false) {
@@ -419,28 +170,6 @@ class DB {
 	}
 
 	/**
-	 * 返回某表结构信息
-	 *
-	 * @param string $table
-	 * @param 详尽数据开关 $detail
-	 * @return array
-	 */
-	public static function tbl_structure($table, $detail = false) {
-		return DB::_execute('tbl_structure', $table, (boolean)$detail);
-	}
-
-	/**
-	 * 返回某表索引信息
-	 *
-	 * @param string $table
-	 * @param 详尽数据开关 $detail
-	 * @return array OR string
-	 */
-	public static function tbl_keys($table, $detail = false) {
-		return DB::_execute('tbl_keys', $table, (boolean)$detail);
-	}
-
-	/**
 	 * 依据查询结果，返回结果数值
 	 *
 	 * @param resourceid $resourceid
@@ -453,7 +182,7 @@ class DB {
 	/**
 	 * 依据查询语句，返回结果数值
 	 *
-	 * @param string $query SQL查询语句
+	 * @param string $sql SQL查询语句
 	 * @return unknown
 	 */
 	public static function result_first($sql, $arg = array(), $silent = false) {
@@ -465,9 +194,12 @@ class DB {
 
 	/**
 	 * 执行查询
+	 * 在非UNBUFFERED的情况下：INSERT SQL 语句返回 insert_id();UPDATE 和 DELETE SQL 语句返回 affected_rows()
 	 *
-	 * @param string $sql
-	 * @param 类型定义 $type UNBUFFERED OR SILENT
+	 * @param string	$sql SQL语句
+	 * @param array		$arg SQL中的foramt参数数组，为向后兼容允许使用本参数设置$silent或$unbuffered
+	 * @param boolean	$silent
+	 * @param boolean	$unbuffered
 	 * @return Resource OR Result
 	 */
 	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false) {
@@ -516,6 +248,12 @@ class DB {
 		return self::$db->affected_rows();
 	}
 
+	/**
+	 * 释放资源
+	 * 
+	 * @param resource $query query资源对象
+	 * @return boolean
+	 */
 	public static function free_result($query) {
 		return self::$db->free_result($query);
 	}
@@ -538,11 +276,12 @@ class DB {
 		return self::$db->errno();
 	}
 
-	function _execute($cmd , $arg1 = '', $arg2 = '') {
-		$res = self::$db->$cmd($arg1, $arg2);
-		return $res;
-	}
-
+	/**
+	 * 检查 SQL 语句的安全性
+	 * 
+	 * @param string $sql SQL语句
+	 * @return boolean true
+	 */
 	public static function checkquery($sql) {
 		return database_safecheck::checkquery($sql);
 	}
@@ -572,6 +311,12 @@ class DB {
 		return '\'\'';
 	}
 
+	/**
+	 * 给字段加上反引号
+	 * 
+	 * @param string|array $field 字段
+	 * @return mixed
+	 */
 	public static function quote_field($field) {
 		if (is_array($field)) {
 			foreach ($field as $k => $v) {
@@ -585,6 +330,13 @@ class DB {
 		return $field;
 	}
 
+	/**
+	 * 生成 SQL 语句中的 LIMIT 条件
+	 * 
+	 * @param int|string $start 起始数据索引
+	 * @param int|string $limit 最大数目
+	 * @return string
+	 */
 	public static function limit($start, $limit = 0) {
 		$limit = intval($limit > 0 ? $limit : 0);
 		$start = intval($start > 0 ? $start : 0);
@@ -649,8 +401,9 @@ class DB {
 				break;
 
 			default:
+				throw new DbException('Not allow this glue between field and value: "' . $glue . '"');
 				//self::$db->halt('Not allow this glue between field and value: "' . $glue . '"');
-				self::$db->halt('glue_not_allowed: "' . $glue . '"');
+				//self::$db->halt('glue_not_allowed: "' . $glue . '"');
 		}
 	}
 
@@ -664,13 +417,25 @@ class DB {
 		return $sql;
 	}
 
+	/**
+	 * 格式化field字段和value，并组成一个字符串
+	 *
+	 * @param array $array 格式为 key=>value 数组
+	 * @param 分割符 $glue
+	 * @return string
+	 */
+	public static function implode_field_value($array, $glue = ',') {
+		return self::implode($array, $glue);
+	}
+
 	public static function format($sql, $arg) {
 		$count = substr_count($sql, '%');
 		if (!$count) {
 			return $sql;
 		} elseif ($count > count($arg)) {
+			throw new DbException('SQL string format error! This SQL need "' . $count . '" vars to replace into.', 0, $sql);
 			//self::$db->halt('SQL string format error! This SQL need "' . $count . '" vars to replace into.', $sql);
-			self::$db->halt('', $sql);
+			//self::$db->halt('', $sql);
 		}
 
 		$len = strlen($sql);
@@ -711,6 +476,33 @@ class DB {
 		return $ret;
 	}
 
+	/**
+	 * 返回某表结构信息
+	 *
+	 * @param string $table
+	 * @param 详尽数据开关 $detail
+	 * @return array
+	 */
+	public static function tbl_structure($table, $detail = false) {
+		return self::$db->tbl_structure($table, (boolean)$detail);
+	}
+
+	/**
+	 * 返回某表索引信息
+	 *
+	 * @param string $table
+	 * @param 详尽数据开关 $detail
+	 * @return array OR string
+	 */
+	public static function tbl_keys($table, $detail = false) {
+		return self::$db->tbl_keys($table, (boolean)$detail);
+	}
+
+	/*private function _execute($cmd , $arg1 = '', $arg2 = '') {
+		$res = self::$db->$cmd($arg1, $arg2);
+		return $res;
+	}*/
+
 }
 
 class database_safecheck {
@@ -732,8 +524,9 @@ class database_safecheck {
 			}
 
 			if ($check < 1) {
+				throw new DbException('It is not safe to do this query', 0, $sql);
 				//DB::$db->halt('It is not safe to do this query', $sql);
-				DB::$db->halt('not_safe', $sql);
+				//DB::$db->halt('not_safe', $sql);
 			}
 		}
 		return true;

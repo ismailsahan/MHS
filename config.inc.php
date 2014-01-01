@@ -2,8 +2,8 @@
 
 $_config = array();
 
-// ----------------------------  CONFIG DB  ------------------------------- //
-// ----------------------------  数据库相关设置---------------------------- //
+// -----------------------------  CONFIG DB  ------------------------------ //
+// ---------------------------- 数据库相关设置 ---------------------------- //
 
 /**
  * 数据库主服务器设置, 支持多组服务器设置, 当设置多组服务器时, 则会根据分布式策略使用某个服务器
@@ -20,13 +20,13 @@ $_config = array();
  * ...
  *
  */
-$_config['db'][1]['dbhost']  		= 'localhost';		// 服务器地址
-$_config['db'][1]['dbuser']  		= 'sql';		// 用户
-$_config['db'][1]['dbpw'] 	 	= 'discuzexp2012';		// 密码
-$_config['db'][1]['dbcharset'] 		= 'utf8';		// 字符集
-$_config['db'][1]['pconnect'] 		= 0;			// 是否持续连接
-$_config['db'][1]['dbname']  		= 'sql_conn';		// 数据库
-$_config['db'][1]['tablepre'] 		= 'conn_';		// 表名前缀
+$_config['db'][1]['dbhost']		= 'localhost';		// 服务器地址
+$_config['db'][1]['dbuser']		= 'sql';			// 用户
+$_config['db'][1]['dbpw']		= 'discuzexp2012';	// 密码
+$_config['db'][1]['dbcharset']	= 'utf8';			// 字符集
+$_config['db'][1]['pconnect']	= 0;				// 是否持续连接
+$_config['db'][1]['dbname']		= 'sql_conn';		// 数据库
+$_config['db'][1]['tablepre']	= 'conn_';			// 表名前缀
 
 /**
  * 数据库从服务器设置( slave, 只读 ), 支持多组服务器设置, 当设置多组服务器时, 系统每次随机使用
@@ -69,52 +69,99 @@ $_config['db']['common'] = array();
  * $_config['db']['common']['slave_except_table'] = 'common_session, common_member';
  *
  */
-$_config['db']['common']['slave_except_table'] = '';
+$_config['db']['common']['slave_except_table']	= '';
 
-// 服务器相关设置
-$_config['server']['id']		= 1;			// 服务器编号，多webserver的时候，用于标识当前服务器的ID
 
-// 页面输出设置
-$_config['output']['charset'] 			= 'UTF-8';	// 页面字符集
-$_config['output']['forceheader']		= 1;		// 强制输出页面字符集，用于避免某些环境乱码
-$_config['output']['gzip'] 			= 1;		// 是否采用 Gzip 压缩输出
-$_config['output']['language'] 			= 'zh_cn';	// 页面语言 zh_cn/zh_tw/en
-$_config['output']['staticurl'] 		= '/';	// 站点静态文件路径，“/”结尾
-$_config['output']['ajaxvalidate']		= 0;		// 是否严格验证 Ajax 页面的真实性 0=关闭，1=打开
-$_config['output']['tplrefresh'] = 1;
 
-// COOKIE 设置
-$_config['cookie']['cookiepre'] 		= 'mhs_'; 	// COOKIE前缀
-$_config['cookie']['cookiedomain'] 		= ''; 		// COOKIE作用域
-$_config['cookie']['cookiepath'] 		= '/'; 		// COOKIE作用路径
+// ---------------------------- 服务器相关设置 ---------------------------- //
+$_config['server']['id']						= 1;				// 服务器编号，多webserver的时候，用于标识当前服务器的ID
 
-// 站点安全设置
-$_config['security']['authkey']         = '968B6CDC1A';	// 站点加密密钥
-$_config['security']['urlxssdefend']    = true;         // 自身 URL XSS 防御
-$_config['security']['attackevasive']   = 0;    // CC 攻击防御级别，可防止大量的正常和非正常请求造成的拒绝服务攻击
-														// 0=关闭, 1=cookie 刷新限制, 2=限制代理访问, 4=二次请求, 8=回答问题（仅首次访问时需要回答问题）
-														// 允许设置组合，组合为: 1|2, 1|4, 2|8, 1|2|4 ...
-$_config['security']['allowedentrance'] = 'index.php';  //允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
 
-$_config['security']['querysafe']['status']	= 1;		// 是否开启SQL安全检测，可自动预防SQL注入攻击
+
+// ----------------------------- 页面输出设置 ----------------------------- //
+$_config['output']['charset']					= 'UTF-8';			// 页面字符集
+$_config['output']['forceheader']				= 1;				// 强制输出页面字符集，用于避免某些环境乱码
+$_config['output']['gzip']						= 1;				// 是否采用 Gzip 压缩输出
+$_config['output']['language']					= 'zh_cn';			// 页面语言 zh_cn/zh_tw/en
+$_config['output']['staticurl']					= '/';				// 站点静态文件路径，“/”结尾
+$_config['output']['ajaxvalidate']				= 0;				// 是否严格验证 Ajax 页面的真实性 0=关闭，1=打开
+$_config['output']['tplrefresh']				= 1;
+
+
+
+// -----------------------------  COOKIE 设置 ----------------------------- //
+$_config['cookie']['cookiepre'] 				= 'mhs_'; 			// COOKIE前缀
+$_config['cookie']['cookiedomain'] 				= ''; 				// COOKIE作用域
+$_config['cookie']['cookiepath'] 				= '/'; 				// COOKIE作用路径
+
+
+
+// ----------------------------- 站点安全设置 ----------------------------- //
+$_config['security']['authkey']					= '968B6CDC1A';		// 站点加密密钥
+$_config['security']['urlxssdefend']			= true;				// 自身 URL XSS 防御
+$_config['security']['attackevasive']			= 0;				// CC 攻击防御级别，可防止大量的正常和非正常请求造成的拒绝服务攻击
+																	// 0=关闭, 1=cookie 刷新限制, 2=限制代理访问, 4=二次请求, 8=回答问题（仅首次访问时需要回答问题）
+																	// 允许设置组合，组合为: 1|2, 1|4, 2|8, 1|2|4 ...
+$_config['security']['allowedentrance'] 		= 'index.php';		// 允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
+$_config['security']['querysafe']['status']		= 1;				// 是否开启SQL安全检测，可自动预防SQL注入攻击
 $_config['security']['querysafe']['dfunction']	= array('load_file','hex','substring','if','ord','char');
 $_config['security']['querysafe']['daction']	= array('@','intooutfile','intodumpfile','unionselect','(select', 'unionall', 'uniondistinct');
-$_config['security']['querysafe']['dnote']	= array('/*','*/','#','--','"');
+$_config['security']['querysafe']['dnote']		= array('/*','*/','#','--','"');
 $_config['security']['querysafe']['dlikehex']	= 1;
 $_config['security']['querysafe']['afullnote']	= 0;
 
-$_config['admincp']['admins']			= '1,11';		// 设置允许登录后台的用户
-														// 只能使用UID，多个创始人之间请使用英文半角逗号",”分开;
-// DEBUG 模式设置
-$_config['debug'] = 4;	// 1: 开启普通 DEBUG 模式
-						// 2: 错误级别 E_ALL
-						// 3: 错误级别 E_ALL(除E_NOTICE)
-						// 4: 尽可能显示所有的错误信息
-						// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
 
-$_config['trace_disabled'] = array('seccode', 'api');//强制禁用调试的ACTION
 
-// UCenter 接口信息设置
+// ----------------------------- 站点路由设置 ----------------------------- //
+$_config['router'] = array();
+$_config['router']['app_group_list']		= '';		// 项目分组设定,多个组之间用逗号分隔
+$_config['router']['app_group_deny']		= '';		// 
+$_config['router']['app_group_path']		= '';		// 
+$_config['router']['app_group_mode']		= 0;		// 
+$_config['router']['app_sub_domain_deploy']	= false;	// 是否开启子域名部署
+$_config['router']['app_sub_domain_rules']	= array();	// 子域名部署规则
+$_config['router']['app_sub_domain_deny']	= array();	// 子域名禁用列表
+$_config['router']['action_suffix']			= '';		// 操作方法后缀	 
+$_config['router']['default_app']			= '@';		// 默认项目名称，@表示当前项目
+$_config['router']['default_group']			= 'Home';	// 默认分组名
+$_config['router']['default_module']		= 'Index';	// 默认模块名
+$_config['router']['default_action']		= 'logging';// 默认动作名
+$_config['router']['default_operation']		= 'login';	// 默认操作名
+$_config['router']['url_case_insensitive']	= false;	// URL是否不区分大小写
+$_config['router']['url_action_map']		= array();	// 
+$_config['router']['url_module_map']		= array();	// 
+$_config['router']['url_deny_suffix']		= '';		// 
+$_config['router']['url_pathinfo_depr']		= '/';		// PATHINFO模式下的参数分割符
+$_config['router']['url_model']				= 1;		// URL访问模式支持 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE 模式); 3 (兼容模式)
+$_config['router']['url_pathinfo_fetch']	= '';		// 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
+$_config['router']['url_html_suffix']		= '';	// URL伪静态后缀设置
+$_config['router']['var_group']				= 'g';		// 默认分组获取变量
+$_config['router']['var_module']			= 'm';		// 默认模块获取变量
+$_config['router']['var_action']			= 'action';		// 默认动作获取变量
+$_config['router']['var_operation']			= 'operation';		// 默认操作获取变量
+$_config['router']['var_template']			= 't';		// 默认模板主题切换变量
+$_config['router']['var_pathinfo']			= 's';		// 兼容模式获取变量
+$_config['router']['var_url_params']		= '_URL_';	// PATHINFOURL参数变量
+
+
+
+// ----------------------------- 最高管理设置 ----------------------------- //
+$_config['admincp']['founder'] = '1';		// 设置具有最高管理权限的用户列表
+											// 只能使用UID，多个创始人之间请使用英文半角逗号",”分开;
+
+
+// ------------------------------- 调试选项 ------------------------------- //
+$_config['debug'] = 4;						// 1: 开启普通 DEBUG 模式
+											// 2: 错误级别 E_ALL
+											// 3: 错误级别 E_ALL(除E_NOTICE)
+											// 4: 尽可能显示所有的错误信息
+											// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
+$_config['trace_disabled']			= array('seccode', 'api');	// 强制禁用调试的ACTION
+
+
+
+// --------------------------- UCenter 接口选项 --------------------------- //
+// 手动设置时请直接复制 UCenter 中提供的配置文本并粘贴到此处
 define('UC_CONNECT', 'mysql');
 define('UC_DBHOST', 'localhost');
 define('UC_DBUSER', 'sql');
