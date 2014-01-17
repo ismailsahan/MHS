@@ -8,3 +8,17 @@
 }
 a { transition:text-shadow 0.2s linear,color 0.2s linear,background 0.2s linear;-webkit-transition:text-shadow 0.2s linear,color 0.2s linear,background 0.2s linear;-moz-transition:text-shadow 0.2s linear,color 0.2s linear,background 0.2s linear;-o-transition:text-shadow 0.2s linear,color 0.2s linear,background 0.2s linear; }
 a:hover,a:visited:hover { text-shadow:#585858 0px 0px 3px !important; }
+h3.page-title { font-family:inherit; }
+.page-sidebar-menu .tooltip-inner { white-space: pre; }
+.hitokoto a { color:#999999; margin: 0 0 0 2em; -webkit-animation: hitokoto_animation 2s ease-out; -moz-animation: hitokoto_animation 2s ease-out; -ms-animation: hitokoto_animation 2s ease-out; -o-animation: hitokoto_animation 2s ease-out; animation: hitokoto_animation 2s ease-out; }
+.hitokoto a:hover { text-decoration: none; color:#FFF; text-shadow: #CCC 0 0 3px !important; }
+.page-sidebar-fixed .hitokoto a { color:#333; }
+.page-sidebar-fixed .hitokoto a:hover { color:#000; text-shadow: #333 0 0 3px !important; }
+/*.page-content { min-height: 560px; }*/
+.hitokoto .tooltip-inner { white-space: pre; max-width:none; text-align: left; }
+
+@-webkit-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
+@-moz-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
+@-ms-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
+@-o-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
+@keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }

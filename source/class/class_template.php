@@ -9,9 +9,16 @@
 !class_exists('Smarty') && include libfile('vendor/Smarty/Smarty.class');
 
 class template extends Smarty{
+	public static $suffix = '.html';
+	public static $default_compile_id;
+	public static $default_cache_id;
+
 	public function __construct(){
 		global $_G;
 		parent::__construct();
+
+		self::$default_cache_id = null;
+		self::$default_compile_id = $_G['language'];
 
 		$this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/'.$_G['setting']['template'].'/');
 		if($_G['setting']['template'] != 'metronic') $this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/metronic/');
@@ -19,9 +26,10 @@ class template extends Smarty{
 		$this->setConfigDir(APP_FRAMEWORK_ROOT.'/cache/cfg');
 		$this->setCacheDir(APP_FRAMEWORK_ROOT.'/cache');
 		$this->caching = true;
+		$this->merge_compiled_includes = true;
 		//$this->cache_lifetime = -1;
 		//$this->debugging = APP_FRAMEWORK_DEBUG;
-		$this->compile_check = APP_FRAMEWORK_DEBUG;
+		$this->compile_check = true;//APP_FRAMEWORK_DEBUG;
 		$this->force_compile = APP_FRAMEWORK_DEBUG;
 
 		$this->left_delimiter  = '{';
@@ -41,14 +49,17 @@ class template extends Smarty{
 	}
 
 	public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = false){
-		global $_G;
-		return parent::fetch($template===null ? null : (strexists($template, '.html') ? $template : $template.'.html'), /*$cache_id===null ? $_G['language'] : */$cache_id, $compile_id===null ? $_G['language'] : $compile_id, $parent, $display, $merge_tpl_vars, $no_output_filter);
+		return parent::fetch($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), /*$cache_id===null ? self::$default_cache_id : */$cache_id, $compile_id===null ? self::$default_compile_id : $compile_id, $parent, $display, $merge_tpl_vars, $no_output_filter);
 	}
 
 	public function display($template = null, $cache_id = null, $compile_id = null, $parent = null){
-		global $_G;
-		return parent::fetch($template===null ? null : (strexists($template, '.html') ? $template : $template.'.html'), /*$cache_id===null ? $_G['language'] : */$cache_id, $compile_id===null ? $_G['language'] : $compile_id, $parent, true);
+		return parent::fetch($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), /*$cache_id===null ? self::$default_cache_id : */$cache_id, $compile_id===null ? self::$default_compile_id : $compile_id, $parent, true);
 	}
+
+	public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null){
+		return parent::isCached($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), /*$cache_id===null ? self::$default_cache_id : */$cache_id, $compile_id===null ? self::$default_compile_id : $compile_id, $parent);
+	}
+
 }
 
 class StaticEngine {

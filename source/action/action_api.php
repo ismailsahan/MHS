@@ -56,8 +56,16 @@ class ApiAction {
 		exit('感谢你反馈信息，我们会尽快修复问题的<br/><br/>你提交的内容是：<br/>'.$data);
 	}
 
+	/**
+	 * 获取网站服务条款
+	 */
 	public function tos(){
-		global $_G, $template;
-		$template->display('tos');
+		global $_G;
+		$tos = Cache::get('tos');
+		if($tos === null || APP_FRAMEWORK_DEBUG) {
+			$tos = DB::result(DB::query("SELECT `svalue` FROM %t WHERE `skey`='tos'", array('setting')));
+			Cache::set('tos', $tos, 604800);
+		}
+		exit($tos);
 	}
 }

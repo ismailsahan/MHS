@@ -61,16 +61,26 @@ class core {
 	}
 
 	public function init() {
-		$this->_init_env();			process('加载框架配置...');
-		$this->_init_config();		process('加载框架运行库...');
-		$this->_init_lib();			process('初始化输入...');
-		$this->_init_input();		process('初始化输出...');
-		$this->_init_output();		process('初始化数据库支撑组件...');
-		$this->_init_db();			process('初始化设置选项...');
-		$this->_init_setting();		process('初始化杂项...');
-		$this->_init_misc();		process('初始化会话SESSION...');
-		$this->_init_session();		process('初始化用户...');
-		$this->_init_user();		process('已加载框架');
+		$this->_init_env();
+		process('加载框架配置...');
+		$this->_init_config();
+		process('加载框架运行库...');
+		$this->_init_lib();
+		process('初始化输入...');
+		$this->_init_input();
+		process('初始化输出...');
+		$this->_init_output();
+		process('初始化数据库支撑组件...');
+		$this->_init_db();
+		process('初始化设置选项...');
+		$this->_init_setting();
+		process('初始化用户...');
+		$this->_init_user();
+		process('初始化会话SESSION...');
+		$this->_init_session();
+		process('初始化杂项...');
+		$this->_init_misc();
+		process('已加载框架');
 	}
 
 	/**
@@ -197,6 +207,23 @@ class core {
 
 		define('STATICURL', !empty($this->config['output']['staticurl']) ? $this->config['output']['staticurl'] : '/');
 		$this->var['staticurl'] = STATICURL;
+
+		//SESSION 初始化
+		session_set_cookie_params(0, $this->config['cookie']['cookiepath'], $this->config['cookie']['cookiedomain'], IS_HTTPS, true);
+		@ini_set('session.use_cookies', true);
+		@ini_set('session.use_only_cookies', false);
+		@ini_set('session.cookie_lifetime', 0);
+		@ini_set('session.hash_function', 1);
+		session_cache_limiter('private');
+
+		if(!is_writable(ini_get('session.save_path'))){
+			if(!is_dir(APP_FRAMEWORK_ROOT.'/cache/sessions')) mkdir(APP_FRAMEWORK_ROOT.'/cache/sessions');
+			if(!file_exists(APP_FRAMEWORK_ROOT.'/cache/sessions/index.htm')) touch(APP_FRAMEWORK_ROOT.'/cache/sessions/index.htm');
+			session_save_path(APP_FRAMEWORK_ROOT.'/cache/sessions');
+		}
+
+		@session_name($this->config['cookie']['cookiepre'].'SESSIONID');
+		session_start();
 	}
 
 	/**
@@ -324,9 +351,9 @@ class core {
 		$this->var['setting'] = Cache::get('setting');
 		if($this->var['setting'] == null || APP_FRAMEWORK_DEBUG) {
 			$this->var['setting'] = array();
-			$tmp = DB::fetch_all('SELECT * FROM '.DB::table('setting'));
+			$tmp = DB::fetch_all("SELECT * FROM %t WHERE `skey`!='tos'", array('setting'));
 			foreach($tmp as $val){
-				$this->var['setting'][$val['skey']] = strexists($val['svalue'], 'a:') ? unserialize($val['svalue']) : $val['svalue'];
+				$this->var['setting'][$val['skey']] = strlen($val['svalue'])>2 && substr($val['svalue'], 0, 2)==='a:' ? unserialize($val['svalue']) : $val['svalue'];
 			}
 			Cache::set('setting', $this->var['setting'], 604800);
 		}
@@ -349,11 +376,43 @@ class core {
 		//初始化模板引擎Smarty
 		global $template;
 		$template = new template;
+	}
 
-		///站点关闭的处
-		if($this->var['setting']['closed']){
-			$template->display('closed');
-			exit;
+	/**
+	 * 初始化用户
+	 */
+	private function _init_user(){
+		//判断用户是否已登录
+		if(!empty($this->var['cookie']['auth'])){
+			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
+			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === $uid && $_SESSION['user']['username'] === $username){
+				if($_SESSION['user']['expiry'] < TIMESTAMP + 600){
+					$this->var['uid'] = $_SESSION['user']['uid'];
+					$this->var['username'] = $_SESSION['user']['username'];
+					$this->var['member'] = $_SESSION['user'];
+					$_SESSION['user']['expiry'] = TIMESTAMP;
+				}else{//会话超时
+					dsetcookie('auth');
+					unset($_SESSION['user']);
+					redirect(U('logging/expired'));
+					exit;
+				}
+			}
+		}
+	}
+
+	/**
+	 * 分配SESSION
+	 */
+	private function _init_session() {
+		$ip = explode('.', $this->var['clientip']);
+		$session = DB::result(DB::query('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'])));
+		if($session == 0){
+			$this->var['sid'] = uniqid();
+			DB::query('REPLACE INTO %t (`sid`, `ip1`, `ip2`, `ip3`, `ip4`, `uid`, `username`, `lastactivity`) VALUES (%s, %d, %d, %d, %d, %d, %s, %d)', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'], TIMESTAMP), null, true);
+			dsetcookie('sid', $this->var['sid'], 86400 * 30);
+		}else{
+			DB::query('UPDATE %t SET `uid`=%d, `username`=%s, `lastactivity`=%d WHERE `sid`=%s', array('session', $this->var['uid'], $this->var['username'], TIMESTAMP, $this->var['sid']), null, true);
 		}
 	}
 
@@ -384,51 +443,11 @@ class core {
 		$lastact = TIMESTAMP."\t".htmlspecialchars(basename($this->var['PHP_SELF']));
 		dsetcookie('lastact', $lastact, 86400);
 		setglobal('currenturl_encode', base64_encode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']));
-	}
 
-	/**
-	 * 分配SESSION
-	 */
-	private function _init_session() {
-		//SESSION 初始化
-		session_set_cookie_params(0, $this->config['cookie']['cookiepath'], $this->config['cookie']['cookiedomain'], IS_HTTPS, true);
-		@ini_set('session.use_cookies', true);
-		@ini_set('session.use_only_cookies', false);
-		@ini_set('session.cookie_lifetime', 0);
-		@ini_set('session.hash_function', 1);
-		session_cache_limiter('private');
-
-		if(!is_writable(ini_get('session.save_path'))){
-			if(!is_dir(APP_FRAMEWORK_ROOT.'/cache/sessions')) mkdir(APP_FRAMEWORK_ROOT.'/cache/sessions');
-			session_save_path(APP_FRAMEWORK_ROOT.'/cache/sessions');
-		}
-
-		@session_name($this->config['cookie']['cookiepre'].'SESSIONID');
-		session_start();
-
-		if(empty($_COOKIE['sid'])) dsetcookie('sid', $this->var['sid'], 86400 * 30);
-	}
-
-	/**
-	 * 初始化用户
-	 */
-	private function _init_user(){
-		//判断用户是否已登录
-		if(!empty($this->var['cookie']['auth'])){
-			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
-			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === $uid && $_SESSION['user']['username'] === $username){
-				if($_SESSION['user']['expiry'] < TIMESTAMP + 600){
-					$this->var['uid'] = $_SESSION['user']['uid'];
-					$this->var['username'] = $_SESSION['user']['username'];
-					$this->var['member'] = $_SESSION['user'];
-					$_SESSION['user']['expiry'] = TIMESTAMP;
-				}else{//会话超时
-					dsetcookie('auth');
-					unset($_SESSION['user']);
-					redirect($_G['basefilename'].'?action=logging&operation=expired');
-					exit;
-				}
-			}
+		//站点关闭
+		if($this->var['setting']['closed']){
+			$template->display('closed');
+			exit;
 		}
 	}
 

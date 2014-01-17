@@ -57,6 +57,24 @@ $(document).ready(function() {
 	});
 });
 
+function hitokoto() {
+	$.getJSON("http://api.hitokoto.us/rand?encode=jsc&fun=?", function(data){
+		$(".hitokoto").html('<a href="http://hitokoto.us/view/'+data.id+'" title="分类 '+data.catname+(data.source ? '\n出自 '+data.source : '')+'\n喜欢 '+data.like+'\n投稿 '+data.author+' @ '+data.date+'" target="_blank">'+data.hitokoto+'</a>').find('a').tooltip();
+	});
+	//$(".footer .footer-inner .hitokoto").append('<a href="http://hitokoto.us/view/">树欲静而风不止</a>');
+}
+
+hitokoto.show = function() {
+	if($(".hitokoto").size() == 0) return $(window).unbind('scroll', hitokoto.show);
+	if(!(($(window).scrollTop()>($(".hitokoto").offset().top+$(".hitokoto").outerHeight()))||(($(window).scrollTop()+$(window).height())<$(".hitokoto").offset().top))) {
+		hitokoto();
+		$(window).unbind('scroll', hitokoto.show);
+	}
+}
+
+$(window).bind("scroll", hitokoto.show);
+hitokoto.show();
+
 function AC_FL_RunContent() {
 	var str = '';
 	var ret = AC_GetArgs(arguments, "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash");

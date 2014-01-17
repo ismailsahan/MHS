@@ -130,7 +130,8 @@ var Activate = function () {
 					$("#agreement-modal").modal();
 				}else{
 					$('body').modalmanager('loading');
-					$("#agreement-modal .modal-body .col-md-12").load("{$_G['basefilename']}?action=api&operation=tos", '', function(){
+					$.get("{U api/tos}", function(text){
+						$("#agreement-modal .modal-body .col-md-12").html(new Showdown.converter().makeHtml(text));
 						$('#agreement-modal').data("inited", true);
 						$("#agreement-modal .modal-footer .red").click(function(){
 							$("#agreement-modal").modal("hide");

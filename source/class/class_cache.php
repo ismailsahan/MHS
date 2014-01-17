@@ -5,6 +5,7 @@
 class Cache {
 
 	private static $object;
+	private static $prefix;
 	public static $storage;
 	public static $count = array(
 		'set' => 0,
@@ -27,6 +28,8 @@ class Cache {
 	);
 
 	public static function init() {
+		global $_G;
+		self::$prefix = $_G['config']['cookie']['cookiepre'];
 		self::$object = new phpFastCache('auto');
 		self::$object->option['path'] = APP_FRAMEWORK_ROOT.'/data/cache';
 		self::$storage = ucfirst(self::$object->option['storage']);
@@ -35,22 +38,22 @@ class Cache {
 
 	public static function set($keyword, $value = '', $time = 300, $option = array()) {
 		self::$count['set']++;
-		return self::$object->set($keyword, $value, $time, $option);
+		return self::$object->set(self::$prefix.$keyword, $value, $time, $option);
 	}
 
 	public static function get($keyword, $option = array()) {
 		self::$count['get']++;
-		return self::$object->get($keyword, $option);
+		return self::$object->get(self::$prefix.$keyword, $option);
 	}
 
 	public static function getInfo($keyword, $option = array()) {
 		self::$count['getInfo']++;
-		return self::$object->getInfo($keyword, $option);
+		return self::$object->getInfo(self::$prefix.$keyword, $option);
 	}
 
 	public static function delete($keyword, $option = array()) {
 		self::$count['delete']++;
-		return self::$object->delete($keyword, $option);
+		return self::$object->delete(self::$prefix.$keyword, $option);
 	}
 
 	public static function stats($option = array()) {
@@ -64,22 +67,22 @@ class Cache {
 	}
 
 	public static function isExisting($keyword) {
-		return self::$object->isExisting($keyword);
+		return self::$object->isExisting(self::$prefix.$keyword);
 	}
 
 	public static function increment($keyword, $step = 1 , $option = array()) {
 		self::$count['increment']++;
-		return self::$object->increment($keyword, $step, $option);
+		return self::$object->increment(self::$prefix.$keyword, $step, $option);
 	}
 
 	public static function decrement($keyword, $step = 1 , $option = array()) {
 		self::$count['decrement']++;
-		return self::$object->decrement($keyword, $step, $option);
+		return self::$object->decrement(self::$prefix.$keyword, $step, $option);
 	}
 
 	public static function touch($keyword, $time = 300, $option = array()) {
 		self::$count['touch']++;
-		return self::$object->decrement($keyword, $time, $option);
+		return self::$object->decrement(self::$prefix.$keyword, $time, $option);
 	}
 
 	public static function setMulti($list = array()) {

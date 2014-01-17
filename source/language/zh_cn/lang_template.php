@@ -89,4 +89,10 @@ $lang = array(
 	'activate' => '激活',
 	'activate_invalid' => '请正确填写以下资料后再尝试激活',
 	'activate_complete_data' => '请填写以下信息以激活您的账户',
+
+	'logout' => '注销',
+	'lockscr' => '锁定',
+	'fullscr' => '全屏',
+	'theme_color' => '主题颜色',
+	
 );

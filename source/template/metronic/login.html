@@ -5,14 +5,14 @@
 <link href="assets/css/pages/logging.css" rel="stylesheet" type="text/css" />
 {/block}
 {block pageplugins}
-<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="assets/scripts/app.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/login.js'}"></script>
 {/block}
 {block pagejs}
-<script type="text/javascript">
+	<script type="text/javascript">
 		$(document).ready(function() {
 			App.init();
 			Login.init();
@@ -43,7 +43,7 @@
 				<label class="control-label visible-ie8 visible-ie9">{lang username}</label>
 				<div class="input-icon">
 					<i class="fa fa-user"></i>
-					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang username}" name="username" value="{$username}" required />
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang username}" name="username" value="{$smarty.post.username|escape}" required />
 				</div>
 			</div>
 			<div class="form-group">

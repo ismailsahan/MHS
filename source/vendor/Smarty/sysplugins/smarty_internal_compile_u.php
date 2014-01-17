@@ -15,6 +15,6 @@ class Smarty_Internal_Compile_U extends Smarty_Internal_CompileBase{
 		$suffix = isset($attr['suffix']) ? $attr['suffix'] : true;
 		$redirect = isset($attr['redirect']) ? $attr['redirect'] : false;
 		$domain = isset($attr['domain']) ? $attr['domain'] : false;
-		return Dispatcher::generate($url, $vars, $suffix, $redirect, $domain);
+		return substr($url,0,1)=='$' ? "<?php echo Dispatcher::generate($url);?>" : Dispatcher::generate($url, $vars, $suffix, $redirect, $domain);
 	}
 }

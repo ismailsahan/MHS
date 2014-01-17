@@ -27,6 +27,10 @@ class LoggingAction {
 		}
 	}
 
+	public function index(){
+		return $this->login();
+	}
+
 	/**
 	 * 登录
 	 */
@@ -116,7 +120,6 @@ class LoggingAction {
 
 		$template->assign('logintip', empty($_G['setting']['logintip']) ? '' : $_G['setting']['logintip'][array_rand($_G['setting']['logintip'])], true);
 		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
-		$template->assign('username', isset($_POST['username']) ? $_POST['username'] : '', true);
 
 		$template->display('login');
 	}

@@ -126,7 +126,7 @@ $_config['router']['default_app']			= '@';		// 默认项目名称，@表示当�
 $_config['router']['default_group']			= 'Home';	// 默认分组名
 $_config['router']['default_module']		= 'Index';	// 默认模块名
 $_config['router']['default_action']		= 'logging';// 默认动作名
-$_config['router']['default_operation']		= 'login';	// 默认操作名
+$_config['router']['default_operation']		= 'index';	// 默认操作名
 $_config['router']['url_case_insensitive']	= false;	// URL是否不区分大小写
 $_config['router']['url_action_map']		= array();	// 
 $_config['router']['url_module_map']		= array();	// 
@@ -151,12 +151,12 @@ $_config['admincp']['founder'] = '1';		// 设置具有最高管理权限的用�
 
 
 // ------------------------------- 调试选项 ------------------------------- //
-$_config['debug'] = 4;						// 1: 开启普通 DEBUG 模式
-											// 2: 错误级别 E_ALL
-											// 3: 错误级别 E_ALL(除E_NOTICE)
-											// 4: 尽可能显示所有的错误信息
-											// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
-$_config['trace_disabled']			= array('seccode', 'api');	// 强制禁用调试的ACTION
+$_config['debug'] 			= 4;						// 1: 开启普通 DEBUG 模式
+														// 2: 错误级别 E_ALL
+														// 3: 错误级别 E_ALL(除E_NOTICE)
+														// 4: 尽可能显示所有的错误信息
+														// 字符串: 当且仅当 $_GET, $_POST 等 REQUEST 对象中的 debug==字符串 时启用 DEBUG 模式
+$_config['trace_disabled']	= array('seccode', 'api');	// 强制禁用调试的ACTION
 
 
 
