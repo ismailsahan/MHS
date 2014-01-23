@@ -1,0 +1,38 @@
+{extends 'common_logging.html'}
+{block subtitle}{lang forgotpwd}{/block}
+{block logging}
+		<!-- BEGIN FORGOT PASSWORD FORM -->
+		<form class="forget-form" action="index.html" method="post">
+			<h3>{lang forgot_pwd}</h3>
+			<p>{lang forgot_pwd_tip}</p>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang username}</label>
+				<div class="input-icon">
+					<i class="fa fa-user"></i>
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang username}" name="username" value="{$smarty.request.username|escape}" required />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang email}</label>
+				<div class="input-icon">
+					<i class="fa fa-envelope"></i>
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" required />
+				</div>
+			</div>
+			{if need_seccode('Login')}
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
+				<div class="input-icon verifycode">
+					<i class="fa fa-picture-o"></i>
+					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$LoginTokenHash}" tag="{$LoginTokenHash}" required />
+					<!--{*<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$LoginTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>*}-->
+				</div>
+			</div>
+			{/if}
+			<div class="form-actions">
+				<a href="{U logging/login}" class="btn default" id="register-back-btn"><i class="m-icon-swapleft"></i>  {lang back}</a>
+				<button type="submit" class="btn green pull-right">{lang submit} <i class="m-icon-swapright m-icon-white"></i></button>
+			</div>
+		</form>
+		<!-- END FORGOT PASSWORD FORM -->
+{/block}

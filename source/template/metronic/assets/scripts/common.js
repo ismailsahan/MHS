@@ -61,7 +61,6 @@ function hitokoto() {
 	$.getJSON("http://api.hitokoto.us/rand?encode=jsc&fun=?", function(data){
 		$(".hitokoto").html('<a href="http://hitokoto.us/view/'+data.id+'" title="分类 '+data.catname+(data.source ? '\n出自 '+data.source : '')+'\n喜欢 '+data.like+'\n投稿 '+data.author+' @ '+data.date+'" target="_blank">'+data.hitokoto+'</a>').find('a').tooltip();
 	});
-	//$(".footer .footer-inner .hitokoto").append('<a href="http://hitokoto.us/view/">树欲静而风不止</a>');
 }
 
 hitokoto.show = function() {

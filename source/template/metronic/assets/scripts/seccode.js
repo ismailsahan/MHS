@@ -42,6 +42,15 @@ $.fn.seccode = function() {
 	}
 };
 
+$.fn.secUdt = function() {
+	switch($(this).prop('tagName')){
+		case 'IMG': return $.fn.seccode.update(this);
+		case 'INPUT': $(this).val(""); return $(this).seccodeHTML(1);
+		default:
+			//console.log($(this).prop('tagName'));
+	}
+};
+
 $.fn.seccodeHTML = function(callback) {
 	var id = $(this).prop("id"), imgurl = $(this).attr('imgurl');
 	//$.fn.seccode.list[$.fn.seccode.id(this)] = true;

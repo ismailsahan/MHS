@@ -8,7 +8,7 @@
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
-class LoggingAction {
+class LoggingAction extends Action {
 	public $default_method = 'login';
 	public $allowed_method = array('login', 'register', 'forgotpwd', 'resetpwd', 'activate', 'expired', 'locked');
 
@@ -19,6 +19,7 @@ class LoggingAction {
 
 	public function __construct(){
 		global $_G;
+		require libfile('function/logging');
 
 		if(!$_G['setting']['nocacheheaders']) {
 			@header("Expires: -1");
@@ -54,88 +55,46 @@ class LoggingAction {
 			}elseif($password != addslashes($password)){//密码初步安全检测不合格
 				$errmsg = 'password_illegal';
 			}else{
-				DB::query("DELETE FROM %t WHERE `lastupdate`<%d", array('failedlogin', TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60), 'UNBUFFERED');
-				$failedlogin = DB::fetch_first("SELECT `count`,`lastupdate` FROM %t WHERE `ip`=%s OR `username`=%s", array('failedlogin', $_G['clientip'], $username));
-				if(isset($failedlogin['count']) && $failedlogin['count'] >= $_G['setting']['failedlogin']['count'] && $failedlogin['lastupdate'] >= TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60){
-					$errmsg = lang('template', 'login_frozen', array('mins' => ceil(($failedlogin['lastupdate'] - TIMESTAMP)/60 + $_G['setting']['failedlogin']['time'])));
-				}else{
-					include_once libfile('client', '/uc_client');
-					$user = uc_user_login($username, $password, 0);
-					$falselogin = false;
-					if($user[0] > 0){//用户名与密码匹配
-						$uid = $user[0];
-						$email = $user[3];
-						$user = DB::fetch_first("SELECT * FROM %t WHERE `uid`=%d LIMIT 1", array('users', $uid));
-
-						$session = array();
-						$session['uid'] = $uid;
-						$session['username'] = $username;
-						$session['email'] = $email;
-						$session['authkey'] = $_G['authkey'];
-						$session['expiry'] = TIMESTAMP;
-						$session['activated'] = count($user) > 0 ? true : false;
-
-						dsetcookie('auth', authcode("{$uid}\t{$username}", 'ENCODE'), 0, 1, 1);
-
-						if(!empty($failedlogin)) DB::query("DELETE FROM %t WHERE `ip`=%s", array('failedlogin', $_G['clientip']), 'UNBUFFERED');
-
-						if($session['activated']){
-							$user = DB::fetch_first("SELECT * FROM %t WHERE `uid`=%d LIMIT 1", array('users_profile', $uid));
-							$_SESSION['user'] = array_merge($user, $session);
-							redirect($_G['basefilename'].'?action=main');
-							exit;
-						}else{
-							$_SESSION['user'] = $session;
-							redirect($_G['basefilename'].'?action=logging&operation=activate');
-							exit;
-						}
-					}elseif($user[0] == -1){//用户不存在，或者被删除
-						$falselogin = true;
-					}elseif($user[0] == -2){//密码错
-						$falselogin = true;
-					}elseif($user[0] == -3){//安全提问错
-						$falselogin = true;
-						$errmsg = 'SECQAA_ERR';
-					}else{//未知错误
-						$errmsg = 'LOGIN_UNDEFINED_ERR';
-					}
-
-					if($falselogin){
-						if(empty($failedlogin))
-							DB::query("INSERT INTO %t (`ip`, `username`, `count`, `lastupdate`) VALUES (%s, %s, %d, %d)", array('failedlogin',  $_G['clientip'], $username, 1, TIMESTAMP));
-						else
-							DB::query("UPDATE %t SET `count`=`count`+1, `lastupdate`=%d WHERE `ip`=%s OR `username`=%s", array('failedlogin', TIMESTAMP, $_G['clientip'], $username));
-						$errmsg = lang('template', empty($errmsg) ? 'login_incorrect' : $errmsg);
-						$errmsg .= lang('template', 'login_failed_tip', array('count' => ($_G['setting']['failedlogin']['count'] - 1 - (isset($failedlogin['count']) ? $failedlogin['count'] : 0))));
-					}
-				}
+				login($username, $password, $errmsg);
 			}
 		}elseif(empty($errmsg) && (IS_POST || !empty($_POST)) && !defined('CC_REQUEST')){
 			$errmsg = 'invalid_request';
 		}
 
 		setToken('Login');
-		setToken('Register');
 		setToken('ForgotPwd');
 
-		$template->assign('logintip', empty($_G['setting']['logintip']) ? '' : $_G['setting']['logintip'][array_rand($_G['setting']['logintip'])], true);
+		//$template->assign('logintip', empty($_G['setting']['logintip']) ? '' : $_G['setting']['logintip'][array_rand($_G['setting']['logintip'])], true);
 		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
 
 		$template->display('login');
 	}
 
 	/**
+	 * 注销/登出
+	 */
+	public function logout(){
+		return logout();
+	}
+
+	/**
 	 * 注册
 	 */
 	public function register(){
-		;
+		global $template;
+		setToken('Register');
+		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
+		$template->display('register');
 	}
 
 	/**
 	 * 找回密码
 	 */
 	public function forgotpwd(){
-		;
+		global $template;
+		setToken('Register');
+		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
+		$template->display('register');
 	}
 
 	/**
@@ -150,20 +109,74 @@ class LoggingAction {
 	 */
 	public function activate(){
 		global $_G, $template;
-		$errmsg = '';
 
-		if(submitcheck('Activate', $errmsg)){
-			;
+		if(!$_G['uid']){
+			redirect(U('logging/login'));
 		}
-		if(IS_AJAX){
-			echo $errmsg;
-			echo("\n");
-			print_r($_POST);
-			exit;
+
+		if(IS_AJAX && IS_POST){
+			$errmsg = '';
+			$data = array(
+				'errno' => -1,
+				'msg' => ''
+			);
+			if(submitcheck('Activate', $errmsg, 0)){
+				DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `status`, `submittime`, `verifytime`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`, `remark`, `operator`,`operatorname`, `verifytext`) VALUES (%d, %s, %s, %d, %d, %d, %s, %d, %s, %s, %d, %d, %d, %d, %s, %s, %s, %s, %d, %s, %s)', array(
+					'activation',						// 表名
+					$_G['uid'],							// 用户ID
+					$_G['member']['email'],				// 邮箱
+					$_G['username'],					// 用户名
+					0,									// 审核状态，0表示审核中，1表示通过审核，2表示未通过审核
+					TIMESTAMP,							// 申请时间
+					0,									// 审核时间
+					$_POST['realname'],					// 真实名字
+					$_POST['gender'],					// 性别，1男 2女
+					$_POST['qq'],						// QQ号码
+					$_POST['studentid'],				// 学号
+					$_POST['grade'],					// 年级ID
+					$_POST['academy'],					// 学院ID
+					$_POST['specialty'],				// 专业ID
+					$_POST['class'],					// 班级ID
+					'',									// 组织ID
+					implode(',', $_POST['league']),		// 社团ID
+					implode(',', $_POST['department']), // 部门ID
+					htmlentities($_POST['remarks']),	// 留言
+					0,									// 审核员ID
+					'',									// 审核员用户名
+					''									// 审核信息
+				));
+				$data['errno'] = 0;
+				$data['msg'] = '申请成功！请耐心等待审核';
+
+				require_once libfile('class/Mail');
+				Mail::init();
+				Mail::addAddress($_G['member']['email']);
+				Mail::setMsg('我们已经收到您提交的申请，请耐心等候审核结果，多谢合作！以下是您申请的信息：<br/>'.nl2br(var_export($_POST, true), '激活申请'));
+				$errno = Mail::send();
+				if($errno) {$data['msg'] = $errno;$data['errno']=5;}
+
+			}else{
+				switch($errmsg){
+					case 'token_expired'	: $data['errno']=2;break;
+					case 'seccode_incorrect': $data['errno']=1;break;
+					case 'secqaa_incorrect' : break;
+					case 'undefined_err'	: break;
+					default:
+				}
+			}
+			if($errmsg) $data['msg']=lang('template', $errmsg);
+			ajaxReturn($data, 'JSON');
 		}
+
+		$auditInfo = DB::fetch_first('SELECT `status`,`verifytime`,`operatorname`,`verifytext` FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $_G['uid']));
+		$status = isset($auditInfo['status']) ? $auditInfo['status'] : -1;
+		$auditInfo['verifytime'] = isset($auditInfo['verifytime']) ? dgmdate($auditInfo['verifytime']) : '';
+		$auditInfo['verifytext'] = isset($auditInfo['verifytext']) ? stripcslashes($auditInfo['verifytext']) : '';
 
 		setToken('Activate');
-		$template->assign('errmsg', empty($errmsg) ? '' : lang('template', $errmsg), true);
+		$template->assign('status', $status, true);
+		$template->assign('auditInfo', $auditInfo, true);
+
 		$template->display('activate');
 	}
 
@@ -171,24 +184,16 @@ class LoggingAction {
 	 * 会话超时
 	 */
 	public function expired(){
-		return $this->locked('session_expired');
+		return $this->locked(true);
 	}
 
 	/**
 	 * 锁定
 	 */
-	public function locked($msg = ''){
+	public function locked($expired=false){
 		global $template;
-		$template->assign('msg', $msg, true);
+		$template->assign('expired', $expired, true);
 		$template->display('locked');
 	}
 
-	/**
-	 * 添加用户
-	 * @param int $uid
-	 */
-	private function adduser($uid, $username, $email){
-		include_once libfile('client', '/uc_client');
-		return DB::query("INSERT INTO %t (`uid`, `email`, `username`, `password`, `status`, `emailstatus`, `avatarstatus`, `videophotostatus`, `adminid`, `groupid`, `groupexpiry`, `extgroupids`, `regdate`, `credits`, `timeoffset`, `newpm`, `newprompt`, `accessmasks`, `allowadmincp`, `conisbind`) VALUES (%d, %s, %s, '', %d, '0', %d, '0', '0', '0', '0', '', %d, '0', '', '0', '0', '0', '0', '0')", array('users', $uid, $email, $username, self::USER_AVAILABLE, uc_check_avatar($uid), TIMESTAMP));
-	}
 }

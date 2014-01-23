@@ -49,13 +49,13 @@ Logging page
   border-left: 0;
 }
 
-.logging .content .forget-form {
+/*.logging .content .forget-form {
   display: none;
 }
 
 .logging .content .register-form {
   display: none;
-}
+}*/
 
 .logging .content .form-title {
   font-weight: 300;

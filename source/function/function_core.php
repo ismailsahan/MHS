@@ -1,19 +1,9 @@
 <?php
 
-/**
- * function_core.php
- * 核心函数库
- * 
- * @author    gwc0721
- * @copyright WHUT-SIA
- * @version   0.1.1
- * @package   function
- */
-
 define('APP_FRAMEWORK_CORE_FUNCTION', TRUE);
 
 /**
- * DZ加密解密
+ * 加解密函数
  * 
  * @param string  $string    要加密或解密的字串
  * @param string  $operation 操作模式（DECODE解密 ENCODE加密）默认为DECODE
@@ -147,6 +137,12 @@ function debuginfo() {
 	}
 }
 
+/**
+ * 改进的mktime
+ * 
+ * @param type $date 
+ * @return type
+ */
 function dmktime($date) {
 	if(strpos($date, '-')) {
 		$time = explode('-', $date);
@@ -155,12 +151,17 @@ function dmktime($date) {
 	return 0;
 }
 
+/**
+ * 改进的microtime
+ * 
+ * @return type
+ */
 function dmicrotime() {
 	return array_sum(explode(' ', microtime()));
 }
 
 /**
- * DZ格式化时间
+ * 格式化时间
  */
 function dgmdate($timestamp, $format = 'dt', $timeoffset = '9999', $uformat = '') {
 	global $_G;
@@ -246,6 +247,13 @@ function daddslashes($string, $force = 1) {
 	return $string;
 }
 
+/**
+ * 改进的htmlspecialchars
+ * 
+ * @param type $string 
+ * @param type $flags 
+ * @return type
+ */
 function dhtmlspecialchars($string, $flags = null) {
 	if(is_array($string)) {
 		foreach($string as $key => $val) {
@@ -273,6 +281,12 @@ function dhtmlspecialchars($string, $flags = null) {
 	return $string;
 }
 
+/**
+ * 检查是否为机器人
+ * 
+ * @param string $useragent 用户代理识别字串
+ * @return bool
+ */
 function checkrobot($useragent = '') {
 	static $kw_spiders = array('bot', 'crawl', 'spider' ,'slurp', 'sohu-search', 'lycos', 'robozilla');
 	static $kw_browsers = array('msie', 'netscape', 'opera', 'konqueror', 'mozilla');
@@ -281,6 +295,24 @@ function checkrobot($useragent = '') {
 	if(strpos($useragent, 'http://') === false && dstrpos($useragent, $kw_browsers)) return false;
 	if(dstrpos($useragent, $kw_spiders)) return true;
 	return false;
+}
+
+/**
+ * 添加邮件到队列，或者直接发送邮件（当level为0时）
+ * 
+ * @param string $uids		用户 ID 多个用逗号(,)隔开
+ * @param string $emails	目标email，多个用逗号(,)隔开
+ * @param string $subject	邮件标题
+ * @param string $message	邮件内容
+ * @param string $frommail	发信人，可选参数，默认为空，uc后台设置的邮件来源作为发信人地址
+ * @param string $charset	邮件字符集，可选参数，默认为 UTF-8
+ * @param bool   $htmlon	是否是html格式的邮件，可选参数，默认为ture，即HTML邮件
+ * @param int    $level		邮件级别，可选参数，数字大的优先发送，取值为0的时候立即发送，邮件不入队列
+ * @return mixed false:失败：进入队列失败，或者发送失败  int:成功：进入队列的邮件的id，当level为0，则返回1
+ */
+function mailqueue($uids, $emails, $subject, $message, $frommail=null, $charset='UTF-8', $htmlon=true, $level=0) {
+	require_once libfile('client', '/uc_client');
+	return uc_mail_queue($uids, $emails, $subject, $message, $frommail, $charset, $htmlon, $level);
 }
 
 function setglobal($key , $value, $group = null) {
@@ -310,7 +342,7 @@ function getglobal($key, $group = null) {
 }
 
 /**
- * DZ设置Cookie
+ * 设置Cookie
  */
 function dsetcookie($var, $value = '', $life = 0, $prefix = 1, $httponly = false) {
 	global $_G;
@@ -337,6 +369,14 @@ function dsetcookie($var, $value = '', $life = 0, $prefix = 1, $httponly = false
 	}
 }
 
+/**
+ * 改进的strpos
+ * 
+ * @param type $string 
+ * @param type $arr 
+ * @param type $returnvalue 
+ * @return type
+ */
 function dstrpos($string, $arr, $returnvalue = false) {
 	if(empty($string)) return false;
 	foreach((array)$arr as $v) {
@@ -348,6 +388,12 @@ function dstrpos($string, $arr, $returnvalue = false) {
 	return false;
 }
 
+/**
+ * 检查格式是否符合 Email
+ *
+ * @param string $email 输入文本
+ * @return bool
+ */
 function isemail($email) {
 	return strlen($email) > 6 && strlen($email) <= 32 && preg_match("/^([A-Za-z0-9\-_.+]+)@([A-Za-z0-9\-]+[.][A-Za-z0-9\-.]+)$/", $email);
 }
@@ -370,6 +416,12 @@ function dintval($int, $allowarray = false) {
 	return $ret;
 }
 
+/**
+ * 改进的implode
+ * 
+ * @param type $array 
+ * @return type
+ */
 function dimplode($array) {
 	if(!empty($array)) {
 		$array = array_map('addslashes', $array);
@@ -379,6 +431,12 @@ function dimplode($array) {
 	}
 }
 
+/**
+ * 改进的strlen 用于计算字串长度
+ * 
+ * @param string $str 输入字串
+ * @return int
+ */
 function dstrlen($str) {
 	if(strtolower(CHARSET) != 'utf-8') {
 		return strlen($str);
@@ -460,6 +518,12 @@ function cutstr($string, $length, $dot = ' ...') {
 	return $strcut.$dot;
 }
 
+/**
+ * 改进的stripslashes
+ * 
+ * @param type $string 
+ * @return type
+ */
 function dstripslashes($string) {
 	if(empty($string)) return $string;
 	if(is_array($string)) {
@@ -508,6 +572,12 @@ function renum($array) {
 	return array($nums, $newnums);
 }
 
+/**
+ * 生成文件大小字串，支持自动选择单位
+ * 
+ * @param int|float $size 大小（单位字节）
+ * @return string
+ */
 function sizecount($size) {
 	if($size >= 1073741824) {
 		$size = round($size / 1073741824 * 100) / 100 . ' GB';
@@ -527,6 +597,13 @@ function swapclass($class1, $class2 = '') {
 	return $swapc;
 }
 
+/**
+ * 检查指定IP是否具有访问权限
+ * 
+ * @param string $ip IP地址
+ * @param type $accesslist IP地址列表
+ * @return bool
+ */
 function ipaccess($ip, $accesslist) {
 	return preg_match("/^(".str_replace(array("\r\n", ' '), array('|', ''), preg_quote($accesslist, '/')).")/", $ip);
 }
@@ -568,6 +645,12 @@ function strhash($string, $operation = 'DECODE', $key = '') {
 	return base64_encode(gzcompress($string.$vkey));
 }
 
+/**
+ * 改进的unserialize
+ * 
+ * @param type $data 
+ * @return type
+ */
 function dunserialize($data) {
 	if(($ret = unserialize($data)) === false) {
 		$ret = unserialize(stripslashes($data));
@@ -575,6 +658,12 @@ function dunserialize($data) {
 	return $ret;
 }
 
+/**
+ * 获取浏览器版本信息
+ * 
+ * @param string $type 类型
+ * @return type
+ */
 function browserversion($type) {
 	static $return = array();
 	static $types = array('ie' => 'msie', 'firefox' => '', 'chrome' => '', 'opera' => '', 'safari' => '', 'mozilla' => '', 'webkit' => '', 'maxthon' => '', 'qq' => 'qqbrowser');
@@ -608,44 +697,6 @@ function getcookie($key) {
 	global $_G;
 	return isset($_G['cookie'][$key]) ? $_G['cookie'][$key] : '';
 }
-
-/*function lang($file, $msg = '', $vars = array()) {
-	global $_G;
-	if(($pos = strpos($msg, '|')) !== false) {
-		$file = substr($msg, 0, $pos);
-		$msg = substr($msg, $pos + 1);
-	}
-	if($msg == ''){
-		@list($file, $msg) = explode('/', $file);
-	}
-
-	if(!isset($_G['lang'][$file])) {
-		//if(defined('IN_ADMINCP')) $fpath = QWROOT.'/admin/lang/lang_'.$file.'.php';
-		//if(!defined('IN_ADMINCP') || (isset($fpath)&&!realpath($fpath))) $fpath = QWROOT.'/source/lang_'.$file.'.php';
-		@include_once $fpath;
-		if(!isset($lang)) $lang = array();
-		$_G['lang'][$file] = &$lang;
-		unset($lang, $fpath);
-	}
-	$return = empty($msg) ? $_G['lang'][$file] : (empty($_G['lang'][$file][$msg]) ? $msg : $_G['lang'][$file][$msg]);
-	$searchs = $replaces = array();
-	if($vars && is_array($vars)) {
-		foreach($vars as $k => $v) {
-			$searchs[] = '{'.$k.'}';
-			$replaces[] = $v;
-		}
-	}
-	if(is_string($return) && strpos($return, '{_G/') !== false) {
-		preg_match_all('/\{_G\/(.+?)\}/', $return, $gvar);
-		foreach($gvar[0] as $k => $v) {
-			$searchs[] = $v;
-			$replaces[] = getglobal($gvar[1][$k]);
-		}
-	}
-	$return = str_replace($searchs, $replaces, $return);
-	//$return = ele_replace($searchs, $replaces, $return);
-	return $return;
-}*/
 
 /**
  * 语言包调用函数
@@ -743,7 +794,7 @@ function need_seccode($mod){
 function chklogin(){
 	global $_G;
 	if(isset($_SESSION['user']['activated']) && !$_SESSION['user']['activated']){
-		redirect($_G['basefilename'].'?action=logging&operation=activate');
+		redirect(U('logging/activate'));
 		exit;
 	}
 	return ($_G['uid'] > 0 && !empty($_G['username']));
@@ -813,12 +864,12 @@ function redirect($url, $time=0, $msg='') {
 
 /**
  * XML编码
- * @param mixed $data 数据
- * @param string $root 根节点名
- * @param string $item 数字索引的子节点名
- * @param string $attr 根节点属性
- * @param string $id	数字索引子节点key转换的属性名
- * @param string $encoding 数据编码
+ * @param mixed  $data		数据
+ * @param string $root		根节点名
+ * @param string $item		数字索引的子节点名
+ * @param string $attr		根节点属性
+ * @param string $id		数字索引子节点key转换的属性名
+ * @param string $encoding	数据编码
  * @return string
  */
 function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $encoding='utf-8') {
@@ -842,7 +893,7 @@ function xml_encode($data, $root='think', $item='item', $attr='', $id='id', $enc
  * 数据XML编码
  * @param mixed  $data 数据
  * @param string $item 数字索引时的节点名称
- * @param string $id	数字索引key转换为的属性名
+ * @param string $id   数字索引key转换为的属性名
  * @return string
  */
 function data_to_xml($data, $item='item', $id='id') {
@@ -931,7 +982,7 @@ function send_http_status($code) {
  * @return string
  */
 function U($url='', $vars='', $suffix=true, $redirect=false, $domain=false) {
-	trace(func_get_args());
+	//trace(func_get_args());
 	return Dispatcher::generate($url, $vars, $suffix, $redirect, $domain);
 }
 
@@ -1123,17 +1174,22 @@ function setToken($formName){
  * 
  * @param string  $var          表单标识符
  * @param string  $errmsg       错误信息
+ * @param integer $unsetToken   是否注销原表单令牌
  * @param integer $allowget     是否允许GET提交
  * @param integer $seccodecheck 是否检查验证码
  * @param integer $secqaacheck  是否检查安全问答（暂不可用）
  * @return boolean
  */
-function submitcheck($var, &$errmsg, $allowget = 0, $seccodecheck = null, $secqaacheck = 0) {
+function submitcheck($var, &$errmsg, $unsetToken=1, $allowget=0, $seccodecheck=null, $secqaacheck=0) {
 	global $_G;
 	$time = 300;
 	$name = $var;
 	$session = $_SESSION[$name.'Token'];
-	unset($_SESSION[$name.'Token']);
+	if($unsetToken) {
+		unset($_SESSION[$name.'Token']);
+	} else {
+		$_SESSION[$name.'Token']['time'] = TIMESTAMP;
+	}
 	//$var = md5($var . '_Token_' . $_SERVER['HTTP_USER_AGENT'] . $_G['authkey'] . $_SERVER['HTTP_HOST'] . $_G['clientip']);
 	$var = $session['name'];
 	if(empty($_REQUEST[$var])) return false;
@@ -1156,6 +1212,50 @@ function submitcheck($var, &$errmsg, $allowget = 0, $seccodecheck = null, $secqa
 	}
 	$errmsg = 'undefined_err';
 	return false;
+}
+
+/**
+ * Ajax方式返回数据到客户端
+ * @access protected
+ * @param mixed   $data 要返回的数据
+ * @param string  $type AJAX返回数据格式
+ * @param boolean $encoded $data是否已经json_encode或xml_encode处理
+ * @return void
+ */
+function ajaxReturn($data, $type='', $encoded=false) {
+	global $_G;
+	if(empty($type)) $type = $_G['config']['app']['default_ajax_return'];
+	switch (strtoupper($type)){
+		case 'AUTO' :
+			// 返回JSON数据格式到客户端 包含状态信息
+			header('Content-Type:application/json; charset=utf-8');
+			if(!$encoded) $data = json_encode($data);
+			$handler = isset($_GET[$_G['config']['app']['var_jsonp_handler']]) ? $_GET[$_G['config']['app']['var_jsonp_handler']] : '';
+			exit($handler ? $handler.'('.$data.');' : $data);
+		case 'JSON' :
+			// 返回JSON数据格式到客户端 包含状态信息
+			header('Content-Type:application/json; charset=utf-8');
+			if(!$encoded) $data = json_encode($data);
+			exit($data);
+		case 'JSONP':
+			// 返回JSON数据格式到客户端 包含状态信息
+			header('Content-Type:application/json; charset=utf-8');
+			$handler = isset($_GET[$_G['config']['app']['var_jsonp_handler']]) ? $_GET[$_G['config']['app']['var_jsonp_handler']] : $_G['config']['app']['default_jsonp_handler'];
+			if(!$encoded) $data = json_encode($data);
+			exit($handler.'('.$data.');');
+		case 'XML'  :
+			// 返回XML格式数据
+			header('Content-Type:text/xml; charset=utf-8');
+			if(!$encoded) $data = xml_encode($data);
+			exit($data);
+		case 'EVAL' :
+			// 返回可执行的js脚本
+			header('Content-Type:text/html; charset=utf-8');
+			exit($data);
+		default:
+			// 用于扩展其他返回格式数据
+			trace('ajax_return', $data);
+	}
 }
 
 /**

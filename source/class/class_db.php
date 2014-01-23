@@ -277,7 +277,7 @@ class DB {
 	}
 
 	/**
-	 * 检查 SQL 语句的安全性
+	 * 检查 SQL 语句安全威胁
 	 * 
 	 * @param string $sql SQL语句
 	 * @return boolean true
@@ -286,6 +286,13 @@ class DB {
 		return database_safecheck::checkquery($sql);
 	}
 
+	/**
+	 * 转换为安全的值
+	 * 
+	 * @param mixed $str     输入的值
+	 * @param bool  $noarray 不允许数组？
+	 * @return string
+	 */
 	public static function quote($str, $noarray = false) {
 
 		if (is_string($str))
@@ -428,6 +435,20 @@ class DB {
 		return self::implode($array, $glue);
 	}
 
+	/**
+	 * SQL 语句 format 的支持
+	 * 支持的fomat有：
+	 * %t 数据库表名	DB::table()
+	 * %d 整型数据		intval()
+	 * %s 字符串		addslashes()
+	 * %n 列表			in IN (1,2,3)
+	 * %f 浮点型数据	sprintf('%f', $var)
+	 * %i 直接使用不进行处理
+	 * 
+	 * @param type $sql
+	 * @param type $arg 
+	 * @return type
+	 */
 	public static function format($sql, $arg) {
 		$count = substr_count($sql, '%');
 		if (!$count) {

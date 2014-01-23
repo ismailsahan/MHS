@@ -304,7 +304,7 @@ class Dispatcher {
 		global $_G;
 		$config = &$_G['config']['router'];
 		$action = !empty($_POST[$var]) ? $_POST[$var] : (!empty($_GET[$var]) ? $_GET[$var] : $config['default_action']);
-		if(!libfile('action/'.$action, '', false)) $action = $config['default_action'];
+		if(!in_array($action, $_G['config']['app']['actions'], true)) $action = $config['default_action'];
 		unset($_POST[$var], $_GET[$var]);
 		if($maps = $config['url_action_map']) {
 			$_action = strtolower($action);

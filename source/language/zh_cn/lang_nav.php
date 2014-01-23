@@ -3,6 +3,8 @@
 $lang = array(
 	'home' => '首页',
 	'home_detail' => '',
+	'manhour' => '工时',
+	'manhour_detail' => '',
 	'global' => '全局',
 	'global_detail' => '',
 	'interface' => '界面',
@@ -13,6 +15,8 @@ $lang = array(
 	'site_info_detail' => '站点信息',
 	'member_access' => '注册与访问控制',
 	'member_access_detail' => '',
+	'seccheck' => '验证码设置',
+	'seccheck_detail' => '',
 	'site_func' => '站点功能',
 	'site_func_detail' => '',
 	'seo' => 'SEO设置',

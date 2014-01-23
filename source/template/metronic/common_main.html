@@ -1,35 +1,29 @@
 {extends 'common.html'}
-{block subtitle}{lang activate} - {/block}
 {block pagestyle}
 <link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
 <link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
 <link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+{$smarty.block.child}
 {/block}
 {block pageplugins}
 	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+	<!--<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>-->
 	<script type="text/javascript" src="assets/plugins/bootbox/bootbox.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+	<script type="text/javascript" src="assets/plugins/jquery.pulsate.min.js"></script>
 	<script type="text/javascript" src="assets/scripts/app.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimeout.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimer.js"></script>
-	<script type="text/javascript" src="assets/scripts/idle-timeout.js"></script> 
+	<script type="text/javascript" src="assets/scripts/idle-timeout.js"></script>
+	{$smarty.block.child}
 {/block}
-{block pagejs}
-	<script type="text/javascript">
-		$(document).ready(function() {
-			App.init();
-			//IdleTimeout.init();
-		});
-	</script>
-{/block}
-{block bodyextend} class="page-header-fixed"{/block}
+{block bodyclass}page-header-fixed{/block}
 {block body}
-	{function name=menuItem level=0}
+	{function name=menuItem level=0 admin=0}
 		{foreach $menuArr as $menu}{if !is_array($menu)}{continue}{/if}
-		<li class="{if $level==0}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="fa fa-{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge badge-roundless badge-{$menu.tag.type}">{$menu.tag.label}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1}</ul>{/if}</li>
+		<li class="{if $level==0 && !$admin}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="fa fa-{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge badge-roundless badge-{$menu.tag.type}">{$menu.tag.label}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1}</ul>{/if}</li>
 		{/foreach}
 	{/function}
 	<!-- BEGIN HEADER -->
@@ -313,9 +307,24 @@
 					</ul>
 				</li>
 				<!-- END TODO DROPDOWN -->
+				<!-- BEGIN LANGUAGE DROPDOWN -->
+				<li class="dropdown language">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+						<img alt="" src="assets/img/flags/us.png" />
+						<span class="username">US</span>
+						<i class="fa fa-angle-down"></i>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="#"><img alt="" src="assets/img/flags/es.png" /> Spanish</a></li>
+						<li><a href="#"><img alt="" src="assets/img/flags/de.png" /> German</a></li>
+						<li><a href="#"><img alt="" src="assets/img/flags/ru.png" /> Russian</a></li>
+						<li><a href="#"><img alt="" src="assets/img/flags/fr.png" /> French</a></li>
+					</ul>
+				</li>
+				<!-- END LANGUAGE DROPDOWN -->
 				<!-- BEGIN USER LOGIN DROPDOWN -->
 				<li class="dropdown user">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" width="29" height="29" /> <span class="username">{nocache}{$_G.username}{/nocache}</span><i class="fa fa-angle-down"></i></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" width="29" height="29" /> <span class="username">{nocache}{$_G.username} ( {$_G.member.realname} ){/nocache}</span><i class="fa fa-angle-down"></i></a>
 					<ul class="dropdown-menu">
 						<li><a href="extra_profile.html"><i class="fa fa-user"></i> My Profile</a></li>
 						<li><a href="page_calendar.html"><i class="fa fa-calendar"></i> My Calendar</a></li>
@@ -339,7 +348,7 @@
 	<div class="page-container">
 		<!-- BEGIN SIDEBAR -->
 		<div class="page-sidebar navbar-collapse collapse">
-			<!-- BEGIN SIDEBAR MENU -->        
+			<!-- BEGIN SIDEBAR MENU -->
 			<ul class="page-sidebar-menu">
 				<li><div class="sidebar-toggler hidden-phone"></div> </li>
 				<li>
@@ -356,34 +365,13 @@
 					<!-- END RESPONSIVE QUICK SEARCH FORM -->
 				</li>
 				{call menuItem menuArr=$sidebarMenu}
+				{if $adminNav}<li class="admin"><a href="javascript:;"><i class="fa"></i><span class="title">&raquo; 管理选项 &laquo;</span></a></li>{call menuItem menuArr=$adminNav admin=1}{/if}
 			</ul>
 			<!-- END SIDEBAR MENU -->
 		</div>
 		<!-- END SIDEBAR -->
 		<!-- BEGIN PAGE -->
 		<div class="page-content">
-			<!-- BEGIN SAMPLE PORTLET CONFIGURATION MODAL FORM-->               
-			<div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-							<h4 class="modal-title">Modal title</h4>
-						</div>
-						<div class="modal-body">
-							Widget settings form goes here
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn blue">Save changes</button>
-							<button type="button" class="btn default" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-					<!-- /.modal-content -->
-				</div>
-				<!-- /.modal-dialog -->
-			</div>
-			<!-- /.modal -->
-			<!-- END SAMPLE PORTLET CONFIGURATION MODAL FORM-->
 			<!-- BEGIN STYLE CUSTOMIZER -->
 			<div class="theme-panel hidden-xs hidden-sm">
 				<div class="toggler"></div>
@@ -400,6 +388,7 @@
 							<li class="color-white color-light" data-style="light"></li>
 						</ul>
 					</div>
+					{if $smarty.const.APP_FRAMEWORK_DEBUG}
 					<div class="theme-option">
 						<span>Layout</span>
 						<select class="layout-option form-control input-small">
@@ -428,6 +417,7 @@
 							<option value="default" selected="selected">Default</option>
 						</select>
 					</div>
+					{/if}
 				</div>
 			</div>
 			<!-- END BEGIN STYLE CUSTOMIZER -->           
@@ -457,21 +447,7 @@
 			</div>
 			<!-- END PAGE HEADER-->
 			<!-- BEGIN PAGE CONTENT-->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="note note-success">
-						<h4 class="block">User Idle Timeout</h4>
-						<p>
-							This plugin allows you to detect when a user becomes idle (detection provided by Paul Irish's idletimer plugin) and notify the user his/her session is about to expire. Similar to the technique seen on Mint.com. Polling requests are automatically sent to the server at a configurable interval, maintaining the users session while s/he is using your application for long periods of time.
-						</p>
-						<p>
-							This idle timeout countdown is triggered after 5 seconds. <code>Keep your mouse and keyboard still!</code>
-							A polling request is sent to the server every two seconds to keep the server side session alive. I've set this parameter to an extremely low number for demo purposes (timeout is only 5 seconds), but in reality, this should be much higher. 
-							To learn more please check out <a href="https://github.com/ehynds/jquery-idle-timeout" target="_blank">the plugin's official homepage</a>.
-						</p>
-					</div>
-				</div>
-			</div>
+			{block pgcontent}{/block}
 			<!-- END PAGE CONTENT-->
 		</div>
 		<!-- END PAGE -->    
@@ -479,7 +455,7 @@
 	<!-- END CONTAINER -->
 	<!-- BEGIN FOOTER -->
 	<div class="footer">
-		<div class="footer-inner">{$_G['setting']['copyright']}<span class="hitokoto"></span><br />{template debuginfo}</div>
+		<div class="footer-inner">{$_G.setting.copyright}<span class="hitokoto"></span><br />{template debuginfo}</div>
 		<div class="footer-tools">
 			<span class="go-top">
 			<i class="fa fa-angle-up"></i>

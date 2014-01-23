@@ -1,0 +1,63 @@
+{extends 'common_logging.html'}
+{block subtitle}{lang register}{/block}
+{block logging}
+		<!-- BEGIN REGISTRATION FORM -->
+		<form class="register-form" action="{U logging/register}" method="post">
+			{$RegisterToken}
+			<h3 class="form-title">{lang signup}</h3>
+			<div class="alert alert-danger alert-block fade in{if !$errmsg} display-hide{/if}">
+				<button class="close" data-close="alert"></button>
+				<h4 class="alert-heading">{lang tip}</h4><p>{$errmsg}</p>
+			</div>
+			<div class="form-group">
+				<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+				<label class="control-label visible-ie8 visible-ie9">{lang username}</label>
+				<div class="input-icon">
+					<i class="fa fa-user"></i>
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang username}" name="username" value="{nocache}{$smarty.post.username|escape}{/nocache}" required />
+				</div>
+			</div>
+			<div class="form-group">
+				<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+				<label class="control-label visible-ie8 visible-ie9">{lang email}</label>
+				<div class="input-icon">
+					<i class="fa fa-envelope"></i>
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" value="{nocache}{$smarty.post.email}{/nocache}" required />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang password}</label>
+				<div class="input-icon">
+					<i class="fa fa-lock"></i>
+					<input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="{lang password}" name="password" required />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang rpassword}</label>
+				<div class="controls">
+					<div class="input-icon">
+						<i class="fa fa-check"></i>
+						<input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="{lang rpassword}" name="rpassword" required />
+					</div>
+				</div>
+			</div>
+			{if need_seccode('Register')}
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
+				<div class="input-icon verifycode">
+					<i class="fa fa-picture-o"></i>
+					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G.setting.seccodedata.length}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$RegisterTokenHash}" tag="{$RegisterTokenHash}" required />
+				</div>
+			</div>
+			{/if}
+			<div class="form-group">
+				<label><input type="checkbox" name="tnc"/> I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>  
+				<div id="register_tnc_error"></div>
+			</div>
+			<div class="form-actions">
+				<a href="{U logging/login}" class="btn default" id="register-back-btn"><i class="m-icon-swapleft"></i>  {lang back}</a>
+				<button type="submit" id="register-submit-btn" class="btn green pull-right">{lang signup} <i class="m-icon-swapright m-icon-white"></i></button>
+			</div>
+		</form>
+		<!-- END REGISTRATION FORM -->
+{/block}

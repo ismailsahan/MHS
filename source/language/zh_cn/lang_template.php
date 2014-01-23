@@ -55,9 +55,10 @@ $lang = array(
 	'login_heading' => '请登录',//Login to your account
 	'login_tip' => '登录小贴士',
 
+	'find_pwd' => '找回密码',
 	'forgot_pwd' => '忘记密码？',//Forgot your password ?
 	'forgot_pwd_link' => '您可以单击这里来重置您的密码',
-	'forgot_pwd_tip' => '请填写以下信息',//Enter your e-mail address below to reset your password.
+	'forgot_pwd_tip' => '请正确填写以下信息，我们将向您的邮箱发送一封邮件协助您重置您的账号密码',//Enter your e-mail address below to reset your password.
 	'no_account' => '还没有账号？',//Don't have an account yet ?
 	'register' => '注册',
 	'create_account' => '单击这里注册一个账号',//Create an account

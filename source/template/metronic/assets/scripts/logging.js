@@ -1,9 +1,9 @@
-var Login = function () {
+var Logging = function () {
 	var handleLogin = function() {
 		$('.login-form').validate({
 			errorElement: 'span', //default input error message container
 			errorClass: 'help-block', // default input error message class
-			focusInvalid: true, // do not focus the last invalid input
+			focusInvalid: false, // do not focus the last invalid input
 			rules: {
 				username: {
 					required: true
@@ -34,8 +34,8 @@ var Login = function () {
 			},
 
 			invalidHandler: function (event, validator) { //display error alert on form submit
-				$('.login-form .alert-danger p').html("{lang login_invalid}");
-				$('.login-form .alert-danger').show();
+				$('.alert-danger p').html("{lang login_invalid}");
+				$('.alert-danger').show();
 			},
 
 			highlight: function (element) { // hightlight error inputs
@@ -116,42 +116,9 @@ var Login = function () {
 			}
 		});
 
-		jQuery('#forget-password').click(function () {
-			jQuery('.login-form').hide();
-			jQuery('.forget-form').show();
-		});
-
-		jQuery('#back-btn').click(function () {
-			jQuery('.login-form').show();
-			jQuery('.forget-form').hide();
-		});
-
 	}
 
 	var handleRegister = function () {
-
-		function format(state) {
-			if (!state.id) return state.text; // optgroup
-			return "<img class='flag' src='assets/img/flags/" + state.id.toLowerCase() + ".png'/>&nbsp;&nbsp;" + state.text;
-		}
-
-
-		$("#select2_sample4").select2({
-		  	placeholder: '<i class="fa fa-map-marker"></i>&nbsp;Select a Country',
-			allowClear: true,
-			formatResult: format,
-			formatSelection: format,
-			escapeMarkup: function (m) {
-				return m;
-			}
-		});
-
-
-		$('#select2_sample4').change(function () {
-			$('.register-form').validate().element($(this)); //revalidate the chosen dropdown value and show error or success message for the input
-		});
-
-
 
 		$('.register-form').validate({
 			errorElement: 'span', //default input error message container
@@ -159,22 +126,6 @@ var Login = function () {
 			focusInvalid: false, // do not focus the last invalid input
 			ignore: "",
 			rules: {
-				fullname: {
-					required: true
-				},
-				email: {
-					required: true,
-					email: true
-				},
-				address: {
-					required: true
-				},
-				city: {
-					required: true
-				},
-				country: {
-					required: true
-				},
 				username: {
 					required: true
 				},
@@ -183,6 +134,10 @@ var Login = function () {
 				},
 				rpassword: {
 					equalTo: "#register_password"
+				},
+				email: {
+					required: true,
+					email: true
 				},
 				tnc: {
 					required: true
@@ -231,16 +186,6 @@ var Login = function () {
 				return false;
 			}
 		});
-
-		jQuery('#register-btn').click(function () {
-			jQuery('.login-form').hide();
-			jQuery('.register-form').show();
-		});
-
-		jQuery('#register-back-btn').click(function () {
-			jQuery('.login-form').show();
-			jQuery('.register-form').hide();
-		});
 	}
 	
 	return {
@@ -248,8 +193,9 @@ var Login = function () {
 		init: function () {
 			handleLogin();
 			handleForgetPassword();
-			handleRegister();		
-			$(".verifycode a img").seccode();
+			handleRegister();
+			$("#verifycode").seccode();
+			//$(".verifycode a img").seccode();
 		}
 
 	};

@@ -1,6 +1,5 @@
 var Activate = function () {
 
-
 	return {
 		//main function to initiate the module
 		init: function () {
@@ -65,6 +64,11 @@ var Activate = function () {
 				$("#alert-modal").modal("show");
 			}
 
+			function loading() {
+				$("body").modalmanager("loading");
+				$(".modal-scrollable").unbind("click");
+			}
+
 			$("#gender").select2({
 				placeholder: '{lang gender}',
 				minimumResultsForSearch:-1,
@@ -93,6 +97,7 @@ var Activate = function () {
 			});
 			$("#academy").select2({
 				placeholder: '{lang academy}',
+				minimumResultsForSearch:-1,
 				allowClear: false
 			}).change(function(){
 				updateSpecialty();
@@ -101,6 +106,7 @@ var Activate = function () {
 			});
 			$("#specialty").select2({
 				placeholder: '{lang specialty}',
+				minimumResultsForSearch:-1,
 				allowClear: false
 			}).change(function(){
 				updateClass();
@@ -111,12 +117,14 @@ var Activate = function () {
 			});
 			$("#league").select2({
 				placeholder: '{lang league}',
+				minimumResultsForSearch:-1,
 				allowClear: false
 			}).change(function(){
 				updateDepartment();
 			});
 			$("#department").select2({
 				placeholder: '{lang department}',
+				minimumResultsForSearch:-1,
 				allowClear: false
 			});
 			$('#submit_form select').change(function () {
@@ -129,7 +137,7 @@ var Activate = function () {
 				if($('#agreement-modal').data("inited")){
 					$("#agreement-modal").modal();
 				}else{
-					$('body').modalmanager('loading');
+					loading();
 					$.get("{U api/tos}", function(text){
 						$("#agreement-modal .modal-body .col-md-12").html(new Showdown.converter().makeHtml(text));
 						$('#agreement-modal').data("inited", true);
@@ -159,6 +167,17 @@ var Activate = function () {
 			$('.report-link').on('click', function(){
 				$("#report").modal();
 			});
+			$(".note-info a").click(function(){
+				$("#verifycode").secUdt();
+				$("#activate").slideDown();
+				$(".note-info").slideUp();
+			});
+
+			//检查是否为数字账号的QQ邮箱，是则自动填写QQ
+			var eml = $("[name='email']").val();
+			if(/^[1-9]{1}[0-9]{4,10}@qq\.com$/i.test(eml)) {
+				$("[name='qq']").val(eml.match(/[0-9]+/)[0]);
+			}
 			$("#verifycode").seccode();
 
 			$.get("{U api/profile}", {type:"grade"}, function(data){
@@ -280,31 +299,25 @@ var Activate = function () {
 				},
 
 				highlight: function (element) { // hightlight error inputs
-					$(element)
-						.closest('.form-group').removeClass('has-success').addClass('has-error'); // set error class to the control group
+					$(element).closest('.form-group').removeClass('has-success').addClass('has-error'); // set error class to the control group
 				},
 
 				unhighlight: function (element) { // revert the change done by hightlight
-					$(element)
-						.closest('.form-group').removeClass('has-error'); // set error class to the control group
+					$(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
 				},
 
 				success: function (label) {
 					if (label.attr("for") == "gender" || label.attr("for") == "payment[]") { // for checkboxes and radio buttons, no need to show OK icon
-						label
-							.closest('.form-group').removeClass('has-error').addClass('has-success');
+						label.closest('.form-group').removeClass('has-error').addClass('has-success');
 						label.remove(); // remove error label here
 					} else { // display success icon for other inputs
-						label
-							.addClass('valid') // mark the current input as valid and display OK icon
-						.closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
+						label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success'); // set success class to the control group
 					}
 				},
 
 				submitHandler: function (form) {
 					success.show();
 					error.hide();
-					//add here some ajax code to submit your form or just call form.submit() if you want to submit the form without ajax
 				}
 
 			});
@@ -360,7 +373,7 @@ var Activate = function () {
 					$('#activate').find('.button-next').show();
 					$('#activate').find('.button-submit').hide();
 				}
-				App.scrollTo($('.page-title'));
+				App.scrollTo($('#activate'));
 			}
 
 			// default form wizard
@@ -394,17 +407,33 @@ var Activate = function () {
 				onTabShow: function (tab, navigation, index) {
 					var total = navigation.find('li').length;
 					var current = index + 1;
-					var $percent = (current / total) * 100;
+					var percent = (current / total) * 100;
 					$('#activate').find('.progress-bar').css({
-						width: $percent + '%'
+						width: percent + '%'
 					});
 				}
 			});
 
-			$('#activate').find('.button-previous').hide();
-			$('#activate .button-submit').click(function () {
-				$.post($("#submit_form").attr("action")+"&inajax=1", $("#submit_form").serialize(), function(data){
-					alert("测试发送到服务器的数据：\n\n"+data);
+			$('#activate .button-previous').hide();
+			$('#activate .button-submit').click(function() {
+				var url = $("#submit_form").attr("action");
+				loading();
+				$.post(url + (url.indexOf("?")>-1 ? "&inajax=1" : "/inajax/1"), $("#submit_form").serialize(), function(data){
+					if(data.url) {
+						window.location.href(data.url);
+					}else if(data.msg){
+						modalAlert(data.msg);
+						if(data.errno){
+							switch(data.errno) {
+								case 2: return $("#alert-modal button").click(function(){ window.reload(); });//表单过期
+								case 1: $(".button-previous").click();//验证码错误
+								default: return $("#verifycode").secUdt();
+							}
+						}
+						App.scrollTo($('.page-title'));
+						$(".note-danger, #activate").slideUp();
+						$(".note-info").slideDown();
+					}
 				});
 			}).hide();
 
@@ -415,6 +444,7 @@ var Activate = function () {
 					'</div>' +
 				'</div>';
 			$.fn.modalmanager.defaults.resize = true;
+
 		}
 
 	};

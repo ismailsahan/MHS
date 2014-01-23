@@ -43,5 +43,7 @@ $lang = array(
 	'file_upload_error_-101' => '上传失败！上传文件不存在或不合法，请返回。',
 	'file_upload_error_-102' => '上传失败！非图片类型文件，请返回。',
 	'file_upload_error_-103' => '上传失败！无法写入文件或写入失败，请返回。',
-	'file_upload_error_-104' => '上传失败！无法识别的图像文件格式，请返回。'
+	'file_upload_error_-104' => '上传失败！无法识别的图像文件格式，请返回。',
+
+	'send_mail_failed' => '邮件发送失败！原因：{msg}'
 );

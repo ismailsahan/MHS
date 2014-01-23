@@ -1,0 +1,36 @@
+{extends 'common.html'}
+{block subtitle}{lang login}{/block}
+{block pagestyle}
+<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
+<link href="assets/css/pages/logging.css" rel="stylesheet" type="text/css" />
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
+	<script type="text/javascript" src="assets/scripts/app.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/logging.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			Logging.init();
+		});
+	</script>
+{/block}
+{block bodyclass}logging{/block}
+{block body}
+	<!-- BEGIN LOGO --><div class="logo"><img src="{$_G['setting']['logopath']}" alt="{$_G['setting']['sitename']}" /></div><!-- END LOGO -->
+	<!-- BEGIN LOGGING -->
+	<div class="content">
+		{block logging}{/block}
+	</div>
+	<!-- END LOGGING -->
+	<!-- BEGIN COPYRIGHT -->
+	<div class="copyright">
+		<p>{$_G['setting']['copyright']}</p>
+		<p>{template debuginfo}</p>
+	</div>
+	<!-- END COPYRIGHT -->
+{/block}

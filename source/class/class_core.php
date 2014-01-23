@@ -4,10 +4,9 @@
  * class_core.php
  * 核心类库
  * 
- * @author    gwc0721
  * @copyright WHUT-SIA
- * @version   0.1.1
- * @package   function
+ * @version   0.3.2
+ * @package   class
  */
 
 //define('IN_WHUT_CONN', TRUE);
@@ -26,13 +25,14 @@ class core {
 	var $cachelist = array();
 	var $libs = array(
 		'class/error',
+		'class/dispatcher',
 		'class/dbexception',
 		'class/db',
-		'class/dispatcher',
-		//'class/phpnew',
-		'class/template',
 		'vendor/phpfastcache/phpfastcache',
 		'class/cache',
+		'class/action',
+		//'class/phpnew',
+		'class/template',
 	);
 	var $superglobal = array(
 		'GLOBALS' => 1,
@@ -171,7 +171,7 @@ class core {
 	 */
 	private function _init_config() {
 		$_config = array();
-		if(!@include(APP_FRAMEWORK_ROOT.'/config.inc.php')) halt('CONFIG_NONEXISTENT');
+		if(!include(APP_FRAMEWORK_ROOT.'/config.inc.php')) halt('CONFIG_NONEXISTENT');
 
 		$_config['security']['authkey'] = empty($_config['security']['authkey']) ? md5($_config['cookie']['cookiepre'].$_config['db']['dbname']) : $_config['security']['authkey'];
 
@@ -386,7 +386,7 @@ class core {
 		if(!empty($this->var['cookie']['auth'])){
 			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
 			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === $uid && $_SESSION['user']['username'] === $username){
-				if($_SESSION['user']['expiry'] < TIMESTAMP + 600){
+				if($_SESSION['user']['expiry'] >= TIMESTAMP - 600){
 					$this->var['uid'] = $_SESSION['user']['uid'];
 					$this->var['username'] = $_SESSION['user']['username'];
 					$this->var['member'] = $_SESSION['user'];
@@ -394,7 +394,12 @@ class core {
 				}else{//会话超时
 					dsetcookie('auth');
 					unset($_SESSION['user']);
-					redirect(U('logging/expired'));
+					$url = U('logging/expired');
+					if(IS_AJAX){
+						ajaxReturn(array('errno'=>'-255', 'url'=>$url));
+					}else{
+						redirect($url);
+					}
 					exit;
 				}
 			}
@@ -405,14 +410,19 @@ class core {
 	 * 分配SESSION
 	 */
 	private function _init_session() {
-		$ip = explode('.', $this->var['clientip']);
-		$session = DB::result(DB::query('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'])));
-		if($session == 0){
-			$this->var['sid'] = uniqid();
-			DB::query('REPLACE INTO %t (`sid`, `ip1`, `ip2`, `ip3`, `ip4`, `uid`, `username`, `lastactivity`) VALUES (%s, %d, %d, %d, %d, %d, %s, %d)', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'], TIMESTAMP), null, true);
+		if($this->var['setting']['session']){
+			$ip = explode('.', $this->var['clientip']);
+			$session = DB::result(DB::query('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s LIMIT 1', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'])));
+			if($session == 0){
+				$this->var['sid'] = random(6);
+				DB::query('REPLACE INTO %t (`sid`, `ip1`, `ip2`, `ip3`, `ip4`, `uid`, `username`, `lastactivity`) VALUES (%s, %d, %d, %d, %d, %d, %s, %d)', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'], TIMESTAMP), null, true);
+				dsetcookie('sid', $this->var['sid'], 86400 * 30);
+			}else{
+				DB::query('UPDATE %t SET `uid`=%d, `username`=%s, `lastactivity`=%d WHERE `sid`=%s LIMIT 1', array('session', $this->var['uid'], $this->var['username'], TIMESTAMP, $this->var['sid']), null, true);
+			}
+		}elseif(empty($this->var['sid'])){
+			$this->var['sid'] = random(6);
 			dsetcookie('sid', $this->var['sid'], 86400 * 30);
-		}else{
-			DB::query('UPDATE %t SET `uid`=%d, `username`=%s, `lastactivity`=%d WHERE `sid`=%s', array('session', $this->var['uid'], $this->var['username'], TIMESTAMP, $this->var['sid']), null, true);
 		}
 	}
 
@@ -593,6 +603,95 @@ class core {
 		file_put_contents($file, $message);
 	}
 
+	public static function autoload($class) {
+		$class = strtolower($class);
+		if(strpos($class, '_') !== false) {
+			list($folder) = explode('_', $class);
+			$file = 'class/'.$folder.'/'.substr($class, strlen($folder) + 1);
+		} else {
+			$file = 'class/'.$class;
+		}
+
+		try {
+
+			self::import($file);
+			return true;
+
+		} catch (Exception $exc) {
+
+			$trace = $exc->getTrace();
+			foreach ($trace as $log) {
+				if(empty($log['class']) && $log['function'] == 'class_exists') {
+					return false;
+				}
+			}
+			framework_error::exception_error($exc);
+		}
+	}
+
+	public static function import($name, $folder = '', $force = true) {
+		static $_imports = array();
+		$key = $folder.$name;
+		if(!isset($_imports[$key])) {
+			$path = APP_FRAMEWORK_ROOT.'/source/'.$folder;
+			if(strpos($name, '/') !== false) {
+				$pre = basename(dirname($name));
+				$filename = dirname($name).'/'.$pre.'_'.basename($name).'.php';
+			} else {
+				$filename = $name.'.php';
+			}
+
+			if(is_file($path.'/'.$filename)) {
+				include $path.'/'.$filename;
+				$_imports[$key] = true;
+
+				return true;
+			} elseif(!$force) {
+				return false;
+			} else {
+				throw new Exception('Oops! System file lost: '.$filename);
+			}
+		}
+		return true;
+	}
+
+	public static function analysisStart($name){
+		$key = 'other';
+		if($name[0] === '#') {
+			list(, $key, $name) = explode('#', $name);
+		}
+		if(!isset($_ENV['analysis'])) {
+			$_ENV['analysis'] = array();
+		}
+		if(!isset($_ENV['analysis'][$key])) {
+			$_ENV['analysis'][$key] = array();
+			$_ENV['analysis'][$key]['sum'] = 0;
+		}
+		$_ENV['analysis'][$key][$name]['start'] = microtime(TRUE);
+		$_ENV['analysis'][$key][$name]['start_memory_get_usage'] = memory_get_usage();
+		$_ENV['analysis'][$key][$name]['start_memory_get_real_usage'] = memory_get_usage(true);
+		$_ENV['analysis'][$key][$name]['start_memory_get_peak_usage'] = memory_get_peak_usage();
+		$_ENV['analysis'][$key][$name]['start_memory_get_peak_real_usage'] = memory_get_peak_usage(true);
+	}
+
+	public static function analysisStop($name) {
+		$key = 'other';
+		if($name[0] === '#') {
+			list(, $key, $name) = explode('#', $name);
+		}
+		if(isset($_ENV['analysis'][$key][$name]['start'])) {
+			$diff = round((microtime(TRUE) - $_ENV['analysis'][$key][$name]['start']) * 1000, 5);
+			$_ENV['analysis'][$key][$name]['time'] = $diff;
+			$_ENV['analysis'][$key]['sum'] = $_ENV['analysis'][$key]['sum'] + $diff;
+			unset($_ENV['analysis'][$key][$name]['start']);
+			$_ENV['analysis'][$key][$name]['stop_memory_get_usage'] = memory_get_usage();
+			$_ENV['analysis'][$key][$name]['stop_memory_get_real_usage'] = memory_get_usage(true);
+			$_ENV['analysis'][$key][$name]['stop_memory_get_peak_usage'] = memory_get_peak_usage();
+			$_ENV['analysis'][$key][$name]['stop_memory_get_peak_real_usage'] = memory_get_peak_usage(true);
+		}
+		return $_ENV['analysis'][$key][$name];
+	}
+
 	/**
 	 * 设定错误和异常处理
 	 */
@@ -670,7 +769,8 @@ class core {
 				$errorStr = "{$errstr} {$errfile} 第 {$errline} 行.";
 				err($errorStr);
 				//if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
-				function_exists('halt') ? halt($errorStr) : exit('ERROR:'.$errorStr);
+				//function_exists('halt') ? halt($errorStr) : exit('ERROR:'.$errorStr);
+				class_exists('framework_error') ? halt($errorStr) : exit('ERROR:'.$errorStr);
 				break;
 			case E_STRICT:
 			case E_USER_WARNING:
@@ -726,3 +826,13 @@ class core {
 }
 
 class C extends core {}
+
+/*
+if(function_exists('spl_autoload_register')) {
+	spl_autoload_register(array('core', 'autoload'));
+} else {
+	function __autoload($class) {
+		return core::autoload($class);
+	}
+}
+ */

@@ -2,7 +2,7 @@
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
-class ApiAction {
+class ApiAction extends Action {
 	public $default_method = 'def';
 	public $allowed_method = array('def', 'profile', 'tos', 'report');
 
@@ -29,7 +29,7 @@ class ApiAction {
 		$type = $_REQUEST['type'];
 		$hash = crc32($type.$_REQUEST['grade'].$_REQUEST['academy'].$_REQUEST['specialty'].$_REQUEST['league'].$_REQUEST['organization']);
 
-		$data = Cache::get('mhs_profile_'.$hash);
+		$data = Cache::get('profile_'.$hash);
 		if($data === null || APP_FRAMEWORK_DEBUG){
 			include libfile('class/profile');
 			switch($type){
@@ -44,11 +44,12 @@ class ApiAction {
 			}
 			if($data){
 				$data = json_encode($data);
-				Cache::set('mhs_profile_'.$hash, $data, 604800);
+				Cache::set('profile_'.$hash, $data, 604800);
 			}
 		}
 
-		exit($data ? (isset($_REQUEST['callback']) ? $_REQUEST['callback'].'('.$data.')' : $data) : '');
+		ajaxReturn($data, 'AUTO', true);
+		exit;
 	}
 
 	public function report(){
@@ -63,7 +64,7 @@ class ApiAction {
 		global $_G;
 		$tos = Cache::get('tos');
 		if($tos === null || APP_FRAMEWORK_DEBUG) {
-			$tos = DB::result(DB::query("SELECT `svalue` FROM %t WHERE `skey`='tos'", array('setting')));
+			$tos = DB::result(DB::query("SELECT `svalue` FROM %t WHERE `skey`='tos' LIMIT 1", array('setting')));
 			Cache::set('tos', $tos, 604800);
 		}
 		exit($tos);

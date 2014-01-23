@@ -102,7 +102,7 @@ $_config['security']['urlxssdefend']			= true;				// 自身 URL XSS 防御
 $_config['security']['attackevasive']			= 0;				// CC 攻击防御级别，可防止大量的正常和非正常请求造成的拒绝服务攻击
 																	// 0=关闭, 1=cookie 刷新限制, 2=限制代理访问, 4=二次请求, 8=回答问题（仅首次访问时需要回答问题）
 																	// 允许设置组合，组合为: 1|2, 1|4, 2|8, 1|2|4 ...
-$_config['security']['allowedentrance'] 		= 'index.php';		// 允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
+$_config['security']['allowedentrance'] 		= 'index.php,uc.php';		// 允许的入口文件名，可用数组定义。字符串表示时若有多个请用英文半角逗号隔开
 $_config['security']['querysafe']['status']		= 1;				// 是否开启SQL安全检测，可自动预防SQL注入攻击
 $_config['security']['querysafe']['dfunction']	= array('load_file','hex','substring','if','ord','char');
 $_config['security']['querysafe']['daction']	= array('@','intooutfile','intodumpfile','unionselect','(select', 'unionall', 'uniondistinct');
@@ -114,36 +114,42 @@ $_config['security']['querysafe']['afullnote']	= 0;
 
 // ----------------------------- 站点路由设置 ----------------------------- //
 $_config['router'] = array();
-$_config['router']['app_group_list']		= '';		// 项目分组设定,多个组之间用逗号分隔
-$_config['router']['app_group_deny']		= '';		// 
-$_config['router']['app_group_path']		= '';		// 
-$_config['router']['app_group_mode']		= 0;		// 
-$_config['router']['app_sub_domain_deploy']	= false;	// 是否开启子域名部署
-$_config['router']['app_sub_domain_rules']	= array();	// 子域名部署规则
-$_config['router']['app_sub_domain_deny']	= array();	// 子域名禁用列表
-$_config['router']['action_suffix']			= '';		// 操作方法后缀	 
-$_config['router']['default_app']			= '@';		// 默认项目名称，@表示当前项目
-$_config['router']['default_group']			= 'Home';	// 默认分组名
-$_config['router']['default_module']		= 'Index';	// 默认模块名
-$_config['router']['default_action']		= 'logging';// 默认动作名
-$_config['router']['default_operation']		= 'index';	// 默认操作名
-$_config['router']['url_case_insensitive']	= false;	// URL是否不区分大小写
-$_config['router']['url_action_map']		= array();	// 
-$_config['router']['url_module_map']		= array();	// 
-$_config['router']['url_deny_suffix']		= '';		// 
-$_config['router']['url_pathinfo_depr']		= '/';		// PATHINFO模式下的参数分割符
-$_config['router']['url_model']				= 1;		// URL访问模式支持 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE 模式); 3 (兼容模式)
-$_config['router']['url_pathinfo_fetch']	= '';		// 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
-$_config['router']['url_html_suffix']		= '';	// URL伪静态后缀设置
-$_config['router']['var_group']				= 'g';		// 默认分组获取变量
-$_config['router']['var_module']			= 'm';		// 默认模块获取变量
+$_config['router']['app_group_list']		= '';			// 项目分组设定,多个组之间用逗号分隔
+$_config['router']['app_group_deny']		= '';			// 
+$_config['router']['app_group_path']		= '';			// 
+$_config['router']['app_group_mode']		= 0;			// 
+$_config['router']['app_sub_domain_deploy']	= false;		// 是否开启子域名部署
+$_config['router']['app_sub_domain_rules']	= array();		// 子域名部署规则
+$_config['router']['app_sub_domain_deny']	= array();		// 子域名禁用列表
+$_config['router']['action_suffix']			= '';			// 操作方法后缀	 
+$_config['router']['default_app']			= '@';			// 默认项目名称，@表示当前项目
+$_config['router']['default_group']			= 'Home';		// 默认分组名
+$_config['router']['default_module']		= 'Index';		// 默认模块名
+$_config['router']['default_action']		= 'logging';	// 默认动作名
+$_config['router']['default_operation']		= 'index';		// 默认操作名
+$_config['router']['url_case_insensitive']	= false;		// URL是否不区分大小写
+$_config['router']['url_action_map']		= array();		// 
+$_config['router']['url_module_map']		= array();		// 
+$_config['router']['url_deny_suffix']		= '';			// 
+$_config['router']['url_pathinfo_depr']		= '/';			// PATHINFO模式下的参数分割符
+$_config['router']['url_model']				= 0;			// URL访问模式支持 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE 模式); 3 (兼容模式)
+$_config['router']['url_pathinfo_fetch']	= '';			// 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
+$_config['router']['url_html_suffix']		= '';			// URL伪静态后缀设置
+$_config['router']['var_group']				= 'g';			// 默认分组获取变量
+$_config['router']['var_module']			= 'm';			// 默认模块获取变量
 $_config['router']['var_action']			= 'action';		// 默认动作获取变量
-$_config['router']['var_operation']			= 'operation';		// 默认操作获取变量
-$_config['router']['var_template']			= 't';		// 默认模板主题切换变量
-$_config['router']['var_pathinfo']			= 's';		// 兼容模式获取变量
-$_config['router']['var_url_params']		= '_URL_';	// PATHINFOURL参数变量
+$_config['router']['var_operation']			= 'operation';	// 默认操作获取变量
+$_config['router']['var_template']			= 't';			// 默认模板主题切换变量
+$_config['router']['var_pathinfo']			= 's';			// 兼容模式获取变量
+$_config['router']['var_url_params']		= '_URL_';		// PATHINFOURL参数变量
 
 
+// ----------------------------- 站点项目设置 ----------------------------- //
+$_config['app'] = array();
+$_config['app']['actions']					= array('logging', 'main', 'api', 'seccode'); // 允许的ACTION
+$_config['app']['default_ajax_return']		= 'AUTO';		// 默认 AJAX 返回数据类型，AUTO表示自动选择 JSON 和 JSONP
+$_config['app']['var_jsonp_handler']		= 'callback';	// 默认 JSONP 回调函数索引名 $_GET
+$_config['app']['default_jsonp_handler']	= 'callback';	// 默认 JSONP 回调函数名
 
 // ----------------------------- 最高管理设置 ----------------------------- //
 $_config['admincp']['founder'] = '1';		// 设置具有最高管理权限的用户列表
