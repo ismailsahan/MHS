@@ -123,7 +123,7 @@ function debuginfo() {
 			'time' => number_format((dmicrotime() - $_G['starttime']), 6),
 			'queries' => $db->querynum,
 			//'memory' => isset($_G['memory']) ? ucwords(@$_G['memory']) : null,
-			'memory' => Cache::$storage=='files' ? null : Cache::$storage,
+			'memory' => Cache::$storage=='Files' ? null : Cache::$storage,
 			//'mem' => (intval(ini_get('memory_limit')) > 0) ? memory_get_usage() : ''
 		);
 		if($db->slaveid) {
@@ -734,9 +734,14 @@ function lang($file, $langvar = null, $vars = array(), $default = null, $raw = f
 	$return = $return === null ? ($default !== null ? $default : $langvar) : $return;
 	$searchs = $replaces = array();
 	if($vars && is_array($vars)) {
-		foreach($vars as $k => $v) {
-			$searchs[] = '{'.$k.'}';
-			$replaces[] = $v;
+		if(isset($vars[0]) && is_string($return)){
+			array_unshift($vars, $return);
+			$return = call_user_func_array('sprintf', $vars);
+		}else{
+			foreach($vars as $k => $v) {
+				$searchs[] = '{'.$k.'}';
+				$replaces[] = $v;
+			}
 		}
 	}
 	if(is_string($return) && strpos($return, '{_G/') !== false) {
@@ -835,12 +840,13 @@ function dump($var, $echo=true, $label=null, $strict=true) {
 
 /**
  * URL重定向
- * @param string $url 重定向的URL地址
- * @param integer $time 重定向的等待时间（秒）
- * @param string $msg 重定向前的提示信息
+ * @param string  $url   重定向的URL地址
+ * @param integer $time  重定向的等待时间（秒）
+ * @param string  $msg   重定向前的提示信息
+ * @param boolean $theme 是否使用主题
  * @return void
  */
-function redirect($url, $time=0, $msg='') {
+function redirect($url, $time=0, $msg='', $theme=false) {
 	//多行URL地址支持
 	$url = str_replace(array("\n", "\r"), '', $url);
 	if (empty($msg))
@@ -851,7 +857,13 @@ function redirect($url, $time=0, $msg='') {
 			header('Location: ' . $url);
 		} else {
 			header("refresh:{$time};url={$url}");
-			echo($msg);
+			if($theme) {
+				global $template;
+				$template->assign('msg', $msg, true);
+				$template->display('redirect');
+			} else {
+				echo($msg);
+			}
 		}
 		exit();
 	} else {
@@ -860,6 +872,11 @@ function redirect($url, $time=0, $msg='') {
 			$str .= $msg;
 		exit($str);
 	}
+}
+
+function redirecthtml($url, $time=3000, $method='replace') {
+	$url = U($url);
+	return "<script type=\"text/javascript\">setTimeout(\"window.location.{$method}('{$url}')\", {$time})</script>";
 }
 
 /**
@@ -1174,13 +1191,13 @@ function setToken($formName){
  * 
  * @param string  $var          表单标识符
  * @param string  $errmsg       错误信息
- * @param integer $unsetToken   是否注销原表单令牌
+ * @param integer $keepToken    是否保持原表单令牌有效性
  * @param integer $allowget     是否允许GET提交
  * @param integer $seccodecheck 是否检查验证码
  * @param integer $secqaacheck  是否检查安全问答（暂不可用）
  * @return boolean
  */
-function submitcheck($var, &$errmsg, $unsetToken=1, $allowget=0, $seccodecheck=null, $secqaacheck=0) {
+function submitcheck($var, &$errmsg, $keepToken=0, $allowget=0, $seccodecheck=null, $secqaacheck=0) {
 	global $_G;
 	$time = 300;
 	$name = $var;
@@ -1188,7 +1205,7 @@ function submitcheck($var, &$errmsg, $unsetToken=1, $allowget=0, $seccodecheck=n
 	if($unsetToken) {
 		unset($_SESSION[$name.'Token']);
 	} else {
-		$_SESSION[$name.'Token']['time'] = TIMESTAMP;
+		$session['time'] = $_SESSION[$name.'Token']['time'] = TIMESTAMP;
 	}
 	//$var = md5($var . '_Token_' . $_SERVER['HTTP_USER_AGENT'] . $_G['authkey'] . $_SERVER['HTTP_HOST'] . $_G['clientip']);
 	$var = $session['name'];
@@ -1549,4 +1566,78 @@ function error($message, $vars = array(), $return = false) {
  */
 function halt($error, $param=array()){
 	exit(framework_error::halt($error, $param));
+}
+
+
+/**
+* Error Handler
+*
+* This function lets us invoke the exception class and
+* display errors using the standard error template located
+* in application/errors/errors.php
+* This function will send the error page directly to the
+* browser and exit.
+*
+* @access	public
+* @return	void
+*/
+function show_error($message, $status_code = 500, $heading = 'An Error Was Encountered') {
+	$_error = &load_class('Exceptions', 'core');
+	echo $_error->show_error($heading, $message, 'error_general', $status_code);
+	exit;
+}
+
+// ------------------------------------------------------------------------
+
+/**
+* 404 Page Handler
+*
+* This function is similar to the show_error() function above
+* However, instead of the standard error template it displays
+* 404 errors.
+*
+* @access	public
+* @return	void
+*/
+function show_404($page = '', $log_error = TRUE) {
+	$_error = & load_class('Exceptions', 'core');
+	$_error->show_404($page, $log_error);
+	exit;
+}
+
+/**
+* Exception Handler
+*
+* This is the custom exception handler that is declaired at the top
+* of Codeigniter.php.  The main reason we use this is to permit
+* PHP errors to be logged in our own log files since the user may
+* not have access to server logs. Since this function
+* effectively intercepts PHP errors, however, we also need
+* to display errors based on the current error_reporting level.
+* We do that with the use of a PHP error template.
+*
+* @access	private
+* @return	void
+*/
+function _exception_handler($severity, $message, $filepath, $line) {
+	 // We don't bother with "strict" notices since they tend to fill up
+	 // the log file with excess information that isn't normally very helpful.
+	 // For example, if you are running PHP 5 and you use version 4 style
+	 // class functions (without prefixes like "public", "private", etc.)
+	 // you'll get notices telling you that these have been deprecated.
+	if ($severity == E_STRICT)
+	{
+		return;
+	}
+	$_error = & load_class('Exceptions', 'core');
+	// Should we display the error? We'll get the current error_reporting
+	// level and add its bits with the severity bits to find out.
+	if (($severity & error_reporting()) == $severity) {
+		$_error->show_php_error($severity, $message, $filepath, $line);
+	}
+	// Should we log the error?  No?  We're done...
+	if (config_item('log_threshold') == 0) {
+		return;
+	}
+	$_error->log_exception($severity, $message, $filepath, $line);
 }

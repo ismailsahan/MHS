@@ -4,7 +4,28 @@ $.extend( true, $.fn.dataTable.defaults, {
 	//"sDom": "<'row'<'col-md-6 col-sm-12'l><'col-md-12 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // defaukt datatable without  horizobtal scroll
 	"sPaginationType": "bootstrap",
 	"oLanguage": {
-		"sLengthMenu": "_MENU_ records"
+		"oAria": {
+			"sSortAscending":"activate to sort column ascending",
+			"sSortDescending":"activate to sort column ascending",
+		},
+		"oPaginate": {
+			"sFirst":"首页",
+			"sLast":"末页",
+			"sNext":"下一页",
+			"sPrevious":"上一页"
+		},
+		"sEmptyTable": "无可用的数据",
+		"sInfo": "已显示 _TOTAL_ 项中的第 _START_ 到 _END_ 项",
+		"sInfoEmpty": "没有数据可供显示",
+		"sInfoFiltered": "(已从 _MAX_ 个条目中过滤)",
+		//"sInfoPostFix": "",//All records shown are derived from real information.
+		"sInfoThousands": ",",
+		"sLengthMenu": "显示 _MENU_ 项",
+		"sLoadingRecords": "加载中 请稍候...",
+		"sProcessing": "处理中...",
+		"sSearch": "搜索:",
+		//"sUrl": "http://www.sprymedia.co.uk/dataTables/lang.txt",
+		"sZeroRecords": "无匹配数据"
 	}
 } );
 

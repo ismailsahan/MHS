@@ -8,20 +8,20 @@
  * @param string $errmsg	错误信息
  * @param int    $uid		用户ID
  * @param string $email		E-mail
+ * @param bool   $redirect  登录后是否跳转
  * @return boolean|null
  * 
  * @example 正常登录 login($username, $password, $errmsg)
  * @example 直接登录 login($username, null, $errmsg, $uid, $email)
  * 
  */
-function login($username, $password='', &$errmsg='', $uid=0, $email='') {
+function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirect=true) {
 	global $_G;
-	//正常登录
-	if($uid == 0 || empty($email)) {
+	if($uid == 0 || empty($email)) {	// 正常登录
 		DB::query('DELETE FROM %t WHERE `lastupdate`<%d', array('failedlogin', TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60), 'UNBUFFERED');
 		$failedlogin = DB::fetch_first('SELECT `count`,`lastupdate` FROM %t WHERE `ip`=%s OR `username`=%s LIMIT 1', array('failedlogin', $_G['clientip'], $username));
 		if(isset($failedlogin['count']) && $failedlogin['count'] >= $_G['setting']['failedlogin']['count'] && $failedlogin['lastupdate'] >= TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60){
-			$errmsg = lang('template', 'login_frozen', array('mins' => ceil(($failedlogin['lastupdate'] - TIMESTAMP)/60 + $_G['setting']['failedlogin']['time'])));
+			$errmsg = lang('logging', 'login_frozen', array('mins' => ceil(($failedlogin['lastupdate'] - TIMESTAMP)/60 + $_G['setting']['failedlogin']['time'])));
 		}else{
 			include_once libfile('client', '/uc_client');
 			$user = uc_user_login($username, $password, 0);
@@ -29,7 +29,7 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='') {
 			if($user[0] > 0){//用户名与密码匹配
 				$uid = $user[0];
 				$email = $user[3];
-				return login($username, null, $errmsg, $uid, $email);
+				return login($username, null, $errmsg, $uid, $email, $redirect);
 			}elseif($user[0] == -1){//用户不存在，或者被删除
 				$falselogin = true;
 			}elseif($user[0] == -2){//密码错
@@ -46,45 +46,36 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='') {
 					DB::query('INSERT INTO %t (`ip`, `username`, `count`, `lastupdate`) VALUES (%s, %s, %d, %d)', array('failedlogin',  $_G['clientip'], $username, 1, TIMESTAMP));
 				else
 					DB::query('UPDATE %t SET `count`=`count`+1, `lastupdate`=%d WHERE `ip`=%s OR `username`=%s LIMIT 1', array('failedlogin', TIMESTAMP, $_G['clientip'], $username));
-				$errmsg = lang('template', empty($errmsg) ? 'login_incorrect' : $errmsg);
-				$errmsg .= lang('template', 'login_failed_tip', array('count' => ($_G['setting']['failedlogin']['count'] - 1 - (isset($failedlogin['count']) ? $failedlogin['count'] : 0))));
+				$errmsg = lang('logging', empty($errmsg) ? 'login_incorrect' : $errmsg);
+				$errmsg .= lang('logging', 'login_failed_tip', array('count' => ($_G['setting']['failedlogin']['count'] - 1 - (isset($failedlogin['count']) ? $failedlogin['count'] : 0))));
 			}
 		}
 		return false;
-	} else {//直接登录
+	} else {	// 直接登录
 		$user = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('users', $uid));
 
 		$session = array();
 		$session['uid'] = $uid;
-		$session['username'] = $username;
-		$session['email'] = $email;
+		$session['username'] = $username ? $username : $user['username'];
+		$session['email'] = $email ? $email : $user['email'];
 		$session['authkey'] = $_G['authkey'];
 		$session['expiry'] = TIMESTAMP;
 		$session['activated'] = count($user) > 0 ? true : false;
 
-		dsetcookie('auth', authcode("{$uid}\t{$username}", 'ENCODE'), 0, 1, 1);
+		dsetcookie('auth', authcode("{$uid}\t{$username}\t{$email}", 'ENCODE'), 0, 1, 1);
 
 		if(!empty($failedlogin)) DB::query('DELETE FROM %t WHERE `ip`=%s LIMIT 1', array('failedlogin', $_G['clientip']), 'UNBUFFERED');
 
 		if($session['activated']){
-			$user = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
-			$_SESSION['user'] = array_merge($user, $session);
-
-			$url = U('main/index');
-			if(IS_AJAX){
-				ajaxReturn(array(
-					'errno' => 0,
-					'url' => $url
-				));
-				exit;
-			}else{
-				redirect($url);
-				exit;
-			}
+			$profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
+			$_SESSION['user'] = array_merge($profile, $user, $session);
+			$url = empty($_G['referer']) ? U('main/index') : $_G['referer'];
 		}else{
 			$_SESSION['user'] = $session;
-
 			$url = U('logging/activate');
+		}
+
+		if($redirect){
 			if(IS_AJAX){
 				ajaxReturn(array(
 					'errno' => 0,
@@ -96,6 +87,8 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='') {
 				exit;
 			}
 		}
+
+		return true;
 	}
 }
 
@@ -146,14 +139,14 @@ function reguser($username, $password, $email){
  * @return boolean
  */
 function adduser($uid, $user, $profile=array()){
-	if(empty($profile)) $profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('activation'));
+	if(empty($profile)) $profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $uid));
 	if(empty($profile)) return false;
-	DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `password`, `status`, `emailstatus`, `avatarstatus`, `videophotostatus`, `adminid`, `groupid`, `groupexpiry`, `extgroupids`, `regdate`, `credits`, `timeoffset`, `newpm`, `newprompt`, `accessmasks`, `allowadmincp`, `conisbind`) VALUES (%d, %s, %s, NULL, %d, %d, %d, %d, %d, %d, %d, %s, %d, %d, %d, %d, %d, %d, %d, %d)', array(
-		'users', // 用户表单名
+	DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `password`, `status`, `emailstatus`, `avatarstatus`, `videophotostatus`, `adminid`, `groupid`, `groupexpiry`, `extgroupids`, `regdate`, `credits`, `timeoffset`, `newpm`, `newprompt`, `accessmasks`, `allowadmincp`, `conisbind`) VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d, %s, %d, %d, %d, %d, %d, %d, %d, %d)', array(
+		'users', 					// 表
 		$uid,						// 用户ID
 		$profile['email'],			// 电子邮箱
 		$profile['username'],		// 用户名
-									// 密码
+		'',							// 密码
 		$user['status'],			// 账号状态
 		$user['emailstatus'],		// 邮箱验证状态
 		$user['avatarstatus'],		// 头像状态
@@ -172,6 +165,7 @@ function adduser($uid, $user, $profile=array()){
 		$user['conisbind']			// 绑定QQ状态
 	));
 	DB::query('REPLACE INTO %t (`uid`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`) VALUES (%d, %s, %d, %s, %s, %d, %d, %d, %d, %s, %s, %s)', array(
+		'users_profile',			// 表
 		$uid,						// 用户ID
 		$profile['realname'],		// 真实姓名
 		$profile['gender'],			// 性别

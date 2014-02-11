@@ -1,0 +1,10 @@
+{extends 'common_logging.html'}
+{block subtitle}{lang logging/register}{/block}
+{block logging}
+		<h3 class="form-title">{lang signup}</h3>
+		<div class="note note-danger">
+			<h4 class="block">{lang logging/regclosed}</h4>
+			<p>{$_G.setting.regclosedreason}</p>
+		</div>
+		<a href="{U logging/login}" class="btn default" id="register-back-btn"><i class="m-icon-swapleft"></i>  {lang back}</a>
+{/block}

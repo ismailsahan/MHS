@@ -74,6 +74,55 @@ hitokoto.show = function() {
 $(window).bind("scroll", hitokoto.show);
 hitokoto.show();
 
+function addreferer(obj, prop) {
+	var url = prop ? $(obj).attr(prop) : obj;
+	if(url) {
+		var i = url.indexOf("referer=");
+		if(i > -1) {
+			var t = $("form").prop("action");
+			$("form").prop("action", t + (t.indexOf("?")>-1 ? "&" : "?") + window.location.search.substr(i));
+		}
+	}
+}
+
+function stripslashes(str) {
+	return (str + '').replace(/\\(.?)/g, function (s, n1) {
+		switch (n1) {
+			case '\\': return '\\';
+			case '0' : return '\u0000';
+			case ''  : return '';
+			default  : return n1;
+		}
+	});
+}
+
+function nl2br(str, is_xhtml) {
+	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>';
+	return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
+
+Date.prototype.format = function(format) {
+	var date = {
+		"M+": this.getMonth() + 1,
+		"d+": this.getDate(),
+		"h+": this.getHours(),
+		"m+": this.getMinutes(),
+		"s+": this.getSeconds(),
+		"q+": Math.floor((this.getMonth() + 3) / 3),
+		"S+": this.getMilliseconds()
+	};
+	if (/(y+)/i.test(format)) {
+		format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+	}
+	for (var k in date) {
+		if (new RegExp("(" + k + ")").test(format)) {
+			format = format.replace(RegExp.$1, RegExp.$1.length == 1
+				? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+		}
+	}
+	return format;
+}
+
 function AC_FL_RunContent() {
 	var str = '';
 	var ret = AC_GetArgs(arguments, "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash");

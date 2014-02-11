@@ -23,6 +23,10 @@ h3.page-title { font-family:inherit; }
 .hitokoto .tooltip-inner { white-space: pre; max-width:none; text-align: left; }
 .theme-panel .theme-options { -webkit-animation: afastr .2s; -moz-animation: afastr .2s; -ms-animation: afastr .2s; -o-animation: afastr .2s; animation: afastr .2s; }
 
+.select-table td:first-child { padding-right:12px;text-align:right; }
+.select-table td h4 { text-align:left; }
+.bigdrop.select2-container .select2-results, .bigdrop .select2-results {max-height: 300px;}
+
 @-webkit-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
 @-moz-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }
 @-ms-keyframes hitokoto_animation { 0% { color:#FFF; opacity:0; } 6% { color:#FFF; opacity:1; } 100% { color:#999999; } }

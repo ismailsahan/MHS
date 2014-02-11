@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * 返回默认侧边导航栏列表
+ */
 function defaultNav(){
 	return array(
 		array(
@@ -24,6 +27,9 @@ function defaultNav(){
 	);
 }
 
+/**
+ * 返回管理的侧边导航栏列表
+ */
 function adminNav(){
 	return array(
 		array(
@@ -36,7 +42,6 @@ function adminNav(){
 					'title' => 'site_info',
 					'link' => 'global/info',
 					'icon' => '',
-					'access' => 0,
 					'tag' => array(
 						'type' => 'success',
 						'label' => 'new'
@@ -48,56 +53,48 @@ function adminNav(){
 					'link' => 'global/access',
 					'icon' => '',
 					'tooltip' => '正在开发中...',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => 'seccheck',
 					'link' => 'global/seccheck',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				/*array(
 					'title' => 'site_func',
 					'link' => 'global/func',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),*/
 				array(
 					'title' => 'seo',
 					'link' => 'global/seo',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => 'time',
 					'link' => 'global/time',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '风格管理',
-					'link' => 'global/time',
+					'link' => 'global/theme',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '模板管理',
-					'link' => 'global/time',
+					'link' => 'global/template',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '语言设置',
 					'link' => 'global/language',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 			)
@@ -106,62 +103,59 @@ function adminNav(){
 			'title' => '用户',
 			'link' => '',
 			'icon' => 'group',
-			'access' => 0,
 			'children' => array(
 				array(
 					'title' => '用户管理',
 					'link' => 'members/user',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '添加用户',
 					'link' => 'members/adduser',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '发送通知',
 					'link' => 'members/newsletter',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '禁止用户',
 					'link' => 'members/userban',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '禁止IP',
 					'link' => 'members/ipban',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '审核用户',
 					'link' => 'members/verifyuser',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '管理组',
 					'link' => 'members/admingroup',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '用户组',
 					'link' => 'members/usergroup',
 					'icon' => '',
-					'access' => 0,
+					'children' => array()
+				),
+				array(
+					'title' => '激活请求',
+					'link' => 'members/activate',
+					'icon' => '',
 					'children' => array()
 				),
 			)
@@ -170,65 +164,77 @@ function adminNav(){
 			'title' => '工具',
 			'link' => '',
 			'icon' => 'wrench',
-			'access' => 0,
 			'children' => array(
 				array(
 					'title' => '运行记录',
-					'link' => '',
+					'link' => 'tool/runlog',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '清除缓存',
-					'link' => '',
+					'link' => 'tool/clearcache',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '邮件设置',
-					'link' => '',
+					'link' => 'tool/mailsetting',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '计划任务',
-					'link' => '',
+					'link' => 'tool/cronjob',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '备份恢复',
-					'link' => '',
+					'link' => 'tool/recovery',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 			)
 		),
 		array(
-			'title' => 'manhour',
+			'title' => 'mhour',
 			'link' => '',
 			'icon' => 'edit',
 			'children' => array(
 				array(
 					'title' => '申报记录',
-					'link' => '',
+					'link' => 'manhour/applylog',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 				array(
 					'title' => '添加工时',
-					'link' => '',
+					'link' => 'manhour/add',
 					'icon' => '',
-					'access' => 0,
 					'children' => array()
 				),
 			)
 		),
 	);
+}
+
+/**
+ * 检查管理权限
+ * 
+ * @param string $idx 菜单/权限索引
+ * @return mixed
+ */
+function chkPermit($idx) {
+	static $permit = array();
+	global $_G;
+
+	if($_G['member']['adminid'] == 0) return false;	// 非管理组，不具备任何管理权限
+	if($_G['member']['adminid'] == 1) return true;	// 超级管理组，具有全部权限
+	if(empty($permit)) {	// 从数据库中获取权限信息
+		$permit = DB::result(DB::query('SELECT `permit` FROM %t WHERE `admingid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid'])));
+		$permit = empty($permit) ? array(0) : unserialize($permit);	// 查询为空时无任何管理权限，并为 $permit 添加元素0，避免多次查询
+	}
+
+	return isset($permit[$idx]) ? $permit[$idx] : false;
 }

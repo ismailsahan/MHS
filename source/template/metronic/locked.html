@@ -1,0 +1,47 @@
+{extends 'common.html'}
+{block subtitle}锁定{/block}
+{block pagestyle}<link href="assets/css/pages/lock.css" rel="stylesheet" type="text/css" />{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/backstretch/jquery.backstretch.min.js"></script>
+	<script type="text/javascript" src="assets/scripts/app.js"></script>
+	<script type="text/javascript" src="assets/scripts/lock.js"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {    
+			App.init();
+			Lock.init();
+		});
+	</script>
+{/block}
+{block body}
+	<div class="page-lock">
+		<div class="page-logo"><a class="brand" href="{U logging/login}"><img src="{$_G.setting.logopath}" alt="logo" /></a></div>
+		<div class="page-body">
+			<img class="page-lock-img" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={$_G.uid}&size=big" alt="" />
+			<div class="page-lock-info">
+				<h1>{nocache}{$smarty.session.user.username}{/nocache}</h1>
+				<span class="email">{nocache}{$smarty.session.user.email}{/nocache}</span>
+				<span class="locked">{if $expired}会话超时(1440秒未活动)，请重新登录{else}{if $errmsg}{$errmsg}{else}已锁定{/if}{/if}</span>
+				<form class="form-inline" action="{U logging/locked}" method="post">
+					{$LockedToken}
+					<div class="input-group input-medium">
+						<input type="password" name="password" class="form-control" placeholder="{lang password}" />
+						<span class="input-group-btn"><button type="submit" class="btn blue icn-only"><i class="m-icon-swapright m-icon-white"></i></button></span>
+					</div>
+					{if need_seccode('Locked')}
+					<div class="form-group">
+						<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
+						<div class="input-icon verifycode">
+							<i class="fa fa-picture-o"></i>
+							<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G.setting.seccodedata.length}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$LockedTokenHash}" tag="{$LockedTokenHash}" required />
+						</div>
+					</div>
+					{/if}
+					<div class="relogin"><a href="{U logging/login}">不是{nocache}{$smarty.session.user.username}{/nocache}？</a></div>
+				</form>
+			</div>
+		</div>
+		<div class="page-footer">{$_G.setting.copyright}</div>
+	</div>
+{/block}

@@ -114,6 +114,7 @@ class Dispatcher {
 		if(is_array($url)) {
 			$url = $url[1];
 		}
+		if(strpos($url, '.')) return $url;
 		// 解析URL
 		$info = parse_url($url);
 		$url = empty($info['path']) ? (defined('ACTION_NAME') ? ACTION_NAME : $config['default_action']) : $info['path'];
@@ -324,7 +325,7 @@ class Dispatcher {
 	static private function getOperation($var) {
 		global $_G;
 		$config = &$_G['config']['router'];
-		$operation = !empty($_POST[$var]) ? $_POST[$var] : (!empty($_GET[$var]) ? $_GET[$var] : $config['default_operation']);
+		$operation = !empty($_POST[$var]) ? $_POST[$var] : (!empty($_GET[$var]) && substr($_GET[$var],0,1)!='_' ? $_GET[$var] : $config['default_operation']);
 		unset($_POST[$var], $_GET[$var]);
 		if($maps = $config['url_operation_map']) {
 			$_operation = strtolower($operation);

@@ -157,6 +157,7 @@ class core {
 
 		//$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);//BUG
 		$_G['currenturl'] = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		$_G['currenturl_encode'] = base64_encode($_G['currenturl']);
 
 		$this->var = &$_G;
 
@@ -384,17 +385,18 @@ class core {
 	private function _init_user(){
 		//判断用户是否已登录
 		if(!empty($this->var['cookie']['auth'])){
-			@list($uid, $username) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
-			if(isset($_SESSION['user']) && $_SESSION['user']['authkey'] === $this->var['authkey'] && $_SESSION['user']['uid'] > 0 && $_SESSION['user']['uid'] === $uid && $_SESSION['user']['username'] === $username){
-				if($_SESSION['user']['expiry'] >= TIMESTAMP - 600){
+			@list($uid, $username, $email) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
+			if(isset($_SESSION['user']) && $_SESSION['user']['uid'] === $uid){
+				if($_SESSION['user']['expiry'] >= TIMESTAMP - 1440){
 					$this->var['uid'] = $_SESSION['user']['uid'];
 					$this->var['username'] = $_SESSION['user']['username'];
 					$this->var['member'] = $_SESSION['user'];
 					$_SESSION['user']['expiry'] = TIMESTAMP;
-				}else{//会话超时
+				}elseif(!in_array(ACTION_NAME, array('api', 'seccode'))){//会话超时
 					dsetcookie('auth');
-					unset($_SESSION['user']);
+					//unset($_SESSION['user']);
 					$url = U('logging/expired');
+					$url .= (strexists($url, '?') ? '&' : '?').'referer='.urlencode($this->var['currenturl']);
 					if(IS_AJAX){
 						ajaxReturn(array('errno'=>'-255', 'url'=>$url));
 					}else{
@@ -445,14 +447,13 @@ class core {
 
 		//禁用客户端浏览器缓存
 		if(isset($this->var['setting']['nocacheheaders']) && $this->var['setting']['nocacheheaders']){
-			@header("Expires: -1");
-			@header("Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0", FALSE);
-			@header("Pragma: no-cache");
+			@header('Expires: -1');
+			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
+			@header('Pragma: no-cache');
 		}
 
 		$lastact = TIMESTAMP."\t".htmlspecialchars(basename($this->var['PHP_SELF']));
 		dsetcookie('lastact', $lastact, 86400);
-		setglobal('currenturl_encode', base64_encode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']));
 
 		//站点关闭
 		if($this->var['setting']['closed']){
@@ -467,20 +468,7 @@ class core {
 	 * @return string ip IP地址
 	 */
 	/*private function _get_client_ip() {
-		$clientip = '';
-		if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
-			$clientip = getenv('HTTP_CLIENT_IP');
-		} elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
-			$clientip = getenv('HTTP_X_FORWARDED_FOR');
-		} elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
-			$clientip = getenv('REMOTE_ADDR');
-		} elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
-			$clientip = $_SERVER['REMOTE_ADDR'];
-		}
-
-		preg_match("/[\d\.]{7,15}/", $clientip, $clientipmatches);
-		$clientip = $clientipmatches[0] ? $clientipmatches[0] : 'unknown';
-		return $clientip;
+		
 	}*/
 
 	/**
@@ -501,6 +489,25 @@ class core {
 			}
 		}
 		return $ip;
+
+		/*
+		 * 旧方法
+		 *
+		$clientip = '';
+		if(getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+			$clientip = getenv('HTTP_CLIENT_IP');
+		} elseif(getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+			$clientip = getenv('HTTP_X_FORWARDED_FOR');
+		} elseif(getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+			$clientip = getenv('REMOTE_ADDR');
+		} elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+			$clientip = $_SERVER['REMOTE_ADDR'];
+		}
+
+		preg_match("/[\d\.]{7,15}/", $clientip, $clientipmatches);
+		$clientip = $clientipmatches[0] ? $clientipmatches[0] : 'unknown';
+		return $clientip;
+		 */
 	}
 
 	/**

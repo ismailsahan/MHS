@@ -75,7 +75,13 @@ class framework_error {
 			$e['message'] = lang('error', $e['message'], empty($param) ? null : (is_array($param) ? $param : array('str' => $param)));
 			process('错误：'.$e['message']);
 			if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
-			if(defined('PHPNEW_STATIC_TPL')) global $template;
+			
+			if(IS_AJAX) ajaxReturn(array(
+				'errno' => 500,
+				'msg'	=> $e['message']
+			));
+
+			$template;
 			if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
 				$template->assign('e', $e, true);
 				$template->display('error');

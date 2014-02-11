@@ -130,8 +130,11 @@ var Activate = function () {
 			$('#submit_form select').change(function () {
 				$('#submit_form').validate().element($(this));
 			});
-			$('#submit_form input').keyup(function(e){
+			$('#submit_form input:not(#verifycode)').keyup(function(e){
 				if(e.which == 13) $("#activate .button-next").click();
+			});
+			$('#verifycode').keyup(function(e){
+				if(e.which == 13) $("#activate .button-submit").click();
 			});
 			$('#agreement-link').on('click', function(){
 				if($('#agreement-modal').data("inited")){
@@ -139,7 +142,12 @@ var Activate = function () {
 				}else{
 					loading();
 					$.get("{U api/tos}", function(text){
-						$("#agreement-modal .modal-body .col-md-12").html(new Showdown.converter().makeHtml(text));
+						if(typeof markdown == 'object') {
+							text = markdown.toHTML(text);
+						}else if(typeof marked == 'function') {
+							text = marked(text);
+						}
+						$("#agreement-modal .modal-body .col-md-12").html(text);
 						$('#agreement-modal').data("inited", true);
 						$("#agreement-modal .modal-footer .red").click(function(){
 							$("#agreement-modal").modal("hide");
@@ -360,18 +368,18 @@ var Activate = function () {
 				}
 
 				if (current == 1) {
-					$('#activate').find('.button-previous').hide();
+					$('#activate .button-previous').hide();
 				} else {
-					$('#activate').find('.button-previous').show();
+					$('#activate .button-previous').show();
 				}
 
 				if (current >= total) {
-					$('#activate').find('.button-next').hide();
-					$('#activate').find('.button-submit').show();
+					$('#activate .button-next').hide();
+					$('#activate .button-submit').show();
 					displayConfirm();
 				} else {
-					$('#activate').find('.button-next').show();
-					$('#activate').find('.button-submit').hide();
+					$('#activate .button-next').show();
+					$('#activate .button-submit').hide();
 				}
 				App.scrollTo($('#activate'));
 			}
@@ -416,6 +424,7 @@ var Activate = function () {
 
 			$('#activate .button-previous').hide();
 			$('#activate .button-submit').click(function() {
+				if(form.validate().element($("#verifycode")) == false) return $("#verifycode").focus();
 				var url = $("#submit_form").attr("action");
 				loading();
 				$.post(url + (url.indexOf("?")>-1 ? "&inajax=1" : "/inajax/1"), $("#submit_form").serialize(), function(data){
@@ -426,7 +435,7 @@ var Activate = function () {
 						if(data.errno){
 							switch(data.errno) {
 								case 2: return $("#alert-modal button").click(function(){ window.reload(); });//表单过期
-								case 1: $(".button-previous").click();//验证码错误
+								case 1: //$(".button-previous").click();//验证码错误
 								default: return $("#verifycode").secUdt();
 							}
 						}

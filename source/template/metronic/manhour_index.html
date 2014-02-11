@@ -1,0 +1,223 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/manhour}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/manhour.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			//IdleTimeout.init();
+			Manhour.init();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">提示信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row"><div class="col-md-12"></div></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="act-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">活动详情</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">活动名称:</p>
+							<p class="col-md-9" data-act="name">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">活动地点:</p>
+							<p class="col-md-9" data-act="place">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">开始时间:</p>
+							<p class="col-md-9" data-act="starttime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">结束时间:</p>
+							<p class="col-md-9" data-act="endtime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">主办者:</p>
+							<p class="col-md-9" data-act="sponsor">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">承办者:</p>
+							<p class="col-md-9" data-act="undertaker">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">活动介绍:</p>
+							<p class="col-md-9" data-act="intro">-</p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="mh-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">工时详情</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">活动名称:</p>
+							<p class="col-md-9" data-mh="actname">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">工时数:</p>
+							<p class="col-md-9" data-mh="manhour">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">时间:</p>
+							<p class="col-md-9" data-mh="time">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">状态:</p>
+							<p class="col-md-9" data-mh="status">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">申请时间:</p>
+							<p class="col-md-9" data-mh="applytime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">审查时间:</p>
+							<p class="col-md-9" data-mh="verifytime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">申请留言:</p>
+							<p class="col-md-9" data-mh="remark">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3 text-right">验证留言:</p>
+							<p class="col-md-9" data-mh="verifytext">-</p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="applymh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">申报工时</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U api/applymh}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">活动<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><select class="select2 form-control" id="aid" name="aid" required><option value=""></option></select></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">工时<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="manhour" value="" required /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">时间<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10">
+								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+0d">
+									<input type="text" name="time" class="form-control" required />
+									<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">留言<span class="required">&nbsp;</span></label>
+							<div class="col-xs-9 col-sm-10"><textarea class="form-control" name="remark" rows="4"></textarea></div>
+						</div>
+						<!--<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">Date Range</label>
+							<div class="col-xs-9 col-sm-10">
+								<div class="input-group date-picker input-daterange" data-date="10/11/2012" data-date-format="mm/dd/yyyy">
+									<input type="text" class="form-control" name="from">
+									<span class="input-group-addon">to</span>
+									<input type="text" class="form-control" name="to">
+								</div>
+							</div>
+						</div>-->
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">申报</button>
+				</div>
+			</div>
+			<div id="checkmh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">复查工时</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U api/checkmh}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-12"><p class="text-left">理由<span class="required">*</span></p></label>
+							<div class="col-xs-12"><textarea class="form-control" name="remark" rows="6"></textarea></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">申请复查</button>
+				</div>
+			</div>
+			<div class="portlet box grey">
+				<div class="portlet-title">
+					<div class="caption"><i class="fa fa-leaf"></i> 工时查询</div>
+					<div class="actions">
+						<a href="#" class="btn blue" id="applymh-button" data-target="#applymh" data-toggle="modal"><i class="fa fa-pencil"></i> 申报工时</a>
+						<a href="#" class="btn green" id="checkmh-button"><i class="fa fa-cogs"></i> 复查工时</a>
+					</div>
+				</div>
+				<div class="portlet-body">
+					<table class="table table-striped table-bordered table-hover" id="manhours">
+						<thead><tr>
+							<th style="width:41px"><input type="checkbox" class="group-checkable" data-set="#manhours .checkboxes" /></th>
+							<th>工时</th>
+							<th>活动</th>
+							<th>时间</th>
+							<th>状态</th>
+							<th style="width:61px"></th>
+						</tr></thead>
+						<tbody>
+							{foreach $manhours as $manhour}
+							<tr class="odd gradeX">
+								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$manhour.id}" /></td>
+								<td>{$manhour.manhour}</td>
+								<td><a href="javascript:;" data-aid="{$manhour.aid}">{$manhour.actname}</a></td>
+								<td data-time="{$manhour.time}"></td>
+								<td data-status="{$manhour.status}"></td>
+								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">详情</a></td>
+							</tr>
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- END PAGE CONTENT-->
+{/block}

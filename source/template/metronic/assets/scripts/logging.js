@@ -20,21 +20,21 @@ var Logging = function () {
 			},
 			messages: {
 				username: {
-					required: "{lang username_required}"
+					required: "{lang logging/username_required}"
 				},
 				password: {
-					required: "{lang password_required}",
-					minlength: "{lang password_minlength}"
+					required: "{lang logging/password_required}",
+					minlength: "{lang logging/password_minlength}"
 				},
 				verifycode: {
-					required: "{lang verifycode_required}",
-					minlength: "{lang verifycode_length}",
-					pattern: "{lang verifycode_invalid}"
+					required: "{lang logging/verifycode_required}",
+					minlength: "{lang logging/verifycode_length}",
+					pattern: "{lang logging/verifycode_invalid}"
 				}
 			},
 
 			invalidHandler: function (event, validator) { //display error alert on form submit
-				$('.alert-danger p').html("{lang login_invalid}");
+				$('.alert-danger p').html("{lang logging/login_invalid}");
 				$('.alert-danger').show();
 			},
 
@@ -73,6 +73,9 @@ var Logging = function () {
 			focusInvalid: false, // do not focus the last invalid input
 			ignore: "",
 			rules: {
+				username: {
+					required: true
+				},
 				email: {
 					required: true,
 					email: true
@@ -80,13 +83,18 @@ var Logging = function () {
 			},
 
 			messages: {
+				username: {
+					required: "{lang logging/username_required}"
+				},
 				email: {
-					required: "Email is required."
+					required: "{lang logging/email_required}",
+					email: "{lang logging/email_illegal}"
 				}
 			},
 
 			invalidHandler: function (event, validator) { //display error alert on form submit   
-
+				$('.alert-danger p').html("请正确填写以下资料后再尝试找回密码");
+				$('.alert-danger').show();
 			},
 
 			highlight: function (element) { // hightlight error inputs
@@ -130,7 +138,8 @@ var Logging = function () {
 					required: true
 				},
 				password: {
-					required: true
+					required: true,
+					minlength: 6
 				},
 				rpassword: {
 					equalTo: "#register_password"
@@ -139,19 +148,43 @@ var Logging = function () {
 					required: true,
 					email: true
 				},
+				verifycode: {
+					required: true,
+					minlength: {$_G['setting']['seccodedata']['length']}
+				},
 				tnc: {
 					required: true
 				}
 			},
 
-			messages: { // custom messages for radio buttons and checkboxes
+			messages: {
+				username: {
+					required: "{lang logging/username_required}"
+				},
+				password: {
+					required: "{lang logging/password_required}",
+					minlength: "{lang logging/password_minlength}"
+				},
+				rpassword: {
+					equalTo: "确认密码与密码不一致！"
+				},
+				email: {
+					required: "邮箱不能为空！",
+					email: "您输入的电邮格式不正确"
+				},
+				verifycode: {
+					required: "{lang logging/verifycode_required}",
+					minlength: "{lang logging/verifycode_length}",
+					pattern: "{lang logging/verifycode_invalid}"
+				},
 				tnc: {
-					required: "Please accept TNC first."
+					required: "请先同意我们的服务条款和隐私保护政策"
 				}
 			},
 
 			invalidHandler: function (event, validator) { //display error alert on form submit   
-
+				$('.alert-danger p').html("请正确填写以下资料后再尝试注册");
+				$('.alert-danger').show();
 			},
 
 			highlight: function (element) { // hightlight error inputs
@@ -177,6 +210,34 @@ var Logging = function () {
 				form.submit();
 			}
 		});
+
+		if($.fn.pwstrength) {
+			/*$("#register_password").keydown(function () {
+				if (initialized === false) {
+					// set base options
+					input.pwstrength({
+						raisePower: 1.4,
+						minChar: 8,
+						verdicts: ["Weak", "Normal", "Medium", "Strong", "Very Strong"],
+						scores: [17, 26, 40, 50, 60]
+					});
+
+					// add your own rule to calculate the password strength
+					input.pwstrength("addRule", "demoRule", function (options, word, score) {
+						return word.match(/[a-z].[0-9]/) && score;
+					}, 10, true);
+
+					// set as initialized 
+					initialized = true;
+				}
+			});*/
+			$("#register_password").pwstrength({
+				raisePower: 1.4,
+				minChar: 6
+			})/*.pwstrength("addRule", "demoRule", function (options, word, score) {
+				return word.match(/[a-z].[0-9]/) && score;
+			}, 10, true)*/;
+		}
 
 		$('.register-form input').keypress(function (e) {
 			if (e.which == 13) {

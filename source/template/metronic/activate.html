@@ -1,5 +1,5 @@
 {extends 'common.html'}
-{block subtitle}{lang activate}{/block}
+{block subtitle}{lang logging/activate}{/block}
 {block pagestyle}
 <link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
 <link href="assets/css/pages/activate.css" rel="stylesheet" type="text/css" />
@@ -13,7 +13,7 @@
 	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/showdown.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-markdown/lib/markdown.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootbox/bootbox.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
@@ -61,7 +61,7 @@
 		<!-- BEGIN PAGE -->  
 		<div class="page-content">         
 			<!-- BEGIN PAGE HEADER-->   
-			<h3 class="page-title">{lang activate} <small>您需要补全以下信息才能使用本系统</small></h3>
+			<h3 class="page-title">{lang logging/activate} <small>您需要补全以下信息才能使用本系统</small></h3>
 			<!-- END PAGE HEADER-->
 			<!-- BEGIN PAGE CONTENT-->
 			<div class="note note-danger fade in{if $status<0 || $status!=2} hideFrsight{/if}">
@@ -77,7 +77,7 @@
 				<p><a href="javascript:;">若您想更改申请资料请单击这里重新申请激活</a></p>
 			</div>
 			<div class="portlet box blue{nocache}{if $status==0 || $status==1} hideFrsight{/if}{/nocache}" id="activate">
-				<div class="portlet-title"><div class="caption"><i class="fa fa-reorder"></i> {lang activate} - <span class="step-title">第1步(共5步)</span></div></div>
+				<div class="portlet-title"><div class="caption"><i class="fa fa-reorder"></i> {lang logging/activate} - <span class="step-title">第1步(共5步)</span></div></div>
 				<div class="portlet-body form">
 					<form action="{U logging/activate}" method="post" class="form-horizontal" id="submit_form">
 						{$ActivateToken}
@@ -178,12 +178,6 @@
 												<label><input type="checkbox" name="allowemail" value="2" data-title="允许通过 Email 向我发送信息" checked /> 允许通过 Email 向我发送信息</label>
 											</div><div id="form_extra_error"></div></div>
 										</div>
-										{if need_seccode('Login')}
-										<div class="form-group">
-											<label class="control-label col-md-3">{lang verifycode}<span class="required">*</span></label>
-											<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>
-										</div>
-										{/if}
 									</div>
 									<div class="tab-pane" id="tab5">
 										<h3 class="block">确认你的信息</h3>
@@ -246,10 +240,12 @@
 												<p class="form-control-static" data-display="allowemail"></p>
 											</div>
 										</div>
+										{if need_seccode('Login')}
 										<div class="form-group">
-											<label class="control-label col-md-3">{lang verifycode}:</label>
-											<div class="col-md-4"><p class="form-control-static" data-display="verifycode"></p></div>
+											<label class="control-label col-md-3">{lang verifycode}<span class="required">*</span></label>
+											<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>
 										</div>
+										{/if}
 									</div>
 								</div>
 							</div>
@@ -286,7 +282,7 @@
 						<button type="button" class="btn blue">我接受</button>
 					</div>
 				</div>
-				<div id="report" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+				<div id="report" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760" data-focus-on="textarea">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
 						<h4 class="modal-title">反馈</h4>
