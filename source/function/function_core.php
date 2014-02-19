@@ -1011,7 +1011,7 @@ function U($url='', $vars='', $suffix=true, $redirect=false, $domain=false) {
  * @param string $addChars 额外字符
  * @return string
  */
-function rand_string($len=6, $type='', $addChars='') {
+function rand_string($len=6, $type=5, $addChars='') {
 	$str ='';
 	switch($type) {
 		case 0:
@@ -1199,7 +1199,7 @@ function setToken($formName){
  */
 function submitcheck($var, &$errmsg, $keepToken=0, $allowget=0, $seccodecheck=null, $secqaacheck=0) {
 	global $_G;
-	$time = 300;
+	$time = 1440;
 	$name = $var;
 	$session = $_SESSION[$name.'Token'];
 	if($unsetToken) {

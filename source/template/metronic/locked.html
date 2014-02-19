@@ -18,7 +18,7 @@
 	<div class="page-lock">
 		<div class="page-logo"><a class="brand" href="{U logging/login}"><img src="{$_G.setting.logopath}" alt="logo" /></a></div>
 		<div class="page-body">
-			<img class="page-lock-img" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={$_G.uid}&size=big" alt="" />
+			<img class="page-lock-img" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={$smarty.session.user.uid}&size=big" alt="" />
 			<div class="page-lock-info">
 				<h1>{nocache}{$smarty.session.user.username}{/nocache}</h1>
 				<span class="email">{nocache}{$smarty.session.user.email}{/nocache}</span>

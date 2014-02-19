@@ -73,10 +73,13 @@ class Mail {
 		self::$mail->msgHTML($content, APP_FRAMEWORK_ROOT, true);
 	}
 
-	public static function setMsg($msg, $subject='') {
+	public static function setMsg($msg, $subject='', $addmsg='', $addtitle='') {
 		global $template;
 		static $attachmentAdded = false;
-		$template->assign('emailmsg', $msg, true);
+		$template->assign('title', $subject, true);
+		$template->assign('text', $msg, true);
+		$template->assign('additional_title', $addtitle, true);
+		$template->assign('additional_text', $addmsg, true);
 		if(!$attachmentAdded) {
 			//self::$mail->addAttachment('static/images/logo.png', 'logo.png');
 			$attachmentAdded = true;

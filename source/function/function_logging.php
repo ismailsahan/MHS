@@ -17,7 +17,7 @@
  */
 function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirect=true) {
 	global $_G;
-	if($uid == 0 || empty($email)) {	// 正常登录
+	if($uid == 0/* || empty($email)*/) {	// 正常登录
 		DB::query('DELETE FROM %t WHERE `lastupdate`<%d', array('failedlogin', TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60), 'UNBUFFERED');
 		$failedlogin = DB::fetch_first('SELECT `count`,`lastupdate` FROM %t WHERE `ip`=%s OR `username`=%s LIMIT 1', array('failedlogin', $_G['clientip'], $username));
 		if(isset($failedlogin['count']) && $failedlogin['count'] >= $_G['setting']['failedlogin']['count'] && $failedlogin['lastupdate'] >= TIMESTAMP - $_G['setting']['failedlogin']['time'] * 60){
@@ -97,7 +97,11 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
  */
 function logout(){
 	dsetcookie('auth');
-	unset($_SESSION['user']);
+	//unset($_SESSION['user']);
+	$keys = array_keys($_SESSION);
+	foreach($keys as $k){
+		unset($_SESSION[$k]);
+	}
 
 	if(IS_AJAX){
 		ajaxReturn(array(

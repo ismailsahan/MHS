@@ -9,7 +9,6 @@ function defaultNav(){
 			'title' => 'home',
 			'link' => 'main/index',
 			'icon' => 'home',
-			'tag' => array(),
 			'children' => array()
 		),
 		array(
@@ -19,10 +18,30 @@ function defaultNav(){
 			'children' => array()
 		),
 		array(
-			'title' => '个人档案',
-			'link' => 'profile/index',
+			'title' => 'self',
+			'link' => 'self/index',
 			'icon' => 'user',
-			'children' => array()
+			'children' => array(
+				array(
+					'title' => 'profile',
+					'link' => 'self/profile',
+					'icon' => '',
+					'children' => array()
+				),
+				array(
+					'title' => 'pm',
+					'link' => 'self/pm',
+					'icon' => '',
+					'tag' => 'info',
+					'children' => array()
+				),
+				/*array(
+					'title' => 'cgpwd',
+					'link' => 'self/cgpwd',
+					'icon' => '',
+					'children' => array()
+				),*/
+			)
 		),
 	);
 }
@@ -36,23 +55,19 @@ function adminNav(){
 			'title' => 'global',
 			'link' => '',
 			'icon' => 'cogs',
-			'access' => 1,
 			'children' => array(
 				array(
 					'title' => 'site_info',
 					'link' => 'global/info',
 					'icon' => '',
-					'tag' => array(
-						'type' => 'success',
-						'label' => 'new'
-					),
+					'tag' => 'success',
 					'children' => array()
 				),
 				array(
 					'title' => 'member_access',
 					'link' => 'global/access',
 					'icon' => '',
-					'tooltip' => '正在开发中...',
+					//'tooltip' => '正在开发中...',
 					'children' => array()
 				),
 				array(
@@ -67,130 +82,132 @@ function adminNav(){
 					'icon' => '',
 					'children' => array()
 				),*/
-				array(
+				/*array(
 					'title' => 'seo',
 					'link' => 'global/seo',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				array(
 					'title' => 'time',
 					'link' => 'global/time',
 					'icon' => '',
 					'children' => array()
 				),
-				array(
-					'title' => '风格管理',
+				/*array(
+					'title' => 'theme',
 					'link' => 'global/theme',
 					'icon' => '',
 					'children' => array()
-				),
-				array(
-					'title' => '模板管理',
-					'link' => 'global/template',
+				),*/
+				/*array(
+					'title' => 'tpl',
+					'link' => 'global/tpl',
 					'icon' => '',
 					'children' => array()
-				),
-				array(
-					'title' => '语言设置',
+				),*/
+				/*array(
+					'title' => 'language',
 					'link' => 'global/language',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 			)
 		),
 		array(
-			'title' => '用户',
+			'title' => 'members',
 			'link' => '',
 			'icon' => 'group',
 			'children' => array(
 				array(
-					'title' => '用户管理',
+					'title' => 'user',
 					'link' => 'members/user',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '添加用户',
+					'title' => 'adduser',
 					'link' => 'members/adduser',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '发送通知',
-					'link' => 'members/newsletter',
+					'title' => 'sdmsg',
+					'link' => 'members/sdmsg',
 					'icon' => '',
 					'children' => array()
 				),
-				array(
-					'title' => '禁止用户',
+				/*array(
+					'title' => 'userban',
 					'link' => 'members/userban',
 					'icon' => '',
 					'children' => array()
-				),
-				array(
-					'title' => '禁止IP',
+				),*/
+				/*array(
+					'title' => 'ipban',
 					'link' => 'members/ipban',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				array(
-					'title' => '审核用户',
+					'title' => 'verifyuser',
 					'link' => 'members/verifyuser',
+					'tag' => 'warning',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '管理组',
+					'title' => 'admingroup',
 					'link' => 'members/admingroup',
 					'icon' => '',
 					'children' => array()
 				),
-				array(
-					'title' => '用户组',
+				/*array(
+					'title' => 'usergroup',
 					'link' => 'members/usergroup',
 					'icon' => '',
 					'children' => array()
-				),
-				array(
-					'title' => '激活请求',
+				),*/
+				/*array(
+					'title' => 'activate',
 					'link' => 'members/activate',
 					'icon' => '',
+					'tag' => 'warning',
 					'children' => array()
-				),
+				),*/
 			)
 		),
 		array(
-			'title' => '工具',
+			'title' => 'tool',
 			'link' => '',
 			'icon' => 'wrench',
 			'children' => array(
 				array(
-					'title' => '运行记录',
+					'title' => 'runlog',
 					'link' => 'tool/runlog',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '清除缓存',
+					'title' => 'clearcache',
 					'link' => 'tool/clearcache',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '邮件设置',
+					'title' => 'mailsetting',
 					'link' => 'tool/mailsetting',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '计划任务',
+					'title' => 'cronjob',
 					'link' => 'tool/cronjob',
 					'icon' => '',
 					'children' => array()
 				),
 				array(
-					'title' => '备份恢复',
+					'title' => 'recovery',
 					'link' => 'tool/recovery',
 					'icon' => '',
 					'children' => array()
@@ -203,14 +220,22 @@ function adminNav(){
 			'icon' => 'edit',
 			'children' => array(
 				array(
-					'title' => '申报记录',
+					'title' => 'applylog',
 					'link' => 'manhour/applylog',
 					'icon' => '',
+					'tag' => 'warning',
 					'children' => array()
 				),
 				array(
-					'title' => '添加工时',
-					'link' => 'manhour/add',
+					'title' => 'checklog',
+					'link' => 'manhour/checklog',
+					'icon' => '',
+					'tag' => 'warning',
+					'children' => array()
+				),
+				array(
+					'title' => 'manage',
+					'link' => 'manhour/manage',
 					'icon' => '',
 					'children' => array()
 				),

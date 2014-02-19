@@ -40,16 +40,7 @@ var App = function () {
 
 	var urlencode = function(str) {
 		str = (str + '').toString();
-
-		// Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
-		// PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
-		return encodeURIComponent(str)
-			.replace(/!/g, '%21')
-			.replace(/'/g, '%27')
-			.replace(/\(/g, '%28')
-			.replace(/\)/g, '%29')
-			.replace(/\*/g, '%2A')
-			.replace(/%20/g, '+');
+		return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 	}
 
 	// initializes main settings
@@ -64,11 +55,11 @@ var App = function () {
 		isIE10 = !! navigator.userAgent.match(/MSIE 10.0/);
 
 		if (isIE10) {
-			jQuery('html').addClass('ie10'); // detect IE10 version
+			$('html').addClass('ie10'); // detect IE10 version
 		}
 		
 		if (isIE10 || isIE9 || isIE8) {
-			jQuery('html').addClass('ie'); // detect IE10 version
+			$('html').addClass('ie'); // detect IE10 version
 		}
 
 		/*
@@ -88,7 +79,7 @@ var App = function () {
 			});
 		}
 
-		var e = jQuery("li.dropdown.user ul.dropdown-menu a:has(i.fa-lock)");
+		var e = $("li.dropdown.user ul.dropdown-menu a:has(i.fa-lock)");
 		if(e.length > 0) {
 			var t = e.prop("href");
 			e.prop("href", t + (t.indexOf("?")>-1 ? "&" : "?") + "referer=" + urlencode(window.location.href));
@@ -184,7 +175,7 @@ var App = function () {
 
 	// Handle sidebar menu
 	var handleSidebarMenu = function () {
-		jQuery('.page-sidebar').on('click', 'li > a', function (e) {
+		$('.page-sidebar').on('click', 'li > a', function (e) {
 			if ($(this).next().hasClass('sub-menu') == false) {
 				if ($('.btn-navbar').hasClass('collapsed') == false) {
 					$('.btn-navbar').click();
@@ -203,13 +194,13 @@ var App = function () {
 			parent.children('li.open').children('.sub-menu').slideUp(200);
 			parent.children('li.open').removeClass('open');
 
-			var sub = jQuery(this).next();
+			var sub = $(this).next();
 			var slideOffeset = -200;
 			var slideSpeed = 200;
 
 			if (sub.is(":visible")) {
-				jQuery('.arrow', jQuery(this)).removeClass("open");
-				jQuery(this).parent().removeClass("open");
+				$('.arrow', $(this)).removeClass("open");
+				$(this).parent().removeClass("open");
 				sub.slideUp(slideSpeed, function () {
 					if ($('body').hasClass('page-sidebar-fixed') == false && $('body').hasClass('page-sidebar-closed') == false) {
 						App.scrollTo(the, slideOffeset);
@@ -217,8 +208,8 @@ var App = function () {
 					handleSidebarAndContentHeight();
 				});
 			} else {
-				jQuery('.arrow', jQuery(this)).addClass("open");
-				jQuery(this).parent().addClass("open");
+				$('.arrow', $(this)).addClass("open");
+				$(this).parent().addClass("open");
 				sub.slideDown(slideSpeed, function () {
 					if ($('body').hasClass('page-sidebar-fixed') == false && $('body').hasClass('page-sidebar-closed') == false) {
 						App.scrollTo(the, slideOffeset);
@@ -231,12 +222,12 @@ var App = function () {
 		});
 
 		// handle ajax links
-		jQuery('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
+		$('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
 			e.preventDefault();
 			App.scrollTop();
 
 			var url = $(this).attr("href");
-			var menuContainer = jQuery('.page-sidebar ul');
+			var menuContainer = $('.page-sidebar ul');
 			var pageContent = $('.page-content');
 			var pageContentBody = $('.page-content .page-content-body');
 
@@ -269,6 +260,22 @@ var App = function () {
 				async: false
 			});
 		});
+
+		var badges = [];
+		$('.page-sidebar li span.badge').each(function() {
+			badges.push({
+				name : "badge[]",
+				value: $(this).html()
+			});
+		});
+		if(badges != []) {
+			$.get("index.php?action=api&operation=badge", badges, function(data) {
+				$('.page-sidebar li span.badge').each(function() {
+					var idx = $(this).html();
+					if(typeof data[idx] != "undefined") $(this).html(data[idx]).removeClass("hidden");
+				});
+			}, "json");
+		}
 	}
 
 	// Helper function to calculate sidebar height for fixed sidebar layout.
@@ -454,7 +461,7 @@ var App = function () {
 	// Handles the go to top button at the footer
 	var handleGoTop = function () {
 		/* set variables locally for increased performance */
-		jQuery('.footer').on('click', '.go-top', function (e) {
+		$('.footer').on('click', '.go-top', function (e) {
 			App.scrollTo();
 			e.preventDefault();
 		});
@@ -462,36 +469,36 @@ var App = function () {
 
 	// Handles portlet tools & actions
 	var handlePortletTools = function () {
-		jQuery('body').on('click', '.portlet > .portlet-title > .tools > a.remove', function (e) {
+		$('body').on('click', '.portlet > .portlet-title > .tools > a.remove', function (e) {
 			e.preventDefault();
-			jQuery(this).closest(".portlet").remove();
+			$(this).closest(".portlet").remove();
 		});
 
-		jQuery('body').on('click', '.portlet > .portlet-title > .tools > a.reload', function (e) {
+		$('body').on('click', '.portlet > .portlet-title > .tools > a.reload', function (e) {
 			e.preventDefault();
-			var el = jQuery(this).closest(".portlet").children(".portlet-body");
+			var el = $(this).closest(".portlet").children(".portlet-body");
 			App.blockUI(el);
 			window.setTimeout(function () {
 				App.unblockUI(el);
 			}, 1000);
 		});
 
-		jQuery('body').on('click', '.portlet > .portlet-title > .tools > .collapse, .portlet .portlet-title > .tools > .expand', function (e) {
+		$('body').on('click', '.portlet > .portlet-title > .tools > .collapse, .portlet .portlet-title > .tools > .expand', function (e) {
 			e.preventDefault();
-			var el = jQuery(this).closest(".portlet").children(".portlet-body");
-			if (jQuery(this).hasClass("collapse")) {
-				jQuery(this).removeClass("collapse").addClass("expand");
+			var el = $(this).closest(".portlet").children(".portlet-body");
+			if ($(this).hasClass("collapse")) {
+				$(this).removeClass("collapse").addClass("expand");
 				el.slideUp(200);
 			} else {
-				jQuery(this).removeClass("expand").addClass("collapse");
+				$(this).removeClass("expand").addClass("collapse");
 				el.slideDown(200);
 			}
 		});
 	}
 
-	// Handles custom checkboxes & radios using jQuery Uniform plugin
+	// Handles custom checkboxes & radios using $ Uniform plugin
 	var handleUniform = function () {
-		if (!jQuery().uniform) {
+		if (!$().uniform) {
 			return;
 		}
 		var test = $("input[type=checkbox]:not(.toggle), input[type=radio]:not(.toggle, .star)");
@@ -509,12 +516,12 @@ var App = function () {
 	var handleAccordions = function () {
 		var lastClicked;
 		//add scrollable class name if you need scrollable panes
-		jQuery('body').on('click', '.accordion.scrollable .accordion-toggle', function () {
-			lastClicked = jQuery(this);
+		$('body').on('click', '.accordion.scrollable .accordion-toggle', function () {
+			lastClicked = $(this);
 		}); //move to faq section
 
-		jQuery('body').on('show.bs.collapse', '.accordion.scrollable', function () {
-			jQuery('html,body').animate({
+		$('body').on('show.bs.collapse', '.accordion.scrollable', function () {
+			$('html,body').animate({
 				scrollTop: lastClicked.offset().top - 150
 			}, 'slow');
 		});
@@ -562,7 +569,7 @@ var App = function () {
 
 	// Handles Bootstrap Tooltips.
 	var handleTooltips = function () {
-	   jQuery('.tooltips').tooltip();
+	   $('.tooltips').tooltip();
 	}
 
 	// Handles Bootstrap Dropdowns
@@ -603,7 +610,7 @@ var App = function () {
 	var lastPopedPopover;
 
 	var handlePopovers = function () {
-		jQuery('.popovers').popover();
+		$('.popovers').popover();
 
 		// close last poped popover
 
@@ -614,7 +621,7 @@ var App = function () {
 		});
 	}
 
-	// Handles scrollable contents using jQuery SlimScroll plugin.
+	// Handles scrollable contents using $ SlimScroll plugin.
 	var handleScrollers = function () {
 		$('.scroller').each(function () {
 			var height;
@@ -636,14 +643,14 @@ var App = function () {
 		});
 	}
 
-	// Handles Image Preview using jQuery Fancybox plugin
+	// Handles Image Preview using $ Fancybox plugin
 	var handleFancybox = function () {
-		if (!jQuery.fancybox) {
+		if (!$.fancybox) {
 			return;
 		}
 
-		if (jQuery(".fancybox-button").size() > 0) {
-			jQuery(".fancybox-button").fancybox({
+		if ($(".fancybox-button").size() > 0) {
+			$(".fancybox-button").fancybox({
 				groupAttr: 'data-rel',
 				prevEffect: 'none',
 				nextEffect: 'none',
@@ -662,9 +669,9 @@ var App = function () {
 		//fix html5 placeholder attribute for ie7 & ie8
 		if (isIE8 || isIE9) { // ie8 & ie9
 			// this is html5 placeholder fix for inputs, inputs with placeholder-no-fix class will be skipped(e.g: we need this for password fields)
-			jQuery('input[placeholder]:not(.placeholder-no-fix), textarea[placeholder]:not(.placeholder-no-fix)').each(function () {
+			$('input[placeholder]:not(.placeholder-no-fix), textarea[placeholder]:not(.placeholder-no-fix)').each(function () {
 
-				var input = jQuery(this);
+				var input = $(this);
 
 				if (input.val() == '' && input.attr("placeholder") != '') {
 					input.addClass("placeholder").val(input.attr('placeholder'));
@@ -718,7 +725,7 @@ var App = function () {
 
 	// Handle Select2 Dropdowns
 	var handleSelect2 = function() {
-		if (jQuery().select2) {
+		if ($().select2) {
 			$('.select2me').select2({
 				placeholder: "Select",
 				allowClear: true
@@ -934,7 +941,7 @@ var App = function () {
 		// useful function to make equal height for contacts stand side by side
 		setEqualHeight: function (els) {
 			var tallestEl = 0;
-			els = jQuery(els);
+			els = $(els);
 			els.each(function () {
 				var currentHeight = $(this).height();
 				if (currentHeight > tallestEl) {
@@ -947,7 +954,7 @@ var App = function () {
 		// wrapper function to scroll(focus) to an element
 		scrollTo: function (el, offeset) {
 			pos = (el && el.size() > 0) ? el.offset().top : 0;
-			jQuery('html,body').animate({
+			$('html,body').animate({
 				scrollTop: pos + (offeset ? offeset : 0)
 			}, 'slow');
 		},
@@ -959,7 +966,7 @@ var App = function () {
 
 		// wrapper function to  block element(indicate loading)
 		blockUI: function (el, centerY) {
-			var el = jQuery(el);
+			var el = $(el);
 			if (el.height() <= 400) {
 				centerY = true;
 			}
@@ -982,10 +989,10 @@ var App = function () {
 
 		// wrapper function to  un-block element(finish loading)
 		unblockUI: function (el, clean) {
-			jQuery(el).unblock({
+			$(el).unblock({
 				onUnblock: function () {
-					jQuery(el).css('position', '');
-					jQuery(el).css('zoom', '');
+					$(el).css('position', '');
+					$(el).css('zoom', '');
 				}
 			});
 		},
@@ -993,7 +1000,7 @@ var App = function () {
 		// initializes uniform elements
 		initUniform: function (els) {
 			if (els) {
-				jQuery(els).each(function () {
+				$(els).each(function () {
 					if ($(this).parents(".checker").size() == 0) {
 						$(this).show();
 						$(this).uniform();
@@ -1004,7 +1011,7 @@ var App = function () {
 			}
 		},
 
-		//wrapper function to update/sync jquery uniform checkbox & radios
+		//wrapper function to update/sync $ uniform checkbox & radios
 		updateUniform: function (els) {
 			$.uniform.update(els); // update the uniform checkbox & radios UI after the actual input control state changed
 		},
@@ -1016,7 +1023,7 @@ var App = function () {
 
 		//public helper function to get actual input value(used in IE9 and IE8 due to placeholder attribute not supported)
 		getActualVal: function (el) {
-			var el = jQuery(el);
+			var el = $(el);
 			if (el.val() === el.attr("placeholder")) {
 				return "";
 			}

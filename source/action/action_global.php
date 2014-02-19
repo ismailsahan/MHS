@@ -6,7 +6,7 @@
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
-class MainAction extends Action {
+class GlobalAction extends Action {
 	public $default_method = 'index';
 	public $allowed_method = array('index');
 
@@ -19,7 +19,7 @@ class MainAction extends Action {
 		if(!$template->isCached('main_index')){
 			$template->assign('sidebarMenu', defaultNav());
 			$template->assign('adminNav', adminNav());
-			$template->assign('menuset', array('home'));
+			$template->assign('menuset', array('global'));
 		}
 		$template->display('main_index');
 	}

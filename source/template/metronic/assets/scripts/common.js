@@ -66,9 +66,15 @@ function hitokoto() {
 hitokoto.show = function() {
 	if($(".hitokoto").size() == 0) return $(window).unbind('scroll', hitokoto.show);
 	if(!(($(window).scrollTop()>($(".hitokoto").offset().top+$(".hitokoto").outerHeight()))||(($(window).scrollTop()+$(window).height())<$(".hitokoto").offset().top))) {
-		hitokoto();
+		hitokoto();//setTimeout(hitokoto.alternative, 1000);
 		$(window).unbind('scroll', hitokoto.show);
 	}
+}
+
+hitokoto.alternative = function() {
+	$.getJSON("hitokoto.php?fun=?", function(data){
+		$(".hitokoto").html('<a href="http://hitokoto.us/view/'+data.id+'" title="分类 '+data.catname+(data.source ? '\n出自 '+data.source : '')+'\n喜欢 '+data.like+'\n投稿 '+data.author+' @ '+data.date+'" target="_blank">'+data.hitokoto+'</a>').find('a').tooltip();
+	});
 }
 
 $(window).bind("scroll", hitokoto.show);

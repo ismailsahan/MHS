@@ -28,10 +28,10 @@ class ApiAction extends Action {
 	}
 
 	public function profile(){
-		global $_G, $template;
+		//global $_G;
 
 		$type = $_REQUEST['type'];
-		$hash = crc32($type.$_REQUEST['grade'].$_REQUEST['academy'].$_REQUEST['specialty'].$_REQUEST['league'].$_REQUEST['organization']);
+		$hash = md5($type.$_REQUEST['grade'].$_REQUEST['academy'].$_REQUEST['specialty'].$_REQUEST['league'].$_REQUEST['organization']);
 
 		$data = Cache::get('profile_'.$hash);
 		if($data === null || APP_FRAMEWORK_DEBUG){
@@ -44,12 +44,40 @@ class ApiAction extends Action {
 				case 'league':       $data = Profile::exportLeagues($_REQUEST['academy']); break;
 				case 'organization': $data = Profile::exportOrganizations($_REQUEST['academy']); break;
 				case 'department':   $data = Profile::exportDepartments($_REQUEST['league']); break;
+				default: $data = array();
 				//default: $data=DB::fetch_first('SELECT `name` FROM %t WHERE `id`=%d', array('profile_academies', 2));
 			}
-			if($data){
+			if($_REQUEST['format']){
+				$result = array();
+				foreach($data as $k => &$v){
+					if($k === '') continue;
+					if(is_array($v)){
+						$t = array();
+						foreach($v as $_k => &$_v){
+							$t[] = array(
+								'text' => $_v,
+								'value' => $_k
+							);
+						}
+						$tmp = array(
+							'text' => $k,
+							'children' => $t
+						);
+					}else{
+						$tmp = array(
+							'text' => $v,
+							'value' => $k
+						);
+					}
+					$result[] = $tmp;
+				}
+				$data = &$result;
+			}
+			if(!is_array($data)) $data = array();
+			//if($data){
 				$data = json_encode($data);
 				Cache::set('profile_'.$hash, $data, 604800);
-			}
+			//}
 		}
 
 		ajaxReturn($data, 'AUTO', true);
@@ -68,7 +96,7 @@ class ApiAction extends Action {
 		global $_G;
 		$tos = Cache::get('tos');
 		if($tos === null || APP_FRAMEWORK_DEBUG) {
-			$tos = DB::result(DB::query("SELECT `svalue` FROM %t WHERE `skey`='tos' LIMIT 1", array('setting')));
+			$tos = DB::result_first("SELECT `svalue` FROM %t WHERE `skey`='tos' LIMIT 1", array('setting'));
 			Cache::set('tos', $tos, 604800);
 		}
 		header('Content-Type: text/plain; charset='.$_G['charset']);
@@ -197,9 +225,29 @@ class ApiAction extends Action {
 		}elseif(empty($_POST['remark'])){
 			$result['msg'] = '复查理由不能为空';
 		}else{
-			DB::query('UPDATE %t SET `status`=3, `applytime`=%d, `remark`=%s WHERE `id` IN (%n)', array('manhours', TIMESTAMP, $_POST['remark'], $_POST['id']));
+			DB::query('UPDATE %t SET `status`=3, `applytime`=%d, `remark`=%s WHERE `status` IN (0,1,4,5) AND `id` IN (%n)', array('manhours', TIMESTAMP, $_POST['remark'], $_POST['id']));
 			$result['errno'] = 0;
-			$result['msg'] = '已申请复查'.count($_POST['id']).'个工时条目，请耐心等候审查';
+			$result['msg'] = '已申请复查'.DB::affected_rows().'个工时条目，请耐心等候审查';
+		}
+		ajaxReturn($result, 'AUTO');
+	}
+
+	/**
+	 * 侧边栏
+	 */
+	public function badge(){
+		global $_G;
+		$result = array();
+		if($_G['uid'] && !empty($_REQUEST['badge']) && is_array($_REQUEST['badge'])){
+			foreach($_REQUEST['badge'] as $badge){
+				switch($badge){
+					case 'profile/pm'		: $result[$badge] = 0; break;
+					case 'global/info'		: $result[$badge] = 0; break;
+					case 'members/activate'	: $result[$badge] = 0; break;
+					case 'manhour/applylog'	: $result[$badge] = 0; break;
+					case 'manhour/checklog'	: $result[$badge] = 0; break;
+				}
+			}
 		}
 		ajaxReturn($result, 'AUTO');
 	}

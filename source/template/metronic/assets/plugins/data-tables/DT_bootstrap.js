@@ -1,7 +1,7 @@
 /* Set the defaults for DataTables initialisation */
 $.extend( true, $.fn.dataTable.defaults, {
 	"sDom": "<'row'<'col-md-6 col-sm-12'l><'col-md-12 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
-	//"sDom": "<'row'<'col-md-6 col-sm-12'l><'col-md-12 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // defaukt datatable without  horizobtal scroll
+	//"sDom": "<'row'<'col-md-6 col-sm-12'l><'col-md-12 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // default datatable without  horizobtal scroll
 	"sPaginationType": "bootstrap",
 	"oLanguage": {
 		"oAria": {
@@ -20,10 +20,10 @@ $.extend( true, $.fn.dataTable.defaults, {
 		"sInfoFiltered": "(已从 _MAX_ 个条目中过滤)",
 		//"sInfoPostFix": "",//All records shown are derived from real information.
 		"sInfoThousands": ",",
-		"sLengthMenu": "显示 _MENU_ 项",
+		"sLengthMenu": "每页显示 _MENU_ 项",
 		"sLoadingRecords": "加载中 请稍候...",
 		"sProcessing": "处理中...",
-		"sSearch": "搜索:",
+		"sSearch": "搜索/过滤:",
 		//"sUrl": "http://www.sprymedia.co.uk/dataTables/lang.txt",
 		"sZeroRecords": "无匹配数据"
 	}

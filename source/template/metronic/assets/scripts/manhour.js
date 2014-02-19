@@ -67,6 +67,7 @@ var Manhour = function () {
 				loading();
 				if(type == "manhour") {
 					$.post("{U api/manhour}", {"id":id}, function(data){
+						if(!data.id) return window.location.reload();
 						$("#mh-modal p.col-md-9").each(function() {
 							var mh = $(this).data("mh");
 							if(mh=="time") {
@@ -84,6 +85,7 @@ var Manhour = function () {
 					}, 'json');
 				} else if(type == "activity") {
 					$.post("{U api/activity}", {"id":id}, function(data){
+						if(!data.id) return window.location.reload();
 						$("#act-modal p.col-md-9").each(function() {
 							var act = $(this).data("act");
 							if(act=="starttime" || act=="endtime") {
@@ -100,9 +102,14 @@ var Manhour = function () {
 
 			//$(document).ajaxStart($.blockUI);
 			$(document).ajaxStop($.unblockUI);
+			$(document).ajaxError(function() {
+				modalAlert("向服务器请求数据时发生了错误，请稍候再试");
+			});
 
 			$('#manhours tr:gt(0) td:nth-child(5)').each(function() {
-				$(this).html(statusLabel($(this).data("status")));
+				var t = $(this).data("status");
+				if(t=="2" || t=="3") $(this).closest('tr').find('td:first :checkbox').prop("disabled", true).uniform.update();
+				$(this).html(statusLabel(t));
 			});
 
 			$('#manhours tr:gt(0) td:nth-child(4)').each(function() {
@@ -280,7 +287,7 @@ var Manhour = function () {
 
 						submitHandler: function (form) {
 							loading();
-							var url = $(form).attr("action"), dts = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes()).serializeArray();
+							var url = $(form).attr("action"), dts = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).serializeArray();
 							dts = dts.concat($(form).serializeArray());
 							$.post(url + (url.indexOf("?")>-1 ? "&inajax=1" : "/inajax/1"), dts, function(data){
 								modalAlert(data.msg);
@@ -291,6 +298,8 @@ var Manhour = function () {
 									$('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes()).closest("tr").each(function(){
 										$('#manhours').dataTable().fnUpdate(statusLabel(3), this, 4);
 									});
+									$('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes()).prop("checked", false).prop("disabled", true).uniform.update();
+									$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
 								}
 							});
 						}
@@ -304,7 +313,7 @@ var Manhour = function () {
 					$(this).data("inited", true);
 				}
 
-				if($('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes()).size() == 0) {
+				if($('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).size() == 0) {
 					return modalAlert("请先勾选需要复查的工时所对应的复选框！");
 				}
 				$("#checkmh").modal("show");

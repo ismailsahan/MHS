@@ -23,7 +23,7 @@
 {block body}
 	{function name=menuItem level=0 admin=0}
 		{foreach $menuArr as $menu}{if !is_array($menu)}{continue}{/if}
-		<li class="{if $level==0 && !$admin}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}{if $admin}{nocache}{if !chkPermit($menu.title)} hidden{/if}{/nocache}{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="fa fa-{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge badge-roundless badge-{$menu.tag.type}">{$menu.tag.label}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1 admin=$admin}</ul>{/if}</li>
+		<li class="{if $level==0 && !$admin}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}{if $admin}{nocache}{if !chkPermit($menu.title)} hidden{/if}{/nocache}{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="fa fa-{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge{* badge-roundless*} badge-{$menu.tag} hidden">{$menu.link}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1 admin=$admin}</ul>{/if}</li>
 		{/foreach}
 	{/function}
 	<!-- BEGIN HEADER -->
@@ -113,10 +113,10 @@
 				<li class="dropdown user">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" width="29" height="29" /> <span class="username">{nocache}<!--{$_G.username} ( -->{$_G.member.realname}<!-- )-->{/nocache}</span><i class="fa fa-angle-down"></i></a>
 					<ul class="dropdown-menu">
-						<li><a href="extra_profile.html"><i class="fa fa-user"></i> My Profile</a></li>
-						<li><a href="page_calendar.html"><i class="fa fa-calendar"></i> My Calendar</a></li>
+						<li><a href="{U self/profile}"><i class="fa fa-user"></i> 我的档案</a></li>
+						<!--<li><a href="page_calendar.html"><i class="fa fa-calendar"></i> My Calendar</a></li>
 						<li><a href="inbox.html"><i class="fa fa-envelope"></i> My Inbox <span class="badge badge-danger">3</span></a></li>
-						<li><a href="#"><i class="fa fa-tasks"></i> My Tasks <span class="badge badge-success">7</span></a></li>
+						<li><a href="#"><i class="fa fa-tasks"></i> My Tasks <span class="badge badge-success">7</span></a></li>-->
 						<li class="divider"></li>
 						<li><a href="javascript:;" id="trigger_fullscreen"><i class="fa fa-move"></i> {lang fullscr}</a></li>
 						<li><a href="{U logging/locked}"><i class="fa fa-lock"></i> {lang lockscr}</a></li>
@@ -137,16 +137,16 @@
 		<div class="page-sidebar navbar-collapse collapse">
 			<!-- BEGIN SIDEBAR MENU -->
 			<ul class="page-sidebar-menu">
-				<li><div class="sidebar-toggler hidden-phone"></div> </li>
+				<li><div class="sidebar-toggler hidden-phone"></div></li>
 				<li>
 					<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
 					<form class="sidebar-search" action="{U main/search}" method="POST">
-						<div class="form-container">
+						<div class="form-container">{*
 							<div class="input-box">
 								<a href="javascript:;" class="remove"></a>
 								<input type="text" placeholder="搜索..."/>
 								<input type="button" class="submit" value=" "/>
-							</div>
+							</div>*}
 						</div>
 					</form>
 					<!-- END RESPONSIVE QUICK SEARCH FORM -->

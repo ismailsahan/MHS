@@ -51,6 +51,7 @@ $lang = array(
 	'email_illegal'				=> 'Email 格式有误',
 	'email_notallowed'			=> '该 Email 不允许注册，请换一个试试',
 	'email_exists'				=> '该 Email 已经被注册，请返回登录或者换一个注册',
+	'username_email_notmatch'	=> '用户名和 Email 不匹配',
 	'gender_required'			=> '请选择您的性别',
 	'gender_illeagal'			=> '您选择的性别不合法，请重新选择',
 	'qq_required'				=> 'QQ号不能为空！',

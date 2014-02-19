@@ -240,7 +240,7 @@
 												<p class="form-control-static" data-display="allowemail"></p>
 											</div>
 										</div>
-										{if need_seccode('Login')}
+										{if need_seccode('Activate')}
 										<div class="form-group">
 											<label class="control-label col-md-3">{lang verifycode}<span class="required">*</span></label>
 											<div class="col-md-4"><input class="form-control placeholder-no-fix" type="text" maxlength="{$_G['setting']['seccodedata']['length']}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ActivateTokenHash}" tag="{$ActivateTokenHash}" required /></div>

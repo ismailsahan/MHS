@@ -324,3 +324,11 @@ Profile Page
   font-size:12px;
   margin-top:2px !important;
 }
+
+#table-profile tr,
+#table-profile td {
+  vertical-align: middle;
+}
+#table-profile td:first-child {
+  text-align: right;
+}

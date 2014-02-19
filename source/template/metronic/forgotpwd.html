@@ -2,9 +2,13 @@
 {block subtitle}{lang logging/find_pwd}{/block}
 {block logging}
 		<!-- BEGIN FORGOT PASSWORD FORM -->
-		<form class="forget-form" action="{lang forgotpwd}" method="post">
+		<form class="forget-form" action="{U logging/forgotpwd}" method="post">
 			{$ForgotpwdToken}
 			<h3>{lang logging/find_pwd}</h3>
+			<div class="alert alert-danger alert-block fade in{if !$errmsg} display-hide{/if}">
+				<button class="close" data-close="alert"></button>
+				<h4 class="alert-heading">{lang tip}</h4><p>{$errmsg}</p>
+			</div>
 			<p>{lang logging/forgot_pwd_tip}</p>
 			<div class="form-group">
 				<label class="control-label visible-ie8 visible-ie9">{lang username}</label>
@@ -17,7 +21,7 @@
 				<label class="control-label visible-ie8 visible-ie9">{lang email}</label>
 				<div class="input-icon">
 					<i class="fa fa-envelope"></i>
-					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" required />
+					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" value="{$smarty.request.email|escape}" required />
 				</div>
 			</div>
 			{if need_seccode('Forgotpwd')}

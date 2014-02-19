@@ -434,7 +434,7 @@ var Activate = function () {
 						modalAlert(data.msg);
 						if(data.errno){
 							switch(data.errno) {
-								case 2: return $("#alert-modal button").click(function(){ window.reload(); });//表单过期
+								case 2: return $("#alert-modal").on("hide.bs.modal", function(){ window.location.reload(); });//表单过期
 								case 1: //$(".button-previous").click();//验证码错误
 								default: return $("#verifycode").secUdt();
 							}

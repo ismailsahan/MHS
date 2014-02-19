@@ -256,6 +256,7 @@ var Logging = function () {
 			handleForgetPassword();
 			handleRegister();
 			$("#verifycode").seccode();
+			$("input:visible:first").focus();
 			//$(".verifycode a img").seccode();
 		}
 

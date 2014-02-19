@@ -414,7 +414,7 @@ class core {
 	private function _init_session() {
 		if($this->var['setting']['session']){
 			$ip = explode('.', $this->var['clientip']);
-			$session = DB::result(DB::query('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s LIMIT 1', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'])));
+			$session = DB::result_first('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s LIMIT 1', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username']));
 			if($session == 0){
 				$this->var['sid'] = random(6);
 				DB::query('REPLACE INTO %t (`sid`, `ip1`, `ip2`, `ip3`, `ip4`, `uid`, `username`, `lastactivity`) VALUES (%s, %d, %d, %d, %d, %d, %s, %d)', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username'], TIMESTAMP), null, true);

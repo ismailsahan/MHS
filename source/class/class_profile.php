@@ -37,7 +37,7 @@ class Profile {
 	 */
 	public static function exportSpecialties($grade, $academy){
 		if(empty($academy) || !self::chkGrades($grade)) return array();
-		$data = DB::fetch_all('SELECT `id`,`name` FROM %t WHERE `aid`=%d AND `g%d`=1', array('profile_specialties', $academy, $grade));
+		$data = DB::fetch_all('SELECT `id`,`name` FROM %t WHERE `aid`=%d AND `g%i`=1', array('profile_specialties', $academy, intval($grade)));
 		$return = array();
 		foreach($data as $specialty){
 			$return[$specialty['id']] = $specialty['name'];
@@ -62,6 +62,7 @@ class Profile {
 	 * 导出社团列表
 	 */
 	public static function exportLeagues($academy){
+		if(!$academy) return array();
 		$data = DB::fetch_all('SELECT `id`,`aid`,`name` FROM %t WHERE `aid`=0 OR `aid`=%d', array('profile_leagues', $academy));
 		$return = array();
 		$return[$group0] = array();
@@ -81,6 +82,7 @@ class Profile {
 	 * 导出组织列表
 	 */
 	public static function exportOrganizations($academy){
+		if(!$academy) return array();
 		$data = DB::fetch_all('SELECT * FROM '.DB::table('profile_organizations'));
 	}
 
