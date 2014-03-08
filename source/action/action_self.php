@@ -78,8 +78,6 @@ class SelfAction extends Action {
 				case 'qq':
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
-					}elseif(empty($value)){
-						$this->_ajaxError('QQ不能为空');
 					}elseif(!preg_match("/^[1-9]{1}[0-9]{4,10}$/", $value)){
 						$this->_ajaxError('QQ格式有误');
 					}

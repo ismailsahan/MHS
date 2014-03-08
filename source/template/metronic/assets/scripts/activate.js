@@ -216,7 +216,7 @@ var Activate = function () {
 						required: true
 					},
 					qq: {
-						required: true,
+						required: false,
 						rangelength: [5, 11],
 						digits: true
 					},

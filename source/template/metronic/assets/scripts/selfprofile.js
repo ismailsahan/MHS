@@ -51,7 +51,7 @@ var SelfProfile = function () {
 						if($.inArray(k, ls) > -1) res.push(callback ? {id: k, text: v} : v);
 					});
 				});
-				res = res.join(", ");
+				if(!callback) res = res.join(", ");
 				return callback ? callback(res) : (res ? $('#league').removeClass("editable-empty").text(res) : $('#league').addClass("editable-empty").text($.fn.editable.defaults.emptytext));
 			}, 'json');
 		}
@@ -66,7 +66,7 @@ var SelfProfile = function () {
 						if($.inArray(k, ls) > -1) res.push(callback ? {id: k, text: v} : v);
 					});
 				});
-				res = res.join(", ");
+				if(!callback) res = res.join(", ");
 				return callback ? callback(res) : (res ? $('#department').removeClass("editable-empty").text(res) : $('#department').addClass("editable-empty").text($.fn.editable.defaults.emptytext));
 			}, 'json');
 		}

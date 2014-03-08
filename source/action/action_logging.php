@@ -231,9 +231,7 @@ class LoggingAction extends Action {
 					$errmsg = 'gender_required';
 				}elseif(!in_array($_POST['gender'], array('1', '2'))){																		// 性别不合法
 					$errmsg = 'gender_illeagal';
-				}elseif(empty($_POST['qq'])){																								// 空QQ
-					$errmsg = 'qq_required';
-				}elseif(!preg_match("/^[1-9]{1}[0-9]{4,10}$/", $_POST['qq'])){																// QQ格式不正确
+				}elseif(!empty($_POST['qq']) && !preg_match("/^[1-9]{1}[0-9]{4,10}$/", $_POST['qq'])){																// QQ格式不正确
 					$errmsg = 'qq_illeagal';
 				}elseif(empty($_POST['studentid'])){																						// 空学号
 					$errmsg = 'studentid_required';

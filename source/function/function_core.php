@@ -298,6 +298,26 @@ function checkrobot($useragent = '') {
 }
 
 /**
+ * 将文件数据转化为Base64处理的字符串，以嵌入HTML, CSS
+ * 
+ * @param string $path 文件路径
+ * @return string 处理结果
+ */
+function file2base64($path) {
+	$data = @file_get_contents($path);
+	if(!$data) return $path;
+	$data = base64_encode($data);
+	//$data = chunk_split($data);
+	switch(fileext($path)){//判读图片类型
+		case 'gif': $type='image/gif'; break;
+		case 'jpg': $type='image/jpg'; break;
+		case 'png': $type='image/png'; break;
+		default   : $type='';
+	}
+	return 'data:'.($type ? $type.';base64,' : ',').$data;
+}
+
+/**
  * 添加邮件到队列，或者直接发送邮件（当level为0时）
  * 
  * @param string $uids		用户 ID 多个用逗号(,)隔开
