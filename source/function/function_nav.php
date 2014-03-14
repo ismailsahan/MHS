@@ -34,13 +34,7 @@ function defaultNav(){
 					'icon' => '',
 					'tag' => 'info',
 					'children' => array()
-				),
-				/*array(
-					'title' => 'cgpwd',
-					'link' => 'self/cgpwd',
-					'icon' => '',
-					'children' => array()
-				),*/
+				)
 			)
 		),
 	);

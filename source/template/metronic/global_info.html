@@ -1,0 +1,81 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/site_info}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-editable/bootstrap-editable/css/bootstrap-editable.css"/>
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/global.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			//IdleTimeout.init();
+			Global.initBaseInfo();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<table id="table-profile" class="table table-bordered table-striped table-hover">
+				<tbody>
+					<tr>
+						<th style="width:10em">选项</th>
+						<th>值</th>
+						<th>说明</th>
+					</tr>
+					<tr>
+						<td>站点名称</td>
+						<td><a href="javascript:;" id="sitename" data-type="text" data-pk="1" data-value="{nocache}{$_G.setting.sitename}{/nocache}"></a></td>
+						<td>站点名称，将显示在浏览器窗口标题等位置</td>
+					</tr>
+					<tr>
+						<td>站点LOGO</td>
+						<td><a href="javascript:;" id="logopath" data-type="text" data-pk="1" data-value="{nocache}{$_G.setting.logopath}{/nocache}"></a></td>
+						<td>站点LOGO路径</td>
+					</tr>
+					<tr>
+						<td>版权信息</td>
+						<td><a href="javascript:;" id="copyright" data-type="textarea" data-pk="1" data-value="{nocache}{$_G.setting.copyright}{/nocache}"></a></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>在线客服代码</td>
+						<td><a href="javascript:;" id="onlineservice" data-type="textarea" data-pk="1" data-value="{nocache}{htmlentities($_G.setting.service)}{/nocache}"></a></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>备案信息代码</td>
+						<td><a href="javascript:;" id="icp" data-type="text" data-pk="1" data-value="{nocache}{$_G.setting.icp}{/nocache}"></a></td>
+						<td>页面底部可以显示 ICP 备案信息，如果网站已备案，在此输入您的授权码，它将显示在页面底部，如果没有请留空</td>
+					</tr>
+					<tr>
+						<td>第三方统计代码</td>
+						<td><a href="javascript:;" id="statcode" data-type="textarea" data-pk="1" data-value="{nocache}{htmlentities($_G.setting.statcode)}{/nocache}"></a></td>
+						<td>页面底部可以显示第三方统计</td>
+					</tr>
+					<tr>
+						<td>禁止浏览器缓冲</td>
+						<td><a href="javascript:;" id="nocacheheaders" data-type="select2" data-pk="1" data-value="{nocache}{$_G.setting.nocacheheaders}{/nocache}"></a></td>
+						<td>禁止浏览器对站点页面进行缓冲，可用于解决极个别浏览器内容刷新不正常的问题。注意: 本功能会加重服务器负担</td>
+					</tr>
+					<tr>
+						<td>显示程序运行信息</td>
+						<td><a href="javascript:;" id="debug" data-type="select2" data-pk="1" data-value="{nocache}{$_G.setting.debug}{/nocache}"></a></td>
+						<td>选择“是”将在页脚处显示程序运行时间和数据库查询次数</td>
+					</tr>
+					<tr>
+						<td>关闭站点</td>
+						<td><a href="javascript:;" id="closed" data-type="select2" data-pk="1" data-value="{nocache}{$_G.setting.closed}{/nocache}"></a></td>
+						<td>暂时将站点关闭，其他人无法访问，但不影响管理员访问</td>
+					</tr>
+					<tr>
+						<td>关闭站点的原因</td>
+						<td><a href="javascript:;" id="closereason" data-type="textarea" data-pk="1" data-value="{nocache}{$_G.setting.closereason}{/nocache}"></a></td>
+						<td>站点关闭时出现的提示信息</td>
+					</tr>
+				</tbody>
+			</table>
+{/block}

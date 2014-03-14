@@ -2,6 +2,7 @@
 
 /**
  * 主界面模块
+ * SELECT * FROM `conn_users_profile` WHERE FIND_IN_SET('4', `department`)
  */
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');

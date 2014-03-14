@@ -2,7 +2,6 @@
 {block subtitle}{lang nav/manhour}{/block}
 {block pagestyle}
 <link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-editable/bootstrap-editable/css/bootstrap-editable.css"/>
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-editable/inputs-ext/address/address.css"/>
 <link rel="stylesheet" type="text/css" href="assets/css/pages/profile.css" />
 {/block}
 {block pageplugins}
@@ -10,15 +9,8 @@
 	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script> 
-	<script type="text/javascript" src="assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
 	<script type="text/javascript" src="assets/plugins/moment.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery.mockjax.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-editable/inputs-ext/address/address.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-editable/inputs-ext/wysihtml5/wysihtml5.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/selfprofile.js'}"></script>
 {/block}
@@ -58,9 +50,9 @@
 									<div class="col-md-3">
 										<ul class="ver-inline-menu tabbable margin-bottom-10">
 											<li class="active"><a data-toggle="tab" href="#tab_profile"><i class="fa fa-cog"></i> 个人档案</a><span class="after"></span></li>
-											<li ><a data-toggle="tab" href="#tab_avatar"><i class="fa fa-picture-o"></i> 更换头像</a></li>
-											<li ><a data-toggle="tab" href="#tab_pwd"><i class="fa fa-lock"></i> 修改密码</a></li>
-											<li ><a data-toggle="tab" href="#tab_private"><i class="fa fa-eye"></i> 隐私选项</a></li>
+											<li><a data-toggle="tab" href="#tab_avatar"><i class="fa fa-picture-o"></i> 更换头像</a></li>
+											<li><a data-toggle="tab" href="#tab_pwd"><i class="fa fa-lock"></i> 修改密码</a></li>
+											{*<!--<li><a data-toggle="tab" href="#tab_private"><i class="fa fa-eye"></i> 隐私选项</a></li>-->*}
 										</ul>
 									</div>
 									<div class="col-md-9">
@@ -153,7 +145,7 @@
 													<div class="margin-top-10"><button type="submit" class="btn green">修改密码</button></div>
 												</form>
 											</div>
-											<div id="tab_private" class="tab-pane">
+											<!--{*<div id="tab_private" class="tab-pane">
 												<form action="#" class="">
 													<table class="table table-bordered table-striped">
 														<tr>
@@ -176,13 +168,12 @@
 															<td><label class="uniform-inline"><input type="checkbox" name="accepteml" value="" /></label></td>
 														</tr>
 													</table>
-													<!--end profile-settings-->
 													<div class="margin-top-10">
 														<a href="#" class="btn green">Save Changes</a>
 														<a href="#" class="btn default">Cancel</a>
 													</div>
 												</form>
-											</div>
+											</div>*}-->
 										</div>
 									</div>
 									<!--end col-md-9-->                                   

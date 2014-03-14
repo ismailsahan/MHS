@@ -19,16 +19,14 @@ $lang = array(
 	'interface_detail'		=> '',
 
 	/* 个人 */
-	'profile' 				=> '个人资料',
-	'profile_detail' 		=> '',
-	'pm' 					=> '消息通知',
-	'pm_detail' 			=> '',
-	'cgpwd' 				=> '修改密码',
-	'cgpwd_detail' 			=> '',
+	'profile'				=> '个人资料',
+	'profile_detail'		=> '',
+	'pm'					=> '消息通知',
+	'pm_detail'				=> '',
 
 	/* 全局 */
 	'site_info'				=> '站点信息',
-	'site_info_detail'		=> '这里可以修改系统的基本设置',
+	'site_info_detail'		=> '您在这里可以修改系统的基本设置',
 	'member_access'			=> '注册与访问控制',
 	'member_access_detail'	=> '',
 	'seccheck'				=> '验证码设置',

@@ -243,11 +243,11 @@ class ApiAction extends Action {
 		if($_G['uid'] && !empty($_REQUEST['badge']) && is_array($_REQUEST['badge'])){
 			foreach($_REQUEST['badge'] as $badge){
 				switch($badge){
-					case 'profile/pm'		: $result[$badge] = 0; break;
-					case 'global/info'		: $result[$badge] = 0; break;
-					case 'members/activate'	: $result[$badge] = 0; break;
-					case 'manhour/applylog'	: $result[$badge] = 0; break;
-					case 'manhour/checklog'	: $result[$badge] = 0; break;
+					case 'profile/pm'			: $result[$badge] = 0; break;
+					case 'global/info'			: $result[$badge] = 0; break;
+					case 'members/verifyuser'	: $result[$badge] = 1; break;
+					case 'manhour/applylog'		: $result[$badge] = 0; break;
+					case 'manhour/checklog'		: $result[$badge] = 0; break;
 				}
 			}
 		}

@@ -272,7 +272,7 @@ var App = function () {
 			$.get("index.php?action=api&operation=badge", badges, function(data) {
 				$('.page-sidebar li span.badge').each(function() {
 					var idx = $(this).html();
-					if(typeof data[idx] != "undefined") $(this).html(data[idx]).removeClass("hidden");
+					if(typeof data[idx] != "undefined" && data[idx] != "" && data[idx] != 0) $(this).html(data[idx]).removeClass("hidden");
 				});
 			}, "json");
 		}

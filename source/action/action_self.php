@@ -25,7 +25,7 @@ class SelfAction extends Action {
 			$name = &$_POST['name'];
 			$value = &$_POST['value'];
 			if($_G['setting']['profileset'] && $_G['setting']['profileset'][$name] && !$_G['setting']['profileset'][$name]){
-				$this->_ajaxError('管理员不允许修改这一栏！');
+				$this->_ajaxError('管理员不允许用户修改这一栏！如急需修改，请联系管理员');
 			}
 			require_once libfile('function/logging');
 			switch($name){
@@ -36,19 +36,30 @@ class SelfAction extends Action {
 						$this->_ajaxError('Email 不能为空');
 					}
 					require libfile('function/logging');
-					$errno = edituser($_G['username'], null, null, $value, true);
-					if($errno === 1){
-						login($_G['username'], '', $errmsg, $_G['uid'], '', false);
-					}elseif($errno === -4){
+					$errno = checkemail($value);
+					if($errno === -4 || !isemail($value)){
 						$this->_ajaxError('Email 格式有误');
+					}elseif($errno === 1){
+						$errno = edituser($_G['username'], null, null, $value, true);
+						if($errno === 1){
+							login($_G['username'], '', $errmsg, $_G['uid'], '', false);
+						}elseif($errno === -4){
+							$this->_ajaxError('Email 格式有误');
+						}elseif($errno === -5){
+							$this->_ajaxError('该 Email 不允许注册');
+						}elseif($errno === -6){
+							$this->_ajaxError('该 Email 已经被注册');
+						}elseif($errno == 0 || $errno == -7){
+							$result['msg'] = '没有做任何修改';
+						}elseif($errno == -8){
+							$result['msg'] = '用户受保护无权限更改';
+						}else{
+							$this->_ajaxError('未知错误');
+						}
 					}elseif($errno === -5){
 						$this->_ajaxError('该 Email 不允许注册');
 					}elseif($errno === -6){
 						$this->_ajaxError('该 Email 已经被注册');
-					}elseif($errno == 0 || $errno == -7){
-						$result['msg'] = '没有做任何修改';
-					}elseif($errno == -8){
-						$result['msg'] = '用户受保护无权限更改';
 					}else{
 						$this->_ajaxError('未知错误');
 					}
@@ -177,6 +188,21 @@ class SelfAction extends Action {
 			}
 			setToken('cgpwd');
 			$template->display('profile');
+		}
+	}
+
+	public function pm(){
+		global $_G, $template;
+
+		if(IS_AJAX){
+			;
+		}else{
+			if(!$template->isCached('pm')){
+				$template->assign('sidebarMenu', defaultNav());
+				$template->assign('adminNav', adminNav());
+				$template->assign('menuset', array('self', 'pm'));
+			}
+			$template->display('pm');
 		}
 	}
 

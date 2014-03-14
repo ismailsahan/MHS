@@ -107,35 +107,48 @@ class LoggingAction extends Action {
 				$errmsg = 'rpassword_notmatch';
 			}elseif(empty($email)){							// 空邮箱
 				$errmsg = 'email_required';
+			}elseif(!isemail($email)){						// 邮箱格式不正确
+				$errmsg = 'email_illegal';
 			}else{
-				$uid = reguser($username, $password, $email);
-				switch($uid) {
-					case -1:	// 用户名不合法
-						$errmsg = 'username_illegal';
-						break;
-					case -2:	// 包含不允许注册的词语
-						$errmsg = 'username_notallowed';
-						break;
-					case -3:	// 用户名已经存在
-						$errmsg = 'username_exists';
-						break;
-					case -4:	// Email 格式有误
-						$errmsg = 'email_illegal';
-						break;
-					case -5:	// Email 不允许注册
-						$errmsg = 'email_notallowed';
-						break;
-					case -6:	// 该 Email 已经被注册
-						$errmsg = 'email_exists';
-						break;
-					case  0:	// 未知错误
-						$errmsg = 'unknown_error';
-						break;
-					default:	// 注册成功
-						login($username, null, $errmsg, $uid, $email, false);
-						$template->assign('msg', lang('logging', 'register_success', array($uid, $username)), true);
-						return $template->display('register_success');
-						break;
+				$errno = checkemail($value);
+				if($errno === -4){
+					$errmsg = 'email_illegal';
+				}elseif($errno === 1){
+					$uid = reguser($username, $password, $email);
+					switch($uid) {
+						case -1:	// 用户名不合法
+							$errmsg = 'username_illegal';
+							break;
+						case -2:	// 包含不允许注册的词语
+							$errmsg = 'username_notallowed';
+							break;
+						case -3:	// 用户名已经存在
+							$errmsg = 'username_exists';
+							break;
+						case -4:	// Email 格式有误
+							$errmsg = 'email_illegal';
+							break;
+						case -5:	// Email 不允许注册
+							$errmsg = 'email_notallowed';
+							break;
+						case -6:	// 该 Email 已经被注册
+							$errmsg = 'email_exists';
+							break;
+						case  0:	// 未知错误
+							$errmsg = 'unknown_error';
+							break;
+						default:	// 注册成功
+							//login($username, null, $errmsg, $uid, $email, false);
+							$template->assign('msg', lang('logging', 'register_success', array($uid, $username)), true);
+							return $template->display('register_success');
+							break;
+					}
+				}elseif($errno === -5){
+					$errmsg = 'email_notallowed';
+				}elseif($errno === -6){
+					$errmsg = 'email_exists';
+				}else{
+					$errmsg = 'unknown_error';
 				}
 			}
 		}elseif(empty($errmsg) && (IS_POST || !empty($_POST)) && !defined('CC_REQUEST')){

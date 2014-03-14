@@ -29,7 +29,7 @@ $lang = array(
 	'register'					=> '注册',
 	'register_success'			=> '注册成功',
 	'register_success_tip'		=> '恭喜您已注册成功！您的用户ID是 %d，用户名为 %s',
-	'register_success_redirect'	=> '5 秒后我们将带领您进入激活页面，请稍候',
+	'register_success_redirect'	=> '5 秒后我们将带领您进入登录页面，请稍候',
 
 	/* 激活 */
 	'activate'					=> '激活',

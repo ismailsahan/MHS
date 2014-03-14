@@ -64,10 +64,25 @@ var Activate = function () {
 				$("#alert-modal").modal("show");
 			}
 
-			function loading() {
+			/*function showloading() {
 				$("body").modalmanager("loading");
 				$(".modal-scrollable").unbind("click");
-			}
+			}*/
+			function showloading() {
+				$.blockUI({
+					message: '<img src="assets/img/ajax-loading.gif" />',
+					css: {
+						border: 'none',
+						backgroundColor: 'none'
+					},
+					overlayCSS: {
+						backgroundColor: '#000',
+						opacity: 0.2,
+						cursor: 'wait'
+					},
+					baseZ: 11000
+				});
+			};
 
 			$("#gender").select2({
 				placeholder: '{lang gender}',
@@ -140,7 +155,7 @@ var Activate = function () {
 				if($('#agreement-modal').data("inited")){
 					$("#agreement-modal").modal();
 				}else{
-					loading();
+					showloading();
 					$.get("{U api/tos}", function(text){
 						if(typeof markdown == 'object') {
 							text = markdown.toHTML(text);
@@ -157,6 +172,7 @@ var Activate = function () {
 							$("#agreement-modal").modal("hide");
 							$("input[name='agreement']").prop("checked", true).uniform.update();
 						});
+						$.unblockUI();
 						$("#agreement-modal").modal();
 					});
 				}
@@ -426,11 +442,12 @@ var Activate = function () {
 			$('#activate .button-submit').click(function() {
 				if(form.validate().element($("#verifycode")) == false) return $("#verifycode").focus();
 				var url = $("#submit_form").attr("action");
-				loading();
+				showloading();
 				$.post(url + (url.indexOf("?")>-1 ? "&inajax=1" : "/inajax/1"), $("#submit_form").serialize(), function(data){
 					if(data.url) {
 						window.location.href(data.url);
 					}else if(data.msg){
+						$.unblockUI();
 						modalAlert(data.msg);
 						if(data.errno){
 							switch(data.errno) {
@@ -446,13 +463,13 @@ var Activate = function () {
 				});
 			}).hide();
 
-			$.fn.modal.defaults.spinner = $.fn.modalmanager.defaults.spinner = 
+			/*$.fn.modal.defaults.spinner = $.fn.modalmanager.defaults.spinner = 
 				'<div class="loading-spinner" style="width: 200px; margin-left: -100px;">' +
 					'<div class="progress progress-striped active">' +
 						'<div class="progress-bar" style="width: 100%;"></div>' +
 					'</div>' +
 				'</div>';
-			$.fn.modalmanager.defaults.resize = true;
+			$.fn.modalmanager.defaults.resize = true;*/
 
 		}
 

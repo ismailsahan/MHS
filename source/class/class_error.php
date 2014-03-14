@@ -75,7 +75,8 @@ class framework_error {
 			$e['message'] = lang('error', $e['message'], empty($param) ? null : (is_array($param) ? $param : array('str' => $param)));
 			process('错误：'.$e['message']);
 			if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
-			
+
+			send_http_status(500);
 			if(IS_AJAX) ajaxReturn(array(
 				'errno' => 500,
 				'msg'	=> $e['message']

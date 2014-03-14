@@ -1,0 +1,126 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/member_access}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-markdown/css/bootstrap-markdown.min.css" />
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-markdown/js/bootstrap-markdown.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-markdown/lib/markdown.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/global.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			//IdleTimeout.init();
+			Global.initAccessCtrl();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div class="tabbable tabbable-custom boxless">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#reg" data-toggle="tab">注册</a></li>
+					<li><a href="#act" data-toggle="tab">激活</a></li>
+					<li><a href="#acs" data-toggle="tab">访问控制</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="reg">
+						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption"><i class="fa fa-reorder"></i>注册选项</div>
+							</div>
+							<div class="portlet-body form">
+								<form action="{U global/access}" method="post" class="form-horizontal form-row-seperated">
+									<div class="form-body">
+										<div class="form-group">
+											<label class="control-label col-md-3">允许新用户注册</label>
+											<div class="col-md-9">
+												<div class="radio-list">
+													<label class="radio-inline"><input type="radio" name="regopen" value="1"{nocache}{if $_G.setting.regopen} checked{/if}{/nocache} /> 是</label>
+													<label class="radio-inline"><input type="radio" name="regopen" value="0"{nocache}{if !$_G.setting.regopen} checked{/if}{/nocache} /> 否</label>
+												</div>
+												<span class="help-block">设置是否允许游客注册成为站点会员</span>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">关闭注册提示信息</label>
+											<div class="col-md-9">
+												<textarea name="regclosedreason" class="form-control" rows="3">{nocache}{$_G.setting.regclosedreason}{/nocache}</textarea>
+												<span class="help-block">当站点关闭注册时的提示信息</span>
+											</div>
+										</div>
+										<div class="form-group last">
+											<label class="control-label col-md-3">网站服务条款内容</label>
+											<div class="col-md-9">
+												<textarea name="tos" data-provide="markdown" rows="10" data-error-container="#editor_error"></textarea>
+												<div id="editor_error"></div>
+											</div>
+										</div>
+									</div>
+									<div class="form-actions fluid">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="submit" class="btn green"><i class="fa fa-pencil"></i> 提交</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="act">
+						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption"><i class="fa fa-reorder"></i>激活选项</div>
+							</div>
+							<div class="portlet-body form">
+								<form action="{U global/access}" method="post" class="form-horizontal form-row-seperated">
+									<div class="form-body">
+										<div class="form-group">
+											<label class="control-label col-md-3">允许新用户激活</label>
+											<div class="col-md-9">
+												<div class="radio-list">
+													<label class="radio-inline"><input type="radio" name="actopen" value="1"{nocache}{if $_G.setting.actopen} checked{/if}{/nocache} /> 是</label>
+													<label class="radio-inline"><input type="radio" name="actopen" value="0"{nocache}{if !$_G.setting.actopen} checked{/if}{/nocache} /> 否</label>
+												</div>
+												<span class="help-block">设置是否允许已注册用户正式成为站点会员</span>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="control-label col-md-3">关闭激活提示信息</label>
+											<div class="col-md-9">
+												<textarea name="actclosedreason" class="form-control" rows="3">{nocache}{$_G.setting.actclosedreason}{/nocache}</textarea>
+												<span class="help-block">当站点关闭激活时的提示信息</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-actions fluid">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="submit" class="btn green"><i class="fa fa-pencil"></i> 提交</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="acs">
+						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption"><i class="fa fa-reorder"></i>访问控制</div>
+							</div>
+							<div class="portlet-body">
+								Coming soon!
+							</div>
+						</div>
+					</div>
+				</div>
+{/block}

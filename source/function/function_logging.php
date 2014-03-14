@@ -24,10 +24,11 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 			$errmsg = lang('logging', 'login_frozen', array('mins' => ceil(($failedlogin['lastupdate'] - TIMESTAMP)/60 + $_G['setting']['failedlogin']['time'])));
 		}else{
 			include_once libfile('client', '/uc_client');
-			$user = uc_user_login($username, $password, 0);
+			$user = uc_user_login($username, $password, isemail($username) ? 2 : 0);
 			$falselogin = false;
 			if($user[0] > 0){//用户名与密码匹配
 				$uid = $user[0];
+				$username = $user[1];
 				$email = $user[3];
 				return login($username, null, $errmsg, $uid, $email, $redirect);
 			}elseif($user[0] == -1){//用户不存在，或者被删除
@@ -276,7 +277,7 @@ function delavatar($uid){
 	return uc_user_deleteavatar($uid);
 }
 
-/**
+/** 
  * 检查 Email 地址
  * 
  * @param string $email Email地址
