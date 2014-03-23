@@ -1,0 +1,22 @@
+{extends 'common_main.html'}
+{block subtitle}系统提示{/block}
+{block pagestyle}<link rel="stylesheet" type="text/css" href="assets/css/pages/error.css" />{/block}
+{block pageplugins}{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div class="row">
+				<div class="col-md-12 page-500">
+					<div class="number">403</div>
+					<div class="details">
+						<h3>Forbidden</h3>
+						<p>你无权访问此页面！<br /><br /></p>
+					</div>
+				</div>
+			</div>
+{/block}

@@ -265,7 +265,7 @@ class LoggingAction extends Action {
 						$_G['uid'],							// 用户ID
 						$_G['member']['email'],				// 邮箱
 						$_G['username'],					// 用户名
-						0,									// 审核状态，0表示审核中，1表示通过审核，2表示未通过审核
+						0,									// 审核状态，0等待审核，1通过审核，2未通过审核
 						TIMESTAMP,							// 申请时间
 						0,									// 审核时间
 						$_POST['realname'],					// 真实名字

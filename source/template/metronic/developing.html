@@ -1,0 +1,22 @@
+{extends 'common_main.html'}
+{block subtitle}系统提示{/block}
+{block pagestyle}<link rel="stylesheet" type="text/css" href="assets/css/pages/error.css" />{/block}
+{block pageplugins}{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div class="row">
+				<div class="col-md-12 page-500">
+					<div class="number">501</div>
+					<div class=" details">
+						<h3>此功能尚未上线</h3>
+						<p>Not Implemented<br />此功能正处于开发/调试阶段<br />请稍候来访<br /><br /></p>
+					</div>
+				</div>
+			</div>
+{/block}

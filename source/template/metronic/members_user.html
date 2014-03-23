@@ -1,0 +1,263 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/user}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<style type="text/css" media="screen">
+#users tr, #users td {
+	vertical-align: middle;
+}
+</style>
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/members.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			//IdleTimeout.init();
+			Members.init();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">提示信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row"><div class="col-md-12"></div></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="act-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">活动详情</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="col-md-3">活动名称:</p>
+							<p class="col-md-9" data-act="name">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">活动地点:</p>
+							<p class="col-md-9" data-act="place">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">开始时间:</p>
+							<p class="col-md-9" data-act="starttime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">结束时间:</p>
+							<p class="col-md-9" data-act="endtime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">主办者:</p>
+							<p class="col-md-9" data-act="sponsor">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">承办者:</p>
+							<p class="col-md-9" data-act="undertaker">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">活动介绍:</p>
+							<p class="col-md-9" data-act="intro">-</p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="mh-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">工时详情</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="col-md-3">活动名称:</p>
+							<p class="col-md-9" data-mh="actname">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">工时数:</p>
+							<p class="col-md-9" data-mh="manhour">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">时间:</p>
+							<p class="col-md-9" data-mh="time">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">状态:</p>
+							<p class="col-md-9" data-mh="status">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">申请时间:</p>
+							<p class="col-md-9" data-mh="applytime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">审查时间:</p>
+							<p class="col-md-9" data-mh="verifytime">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">申请留言:</p>
+							<p class="col-md-9" data-mh="remark">-</p>
+						</div>
+						<div class="col-md-6">
+							<p class="col-md-3">验证留言:</p>
+							<p class="col-md-9" data-mh="verifytext">-</p>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="applymh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">申报工时</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U api/applymh}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">活动<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><select class="select2 form-control" id="aid" name="aid" required><option value=""></option></select></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">工时<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="manhour" value="" required /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">时间<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10">
+								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+0d">
+									<input type="text" name="time" class="form-control" required />
+									<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">留言<span class="required">&nbsp;</span></label>
+							<div class="col-xs-9 col-sm-10"><textarea class="form-control" name="remark" rows="4"></textarea></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">申报</button>
+				</div>
+			</div>
+			<div id="checkmh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">复查工时</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U api/checkmh}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-12"><p class="text-left">理由<span class="required">*</span></p></label>
+							<div class="col-xs-12"><textarea class="form-control" name="remark" rows="6"></textarea></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">申请复查</button>
+				</div>
+			</div>
+			<div class="portlet box grey">
+				<div class="portlet-title">
+					<div class="caption"><i class="fa fa-user"></i> 用户管理</div>
+					<div class="actions">
+						<div class="btn-group">
+							<a class="btn default" href="#" data-toggle="dropdown">显示列 <i class="fa fa-angle-down"></i></a>
+							<div id="column_toggler" class="dropdown-menu hold-on-click dropdown-checkboxes pull-right">
+								<label><input type="checkbox" data-column="avatar" checked>头像</label>
+								<label><input type="checkbox" data-column="uid" checked>UID</label>
+								<label><input type="checkbox" data-column="username" checked>用户名</label>
+								<label><input type="checkbox" data-column="realname" checked>真实姓名</label>
+								<label><input type="checkbox" data-column="gender" checked>性别</label>
+								<label><input type="checkbox" data-column="qq" checked>QQ号</label>
+								<label><input type="checkbox" data-column="email" checked>Email</label>
+								<label><input type="checkbox" data-column="manhour" checked>总工时</label>
+								<label><input type="checkbox" data-column="studentid" checked>学号</label>
+								<label><input type="checkbox" data-column="grade" checked>年级</label>
+								<label><input type="checkbox" data-column="academy" checked>学院</label>
+								<label><input type="checkbox" data-column="specialty" checked>专业</label>
+								<label><input type="checkbox" data-column="class" checked>班级</label>
+								<label><input type="checkbox" data-column="league" checked>社团</label>
+								<label><input type="checkbox" data-column="department" checked>部门</label>
+								<label><input type="checkbox" data-column="mobile" checked>手机</label>
+								<label><input type="checkbox" data-column="lastlogin" checked>最后登录时间</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="portlet-body">
+					<table class="table table-striped table-bordered table-hover" id="users">
+						<thead><tr>
+							<th style="width:41px"><input type="checkbox" class="group-checkable" data-set="#users .checkboxes" /></th>
+							<th style="width:48px">头像</th>
+							<th>UID</th>
+							<th>用户名</th>
+							<th>真名</th>
+							<th>性别</th>
+							<th>QQ</th>
+							<th>Email</th>
+							<th>工时</th>
+							<th>学号</th>
+							<th>年级</th>
+							<th>学院</th>
+							<th>专业</th>
+							<th>班级</th>
+							<th>社团</th>
+							<th>部门</th>
+							<th>手机</th>
+							<th>最后登录</th>
+							<th style="width:61px"></th>
+						</tr></thead>
+						<tbody>
+							{foreach $users as $user}
+							<tr class="odd gradeX">
+								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$user.id}" /></td>
+								<td><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$user.uid}{/nocache}&size=small" width="48" height="48" /></td>
+								<td>{$user.uid}</td>
+								<td>{$user.username}</td>
+								<td>{$user.realname}</td>
+								<td data-gender="{$user.gender}">-</td>
+								<td>{$user.qq}</td>
+								<td>{$user.email}</td>
+								<td>{$user.manhour}</td>
+								<td>{$user.studentid}</td>
+								<td data-grade="{$user.grade}">-</td>
+								<td data-academy="{$user.academy}">-</td>
+								<td data-specialty="{$user.specialty}">-</td>
+								<td data-class="{$user.class}">-</td>
+								<td data-league="{$user.league}">-</td>
+								<td data-department="{$user.department}">-</td>
+								<td>{$user.mobile}</td>
+								<td data-time="{$user.lastlogin}">-</td>
+								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">编辑</a> <a href="javascript:;" class="btn btn-xs default red-stripe">删除</a></td>
+							</tr>
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+{/block}

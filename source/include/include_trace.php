@@ -38,7 +38,7 @@ if(class_exists('DB')){
 			$sqldebugrow .= '';
 			while($row = DB::fetch($query)) {
 				if(!$i) {
-					$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
+					//$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
 					$i++;
 				}
 				if(strexists($row['Extra'], 'Using filesort')) {
@@ -49,7 +49,7 @@ if(class_exists('DB')){
 					$sqlw['Using temporary']++;
 					$extra .= $row['Extra'];
 				}
-				$sqldebugrow .= ''.implode('_SP_', $row).'';
+				//$sqldebugrow .= ''.implode('_SP_', $row).'';
 			}
 			$sqldebugrow .= '';
 		}elseif(preg_match('/^UPDATE /', $string[0])){
@@ -62,7 +62,7 @@ if(class_exists('DB')){
 			$queryinfo['delete']++;
 		}
 
-		$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
+		/*$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
 		foreach($string[2] as $error) {
 			$error['file'] = str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']);
 			$error['class'] = isset($error['class']) ? $error['class'] : '';
@@ -71,9 +71,9 @@ if(class_exists('DB')){
 			$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
 			/*if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
 				$dt = ' • '.$error['file'];
-			}*/
+			}* /
 		}
-		$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';
+		$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';*/
 		$sqldebug[] = $string[1].'s • DBLink '.$links[(string)$string[3]].$dt.'[br][color=blue]'.$sql.'[/color][br]'.$sqldebugrow;
 	}
 }

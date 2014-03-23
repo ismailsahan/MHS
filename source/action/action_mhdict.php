@@ -6,7 +6,7 @@
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
-class ToolAction extends Action {
+class MhdictAction extends Action {
 	public $default_method = 'index';
 	public $allowed_method = array('index');
 
@@ -19,7 +19,7 @@ class ToolAction extends Action {
 		if(!$template->isCached('developing')){
 			$template->assign('sidebarMenu', defaultNav());
 			$template->assign('adminNav', adminNav());
-			$template->assign('menuset', array('tool', OPERATION_NAME));
+			$template->assign('menuset', array('mhdict', OPERATION_NAME));
 		}
 		$template->display('developing');
 	}

@@ -10,7 +10,7 @@ error_reporting(0);
 
 require_once libfile('function/seccode');
 
-switch($operation){
+switch(OPERATION_NAME){
 	case 'update':
 		/*if(!strstr($_G['referer'], '/?') && !strstr($_G['referer'], '/index')) {
 			define('IN_ADMINCP', TRUE);
@@ -20,7 +20,11 @@ switch($operation){
 		//exit($sec[1]);
 		break;
 	case 'check':
-		check_seccode($_GET['seccode'], $_GET['tag']);
+		$result = check_seccode($_GET['seccode'], empty($_GET['tag']) ? null : $_GET['tag']);
+		ajaxReturn(array(
+			'errno' => 0,
+			'result' => $result
+		), 'JSON');
 		break;
 	case 'html':
 		$id = $_REQUEST['id'];
@@ -46,12 +50,14 @@ switch($operation){
 				$html .= ' /></a>';
 				break;
 			case 2:
+				$_REQUEST['imgurl'] = empty($_REQUEST['imgurl']) ? U('seccode/index') : $_G['siteurl'].$_REQUEST['imgurl'];
 				$html .= extension_loaded('ming') ?
-						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl'].$_REQUEST['imgurl']."','quality', 'high', 'wmode', 'transparent', 'bgcolor', '#ffffff','align', 'middle', 'menu', 'false', 'allowScriptAccess', 'never')" :
-						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl']."static/seccode/flash/flash2.swf', 'FlashVars', 'sFile=".rawurlencode($_G['siteurl'].$_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
+						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_REQUEST['imgurl']."','quality', 'high', 'wmode', 'transparent', 'bgcolor', '#ffffff','align', 'middle', 'menu', 'false', 'allowScriptAccess', 'never')" :
+						lang('core', 'seccode_swf'.$ani.'_tips', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('width', '".$_G['setting']['seccodedata']['width']."', 'height', '".$_G['setting']['seccodedata']['height']."', 'src', '".$_G['siteurl']."static/seccode/flash/flash2.swf', 'FlashVars', 'sFile=".rawurlencode($_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
 				break;
 			case 3:
-				$html .= lang('core', 'seccode_sound_tips', array('id'=>$id, 'hash'=>$hash)).lang('core', 'seccode_player', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('id', 'seccodeplayer_$hash', 'name', 'seccodeplayer_$hash', 'width', '0', 'height', '0', 'src', '".$_G['siteurl']."static/seccode/flash/flash1.swf', 'FlashVars', 'sFile=".rawurlencode($_G['siteurl'].$_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
+				$_REQUEST['imgurl'] = empty($_REQUEST['imgurl']) ? U('seccode/index') : $_G['siteurl'].$_REQUEST['imgurl'];
+				$html .= lang('core', 'seccode_sound_tips', array('id'=>$id, 'hash'=>$hash)).lang('core', 'seccode_player', array('id'=>$id, 'hash'=>$hash))."AC_FL_RunContent('id', 'seccodeplayer_$hash', 'name', 'seccodeplayer_$hash', 'width', '0', 'height', '0', 'src', '".$_G['siteurl']."static/seccode/flash/flash1.swf', 'FlashVars', 'sFile=".rawurlencode($_REQUEST['imgurl'])."', 'menu', 'false', 'allowScriptAccess', 'never', 'swLiveConnect', 'true', 'wmode', 'transparent')";
 				break;
 		}
 		$html .= '</div>';
@@ -62,9 +68,9 @@ switch($operation){
 		$seccode = empty($_GET['tag']) ? make_seccode() : ($_REQUEST['fromFlash'] && in_array($_G['setting']['seccodedata']['type'], array(2, 3)) && isset($_SESSION['seccode'][$_GET['tag']]) ? $_SESSION['seccode'][$_GET['tag']]['seccode'] : make_seccode($_GET['tag']));
 
 		if(!$_G['setting']['nocacheheaders']) {
-			@header("Expires: -1");
-			@header("Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0", FALSE);
-			@header("Pragma: no-cache");
+			@header('Expires: -1');
+			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
+			@header('Pragma: no-cache');
 		}
 
 		require_once libfile('class/seccode');

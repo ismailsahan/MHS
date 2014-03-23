@@ -3,7 +3,7 @@
 /**
  * 返回默认侧边导航栏列表
  */
-function defaultNav(){
+function &defaultNav(){
 	return array(
 		array(
 			'title' => 'home',
@@ -43,8 +43,8 @@ function defaultNav(){
 /**
  * 返回管理的侧边导航栏列表
  */
-function adminNav(){
-	return array(
+function &adminNav(){
+	static $nav = array(
 		array(
 			'title' => 'global',
 			'link' => '',
@@ -119,12 +119,12 @@ function adminNav(){
 					'icon' => '',
 					'children' => array()
 				),
-				array(
+				/*array(
 					'title' => 'adduser',
 					'link' => 'members/adduser',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				array(
 					'title' => 'sdmsg',
 					'link' => 'members/sdmsg',
@@ -146,7 +146,7 @@ function adminNav(){
 				array(
 					'title' => 'verifyuser',
 					'link' => 'members/verifyuser',
-					'tag' => 'warning',
+					'tag' => 'danger',
 					'icon' => '',
 					'children' => array()
 				),
@@ -217,14 +217,14 @@ function adminNav(){
 					'title' => 'applylog',
 					'link' => 'manhour/applylog',
 					'icon' => '',
-					'tag' => 'warning',
+					'tag' => 'danger',
 					'children' => array()
 				),
 				array(
 					'title' => 'checklog',
 					'link' => 'manhour/checklog',
 					'icon' => '',
-					'tag' => 'warning',
+					'tag' => 'danger',
 					'children' => array()
 				),
 				array(
@@ -235,25 +235,92 @@ function adminNav(){
 				),
 			)
 		),
+		array(
+			'title' => 'mhdict',
+			'link' => '',
+			'icon' => 'file-text',
+			'children' => array(
+				array(
+					'title' => 'activity',
+					'link' => 'mhdict/activity',
+					'icon' => '',
+					'children' => array()
+				),
+				array(
+					'title' => 'basic',
+					'link' => 'mhdict/basic',
+					'icon' => '',
+					'children' => array()
+				),
+				array(
+					'title' => 'league',
+					'link' => 'mhdict/league',
+					'icon' => '',
+					'children' => array()
+				),
+			)
+		),
 	);
+	return $nav;
 }
 
 /**
- * 检查管理权限
+ * 检查管理权限（模板用）
  * 
  * @param string $idx 菜单/权限索引
  * @return mixed
  */
-function chkPermit($idx) {
-	static $permit = array();
+function chkPermit($idx = null) {
+	static $menutitle = array(), $menuidx=null;
+	//static $count = 0;
 	global $_G;
+
+	if($idx === null) {
+		if(empty($menutitle))
+			$menutitle = menutitle(adminNav());
+		$idx = $menuidx = $menuidx===null ? current($menutitle) : next($menutitle);
+		//$idx = $menuidx = next($menutitle);
+	}
+
+	//trace($count++.' '.$idx);
 
 	if($_G['member']['adminid'] == 0) return false;	// 非管理组，不具备任何管理权限
 	if($_G['member']['adminid'] == 1) return true;	// 超级管理组，具有全部权限
-	if(empty($permit)) {	// 从数据库中获取权限信息
-		$permit = DB::result(DB::query('SELECT `permit` FROM %t WHERE `admingid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid'])));
-		$permit = empty($permit) ? array(0) : unserialize($permit);	// 查询为空时无任何管理权限，并为 $permit 添加元素0，避免多次查询
+	if(!isset($_G['member']['adminpermit']) && $_G['member']['adminid']>1) {	// 从数据库中获取权限信息
+		$_G['member']['adminpermit'] = DB::result_first('SELECT `permit` FROM %t WHERE `admingid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid']));
+		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : unserialize($_G['member']['adminpermit']);
 	}
 
-	return isset($permit[$idx]) ? $permit[$idx] : false;
+	return isset($_G['member']['adminpermit'][$idx]) ? $_G['member']['adminpermit'][$idx] : false;
+}
+
+/**
+ * 检查管理权限（后台用）
+ * 若无权限则显示拒绝访问
+ * 
+ * @param string $idx 菜单/权限索引
+ * @return mixed
+ */
+function has_permit($idx) {
+	if(!chkPermit($idx)) {
+		if(IS_AJAX) {
+			ajaxReturn(array(
+				'errno' => 401,
+				'msg' => '拒绝访问'
+			), 'AUTO');
+		}
+		global $template;
+		$template->display('noaccess');
+		exit;
+	}
+}
+
+function &menutitle($nav) {
+	$arr = array();
+	foreach($nav as $menu) {
+		$arr[] = $menu['title'];
+		if(!empty($menu['children']))
+			$arr = array_merge($arr, menutitle($menu['children']));
+	}
+	return $arr;
 }

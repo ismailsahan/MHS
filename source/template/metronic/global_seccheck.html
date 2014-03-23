@@ -2,6 +2,9 @@
 {block subtitle}{lang nav/seccheck}{/block}
 {block pagestyle}{/block}
 {block pageplugins}
+	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/global.js'}"></script>
 {/block}
 {block pagejs}
@@ -9,23 +12,29 @@
 		$(document).ready(function() {
 			App.init();
 			//IdleTimeout.init();
-			//Global.init();
+			Global.initSeccheck();
 		});
 	</script>
 {/block}
 {block pgcontent}
+			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">提示信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row"><div class="col-md-12"></div></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
 			<div class="portlet box blue">
 				<div class="portlet-title">
 					<div class="caption"><i class="fa fa-reorder"></i>{lang nav/seccheck}</div>
-					<div class="tools">
-						<a href="javascript:;" class="collapse"></a>
-						<a href="#portlet-config" data-toggle="modal" class="config"></a>
-						<a href="javascript:;" class="reload"></a>
-						<a href="javascript:;" class="remove"></a>
-					</div>
 				</div>
 				<div class="portlet-body form">
-					<form action="{U global/access}" class="form-horizontal form-row-seperated">
+					<form action="{U global/access}" id="secform" class="form-horizontal form-row-seperated">
 						<div class="form-body">
 							<div class="form-group">
 								<label class="control-label col-md-3">启用验证码</label>
@@ -43,11 +52,15 @@
 							<div class="form-group">
 								<label class="control-label col-md-3">验证码预览</label>
 								<div class="col-md-9">
-									<input type="text" class="form-control" id="verifycode" value="" />
+									<div class="input-icon right">
+										<i class="fa fa-remove"></i>
+										<input type="text" class="form-control" id="verifycode" maxlength="{$_G.setting.seccodedata.length}" value="" />
+									</div>
+									<span class="help-block">更新验证码设置后，您需要手动更换验证码才能看到效果</span>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="control-label col-md-3">验证码类型</label>
+								<label class="control-label col-md-3">验证码类型<span class="required">*</span></label>
 								<div class="col-md-9">
 									<div class="radio-list">
 										<label><input type="radio" name="sectype" value="0"{nocache}{if $_G.setting.seccodedata.type==0} checked{/if}{/nocache} /> 英文图片验证码</label>
@@ -60,7 +73,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="control-label col-md-3">验证码长度</label>
+								<label class="control-label col-md-3">验证码长度<span class="required">*</span></label>
 								<div class="col-md-9">
 									<input type="text" class="form-control" name="seclength" value="{nocache}{$_G.setting.seccodedata.length}{/nocache}" />
 									<span class="help-block">设置验证码的长度，验证码类型为中文图片验证码建议设置的不少于2个，其他情况下不少于4个</span>
@@ -68,30 +81,30 @@
 							</div>
 							<div id="secpicsize">
 								<div class="form-group">
-									<label class="control-label col-md-3">验证码图片宽度</label>
+									<label class="control-label col-md-3">验证码图片宽度<span class="required">*</span></label>
 									<div class="col-md-9">
 										<input type="text" class="form-control" name="secwidth" value="{nocache}{$_G.setting.seccodedata.width}{/nocache}" />
-										<span class="help-block">验证码图片的宽度，范围在 100～200 之间</span>
+										<span class="help-block">验证码图片的宽度，范围在 100～200 之间。默认 150</span>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">验证码图片高度</label>
+									<label class="control-label col-md-3">验证码图片高度<span class="required">*</span></label>
 									<div class="col-md-9">
 										<input type="text" class="form-control" name="secheight" value="{nocache}{$_G.setting.seccodedata.height}{/nocache}" />
-										<span class="help-block">验证码图片的高度，范围在 30～80 之间</span>
+										<span class="help-block">验证码图片的高度，范围在 30～80 之间。默认 60</span>
 									</div>
 								</div>
 							</div>
 							<div id="secpicprop">
 								<div class="form-group">
-									<label class="control-label col-md-3">图片打散</label>
+									<label class="control-label col-md-3">图片打散<span class="required">*</span></label>
 									<div class="col-md-9">
 										<input type="text" class="form-control" name="secscatter" value="{nocache}{$_G.setting.seccodedata.scatter}{/nocache}" />
 										<span class="help-block">打散生成的验证码图片，输入打散的级别，0 为不打散</span>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机图片背景</label>
+									<label class="control-label col-md-3">随机图片背景<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secbackground" value="1"{nocache}{if $_G.setting.seccodedata.background} checked{/if}{/nocache} /> 是</label>
@@ -101,7 +114,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机背景图形</label>
+									<label class="control-label col-md-3">随机背景图形<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secadulterate" value="1"{nocache}{if $_G.setting.seccodedata.adulterate} checked{/if}{/nocache} /> 是</label>
@@ -111,7 +124,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机 TTF 字体</label>
+									<label class="control-label col-md-3">随机 TTF 字体<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secttf" value="1"{nocache}{if $_G.setting.seccodedata.ttf} checked{/if}{/nocache} /> 是</label>
@@ -121,7 +134,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机倾斜度</label>
+									<label class="control-label col-md-3">随机倾斜度<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secangle" value="1"{nocache}{if $_G.setting.seccodedata.angle} checked{/if}{/nocache} /> 是</label>
@@ -131,7 +144,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机扭曲</label>
+									<label class="control-label col-md-3">随机扭曲<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secwarping" value="1"{nocache}{if $_G.setting.seccodedata.warping} checked{/if}{/nocache} /> 是</label>
@@ -141,7 +154,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机颜色</label>
+									<label class="control-label col-md-3">随机颜色<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="seccolor" value="1"{nocache}{if $_G.setting.seccodedata.color} checked{/if}{/nocache} /> 是</label>
@@ -151,7 +164,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">随机大小</label>
+									<label class="control-label col-md-3">随机大小<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secsize" value="1"{nocache}{if $_G.setting.seccodedata.size} checked{/if}{/nocache} /> 是</label>
@@ -161,7 +174,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label col-md-3">文字阴影</label>
+									<label class="control-label col-md-3">文字阴影<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secshadow" value="1"{nocache}{if $_G.setting.seccodedata.shadow} checked{/if}{/nocache} /> 是</label>
@@ -171,7 +184,7 @@
 									</div>
 								</div>
 								<div class="form-group last">
-									<label class="control-label col-md-3">GIF 动画</label>
+									<label class="control-label col-md-3">GIF 动画<span class="required">*</span></label>
 									<div class="col-md-9">
 										<div class="radio-list">
 											<label class="radio-inline"><input type="radio" name="secanimator" value="1"{nocache}{if $_G.setting.seccodedata.animator} checked{/if}{/nocache} /> 是</label>

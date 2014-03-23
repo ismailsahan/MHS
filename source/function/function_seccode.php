@@ -67,15 +67,17 @@ function make_secqaa($idhash){
 	return $_G['cache']['secqaa'][$secqaakey]['question'];
 }
 
-function check_seccode($seccode = '', $tag = '__DEFAULT__'){
+function check_seccode($seccode = '', $tag = '__DEFAULT__', $clear = true){
 	global $errmsg;
-	$time = 180;
+	$time = 900;
 	if(empty($seccode)) $seccode = isset($_POST['verifycode']) ? $_POST['verifycode'] : $_POST['seccode'];
 	$seccode = strtoupper($seccode);
 	$tag = isset($_SESSION['seccode'][$tag]) ? $tag : '__DEFAULT__';
 	$tmp = $_SESSION['seccode'][$tag];
-	unset($_SESSION['seccode'][$tag]);
-	//unset($_SESSION['seccodeauth']);
+	if($clear){
+		unset($_SESSION['seccode'][$tag]);
+		//unset($_SESSION['seccodeauth']);
+	}
 	if($tmp['timestamp'] < TIMESTAMP-$time) $errmsg = 'seccode_expired';
 	return $tmp['timestamp']<TIMESTAMP-$time ? false : ($seccode === $tmp['seccode']);
 }
@@ -89,23 +91,3 @@ function _substr($string, $start, $length) {
 	}
 	return $return;
 }
-
-function sechtml($seccodeauth, $extend="\t|&||&|") {
-	global $_G;
-	@list($src, $attr) = explode("\t", $extend);
-	@list($width, $height, $attr) = explode("|&|", $attr);
-	$width = $width ? $width : $_G['setting']['seccodedata']['width'];
-	$height = $height ? $height : $_G['setting']['seccodedata']['height'];
-	if($_G['setting']['seccodedata']['type'] == 0 || $_G['setting']['seccodedata']['type'] == 1) {
-		return "<img src='index.php?action=seccode{$src}&seccodeauth={$seccodeauth}&{$_G['timestamp']}' width='{$width}' height='{$height}' {$attr}></img>";
-	} elseif($_G['setting']['seccodedata']['type'] == 2) {
-		return "<embed width='{$width}' height='{$height}' src='index.php?action=seccode{$src}&seccodeauth={$seccodeauth}&{$_G['timestamp']}' quality='high' wmode='transparent' align='middle' menu='false' allowscriptaccess='sameDomain' type='application/x-shockwave-flash'{$attr}>";
-	} elseif($_G['setting']['seccodedata']['type'] == 3) {
-		$flashvars = urlencode($_G["siteroot"]."index.php?action=seccode{$src}&seccodeauth={$seccodeauth}&{$_G['timestamp']}");
-		return "请输入你听到的字符: <embed id='seccodeplayer' width='0' height='0' src='static/seccode/flash/flash1.swf' flashvars='sFile={$flashvars}' menu='false' allowscriptaccess='sameDomain' swliveconnect='true' type='application/x-shockwave-flash'><img border='0' style='vertical-align:middle' src='static/seccode/seccodeplayer.gif'><a href='javascript:;' onclick='$$(\"seccodeplayer\").SetVariable(\"isPlay\", \"1\")'>播放验证码</a>";
-	} else {
-		return "<img src='index.php?action=seccode&seccodeauth={$seccodeauth}&{$_G['timestamp']}' width='32' height='24'{$attr}></img>";
-	}
-}
-
-?>

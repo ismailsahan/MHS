@@ -1,6 +1,6 @@
 <?php
 
-!defined('IN_WD') && exit('Access Denied');
+!defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 class GifMerge {
 	var $ver			= '1.1';

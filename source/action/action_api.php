@@ -9,12 +9,6 @@ class ApiAction extends Action {
 	public function __construct(){
 		global $_G;
 
-		if(!$_G['setting']['nocacheheaders']) {
-			@header('Expires: -1');
-			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
-			@header('Pragma: no-cache');
-		}
-
 		//@header('Access-Control-Allow-Origin: null');
 	}
 
@@ -31,6 +25,8 @@ class ApiAction extends Action {
 
 	public function profile(){
 		//global $_G;
+
+		$this->_nocacheheaders(false);
 
 		$type = $_REQUEST['type'];
 		$hash = md5($type.$_REQUEST['grade'].$_REQUEST['academy'].$_REQUEST['specialty'].$_REQUEST['league'].$_REQUEST['organization']);
@@ -86,6 +82,41 @@ class ApiAction extends Action {
 		exit;
 	}
 
+	public function getnamebyid(){
+		$this->_nocacheheaders(false);
+
+		$data = array('name'=>'');
+		$tbls = array(
+			'grade'			=> 'profile_grades',
+			'academy'		=> 'profile_academies',
+			'specialty'		=> 'profile_specialties',
+			'class'			=> 'profile_classes',
+			'league'		=> 'profile_leagues',
+			'organization'	=> 'profile_organizations',
+			'department'	=> 'profile_departments'
+		);
+
+		if(isset($_REQUEST['id']) && $_REQUEST['id']=='0') {
+			$data['name'] = '';
+		}elseif(array_key_exists($_REQUEST['type'], $tbls)){
+			$sql = 'SELECT `%i` FROM %t WHERE `id`';
+			$label = in_array($_REQUEST['type'], array('league', 'organization', 'department'));
+			if($label){
+				$sql .= ' IN (%n)';
+				$_REQUEST['id'] = explode(',', $_REQUEST['id']);
+				foreach($_REQUEST['id'] as &$id)
+					$id = intval(trim($id));
+			}else{
+				$sql .= '=%d LIMIT 1';
+			}
+			$arr = array($_REQUEST['type']=='grade' ? 'grade' : 'name', $tbls[$_REQUEST['type']], $_REQUEST['id']);
+			$data['name'] = $label ? DB::fetch_all($sql, $arr) : DB::result_first($sql, $arr);
+		}
+
+		ajaxReturn($data, 'AUTO');
+		exit;
+	}
+
 	public function report(){
 		$data = $_POST['data'];
 		exit('感谢你反馈信息，我们会尽快修复问题的<br/><br/>你提交的内容是：<br/>'.$data);
@@ -96,6 +127,9 @@ class ApiAction extends Action {
 	 */
 	public function tos(){
 		global $_G;
+
+		$this->_nocacheheaders(false);
+
 		$tos = Cache::get('tos');
 		if($tos === null || APP_FRAMEWORK_DEBUG) {
 			$tos = DB::result_first("SELECT `svalue` FROM %t WHERE `skey`='tos' LIMIT 1", array('setting'));
@@ -141,7 +175,10 @@ class ApiAction extends Action {
 	 * 查询活动信息
 	 */
 	public function activity(){
+		$this->_nocacheheaders(false);
+
 		$id = intval($_REQUEST['id']);
+
 		if($id > 0){
 			$result = DB::fetch_first('SELECT * FROM %t WHERE `id`=%d LIMIT 1', array('activity', $id));
 		}else{
@@ -239,18 +276,36 @@ class ApiAction extends Action {
 	 */
 	public function badge(){
 		global $_G;
+		require_once libfile('function/members');
+
+		$this->_nocacheheaders();
+
 		$result = array();
 		if($_G['uid'] && !empty($_REQUEST['badge']) && is_array($_REQUEST['badge'])){
 			foreach($_REQUEST['badge'] as $badge){
 				switch($badge){
 					case 'profile/pm'			: $result[$badge] = 0; break;
 					case 'global/info'			: $result[$badge] = 0; break;
-					case 'members/verifyuser'	: $result[$badge] = 1; break;
-					case 'manhour/applylog'		: $result[$badge] = 0; break;
-					case 'manhour/checklog'		: $result[$badge] = 0; break;
+					case 'members/verifyuser'	: $result[$badge] = DB::result_first('SELECT count(`uid`) FROM %t WHERE `status`=0', array('activation')); break;
+					case 'manhour/applylog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (2,4)', array('manhours')); break;
+					case 'manhour/checklog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (0,3,5)', array('manhours')); break;
 				}
 			}
 		}
 		ajaxReturn($result, 'AUTO');
+	}
+
+	private function _nocacheheaders($nocache = true){
+		global $_G;
+		if($nocache && !$_G['setting']['nocacheheaders']) {
+			@header('Expires: -1');
+			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
+			@header('Pragma: no-cache');
+		}elseif(!$nocache && $_G['setting']['nocacheheaders']){
+			@session_cache_limiter('public');
+			@header('Expires: '.gmdate("D, d M Y H:i:s", time() + 7*60*60*24).' GMT');
+			@header('Cache-Control: public');
+			@header('Pragma: cache');
+		}
 	}
 }

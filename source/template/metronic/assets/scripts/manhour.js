@@ -1,110 +1,110 @@
 var Manhour = function () {
 
+	function modalAlert(msg) {
+		$("#alert-modal .modal-body .col-md-12").html(msg);
+		$("#alert-modal").modal("show");
+	}
+
+	function loading() {
+		//$("body").modalmanager("loading");
+		//$(".modal-scrollable").unbind("click");
+		$.blockUI({
+			message: '<img src="assets/img/ajax-loading.gif" />',
+			css: {
+				//top: '10%',
+				border: 'none',
+				//padding: '2px',
+				backgroundColor: 'none'
+			},
+			overlayCSS: {
+				backgroundColor: '#000',
+				opacity: 0.2,
+				cursor: 'wait'
+			},
+			baseZ: 11000
+		});
+	}
+
+	var status = [["danger","无效"], ["success","有效"], ["info","审核中"], ["primary","复查中"], ["danger","未通过审核"], ["danger","未通过复查"], ["danger","未知错误"]];
+
+	function statusLabel(id) {
+		id = parseInt(id);
+		switch(id) {
+			default:
+				id = 6;
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				return '<span class="label label-sm label-'+status[id][0]+'" data-status="'+id+'">'+status[id][1]+'</span>';
+		}
+	}
+
+	function gmdate(timestamp, format) {
+		var t = new Date;
+		t.setTime(timestamp + "000");
+		return t.format(format);
+	}
+
+	function getDate(time) {
+		if(!time || time == "0") return "-";
+		return gmdate(time, "yyyy年MM月dd日");
+	}
+
+	function getTime(time) {
+		if(!time || time == "0") return "-";
+		return gmdate(time, "yyyy年MM月dd日 hh:mm:ss");
+	}
+
+	function detail(type, id) {
+		loading();
+		if(type == "manhour") {
+			$.post("{U api/manhour}", {"id":id}, function(data){
+				if(!data.id) return window.location.reload();
+				$("#mh-modal p.col-md-9").each(function() {
+					var mh = $(this).data("mh");
+					if(mh=="time") {
+						data.time = getDate(data.time);
+					}else if(mh=="applytime" || mh=="verifytime") {
+						data[mh] = getTime(data[mh]);
+					}else if(mh == "status") {
+						data.status = statusLabel(data.status);
+					}else if(mh=="remark" || mh=="verifytext") {
+						data[mh] = data[mh] ? nl2br(stripslashes(data[mh])) : "-";
+					}
+					$(this).html(data[mh]);
+				});
+				$("#mh-modal").modal("show");
+			}, 'json');
+		} else if(type == "activity") {
+			$.post("{U api/activity}", {"id":id}, function(data){
+				if(!data.id) return window.location.reload();
+				$("#act-modal p.col-md-9").each(function() {
+					var act = $(this).data("act");
+					if(act=="starttime" || act=="endtime") {
+						data[act] = getTime(data[act]);
+					}else if(!data[act]) {
+						data[act] = "-";
+					}
+					$(this).html(data[act]);
+				});
+				$("#act-modal").modal("show");
+			}, 'json');
+		}
+	}
+
+	//$(document).ajaxStart($.blockUI);
+	$(document).ajaxStop($.unblockUI);
+	$(document).ajaxError(function() {
+		modalAlert("向服务器请求数据时发生了错误，请稍候再试");
+	});
+
 	return {
 
 		//main function to initiate the module
 		init: function () {
-
-			var status = [["danger","无效"], ["success","有效"], ["info","审核中"], ["primary","复查中"], ["danger","未通过审核"], ["danger","未通过复查"], ["danger","未知错误"]];
-
-			function modalAlert(msg) {
-				$("#alert-modal .modal-body .col-md-12").html(msg);
-				$("#alert-modal").modal("show");
-			}
-
-			function loading() {
-				//$("body").modalmanager("loading");
-				//$(".modal-scrollable").unbind("click");
-				$.blockUI({
-					message: '<img src="assets/img/ajax-loading.gif" />',
-					css: {
-						//top: '10%',
-						border: 'none',
-						//padding: '2px',
-						backgroundColor: 'none'
-					},
-					overlayCSS: {
-						backgroundColor: '#000',
-						opacity: 0.2,
-						cursor: 'wait'
-					},
-					baseZ: 11000
-				});
-			}
-
-			function statusLabel(id) {
-				id = parseInt(id);
-				switch(id) {
-					default:
-						id = 6;
-					case 0:
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-						return '<span class="label label-sm label-'+status[id][0]+'" data-status="'+id+'">'+status[id][1]+'</span>';
-				}
-			}
-
-			function gmdate(timestamp, format) {
-				var t = new Date;
-				t.setTime(timestamp + "000");
-				return t.format(format);
-			}
-
-			function getDate(time) {
-				if(!time || time == "0") return "-";
-				return gmdate(time, "yyyy年MM月dd日");
-			}
-
-			function getTime(time) {
-				if(!time || time == "0") return "-";
-				return gmdate(time, "yyyy年MM月dd日 hh:mm:ss");
-			}
-
-			function detail(type, id) {
-				loading();
-				if(type == "manhour") {
-					$.post("{U api/manhour}", {"id":id}, function(data){
-						if(!data.id) return window.location.reload();
-						$("#mh-modal p.col-md-9").each(function() {
-							var mh = $(this).data("mh");
-							if(mh=="time") {
-								data.time = getDate(data.time);
-							}else if(mh=="applytime" || mh=="verifytime") {
-								data[mh] = getTime(data[mh]);
-							}else if(mh == "status") {
-								data.status = statusLabel(data.status);
-							}else if(mh=="remark" || mh=="verifytext") {
-								data[mh] = data[mh] ? nl2br(stripslashes(data[mh])) : "-";
-							}
-							$(this).html(data[mh]);
-						});
-						$("#mh-modal").modal("show");
-					}, 'json');
-				} else if(type == "activity") {
-					$.post("{U api/activity}", {"id":id}, function(data){
-						if(!data.id) return window.location.reload();
-						$("#act-modal p.col-md-9").each(function() {
-							var act = $(this).data("act");
-							if(act=="starttime" || act=="endtime") {
-								data[act] = getTime(data[act]);
-							}else if(!data[act]) {
-								data[act] = "-";
-							}
-							$(this).html(data[act]);
-						});
-						$("#act-modal").modal("show");
-					}, 'json');
-				}
-			}
-
-			//$(document).ajaxStart($.blockUI);
-			$(document).ajaxStop($.unblockUI);
-			$(document).ajaxError(function() {
-				modalAlert("向服务器请求数据时发生了错误，请稍候再试");
-			});
 
 			$('#manhours tr:gt(0) td:nth-child(5)').each(function() {
 				var t = $(this).data("status");
@@ -350,13 +350,6 @@ var Manhour = function () {
 			$('#manhours_wrapper .dataTables_length select').addClass("form-control input-xsmall"); // modify table per page dropdown
 			$('#manhours_wrapper .dataTables_length select').select2({minimumResultsForSearch:-1}); // initialize select2 dropdown
 
-			$.fn.modal.defaults.spinner = $.fn.modalmanager.defaults.spinner = 
-				'<div class="loading-spinner" style="width: 200px; margin-left: -100px;">' +
-					'<div class="progress progress-striped active">' +
-						'<div class="progress-bar" style="width: 100%;"></div>' +
-					'</div>' +
-				'</div>';
-			$.fn.modalmanager.defaults.resize = true;
 		}
 
 	};

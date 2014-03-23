@@ -54,6 +54,7 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 		return false;
 	} else {	// 直接登录
 		$user = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('users', $uid));
+		DB::query('UPDATE %t SET `lastlogin`=%d WHERE `uid`=%d LIMIT 1', array('users', TIMESTAMP, $uid));
 
 		$session = array();
 		$session['uid'] = $uid;
@@ -143,9 +144,27 @@ function reguser($username, $password, $email){
  * @param array $profile 用户资料
  * @return boolean
  */
-function adduser($uid, $user, $profile=array()){
+function adduser($uid, $user=array(), $profile=array()){
 	if(empty($profile)) $profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $uid));
 	if(empty($profile)) return false;
+	if(empty($user)) $user = array(
+		'status'			=> 1,
+		'emailstatus'		=> 0,
+		'avatarstatus'		=> 0,
+		'videophotostatus'	=> 0,
+		'adminid'			=> 0,
+		'groupid'			=> 0,
+		'groupexpiry'		=> 0,
+		'extgroupids'		=> '',
+		'regdate'			=> TIMESTAMP,
+		'credits'			=> 0,
+		'timeoffset'		=> 8,
+		'newpm'				=> '',
+		'newprompt'			=> '',
+		'accessmasks'		=> '',
+		'allowadmincp'		=> 1,
+		'conisbind'			=> 0
+	);
 	DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `password`, `status`, `emailstatus`, `avatarstatus`, `videophotostatus`, `adminid`, `groupid`, `groupexpiry`, `extgroupids`, `regdate`, `credits`, `timeoffset`, `newpm`, `newprompt`, `accessmasks`, `allowadmincp`, `conisbind`) VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d, %s, %d, %d, %d, %d, %d, %d, %d, %d)', array(
 		'users', 					// 表
 		$uid,						// 用户ID

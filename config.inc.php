@@ -146,7 +146,7 @@ $_config['router']['var_url_params']		= '_URL_';		// PATHINFOURL参数变量
 
 // ----------------------------- 站点项目设置 ----------------------------- //
 $_config['app'] = array();
-$_config['app']['actions']					= array('logging', 'main', 'api', 'seccode', 'manhour', 'self', 'global', 'tool', 'members'); // 允许的ACTION
+$_config['app']['actions']					= array('logging', 'main', 'api', 'seccode', 'manhour', 'self', 'global', 'tool', 'members', 'mhdict'); // 允许的ACTION
 $_config['app']['default_ajax_return']		= 'AUTO';		// 默认 AJAX 返回数据类型，AUTO表示自动选择 JSON 和 JSONP
 $_config['app']['var_jsonp_handler']		= 'callback';	// 默认 JSONP 回调函数索引名 $_GET
 $_config['app']['default_jsonp_handler']	= 'callback';	// 默认 JSONP 回调函数名
