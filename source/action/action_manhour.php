@@ -26,4 +26,26 @@ class ManhourAction extends Action {
 		$template->display('manhour_index');
 	}
 
+	public function applylog(){
+		$this->_developing();
+	}
+
+	public function checklog(){
+		$this->_developing();
+	}
+
+	public function manage(){
+		$this->_developing();
+	}
+
+	private function _developing(){
+		global $_G, $template;
+		if(!$template->isCached('developing')){
+			$template->assign('sidebarMenu', defaultNav());
+			$template->assign('adminNav', adminNav());
+			$template->assign('menuset', array('mhour', OPERATION_NAME));
+		}
+		$template->display('developing');
+	}
+
 }

@@ -193,6 +193,8 @@ class core {
 				case 3: error_reporting(E_ALL ^ E_NOTICE); break;
 				case 4: error_reporting(-1); break;
 			}
+			if(PHP_VERSION < '5.3.0')
+				error_reporting(error_reporting() ^ E_NOTICE);
 		} else {
 			define('APP_FRAMEWORK_DEBUG', false);
 			error_reporting(0);
@@ -703,9 +705,15 @@ class core {
 	 * 设定错误和异常处理
 	 */
 	public function sethandler(){
-		//register_shutdown_function(array('core', 'fatalError'));
-		set_error_handler(array('core', 'error_handler'));
-		set_exception_handler(array('core', 'exception_handler'));
+		if(PHP_VERSION < '5.3.0') { // 兼容 PHP 5.2
+			//register_shutdown_function(array('core', 'fatalError'));
+			set_error_handler('alternative_error_handler');
+			set_exception_handler('alternative_exception_handler');
+		} else {
+			//register_shutdown_function(array('core', 'fatalError'));
+			set_error_handler(array('core', 'error_handler'));
+			set_exception_handler(array('core', 'exception_handler'));
+		}
 	}
 
 	public static function handleException($exception) {
@@ -833,6 +841,23 @@ class core {
 }
 
 class C extends core {}
+
+
+if(PHP_VERSION < '5.3.0') {
+	//禁用APC以避免一些问题
+	/*if(extension_loaded('apc')) {
+		@ini_set('apc.enabled', 0);
+		@ini_set('apc.include_once_override', 0);
+		@ini_set('apc.canonicalize', 0);
+		@ini_set('apc.stat', 0);
+	}*/
+	function alternative_exception_handler($e) {
+		return C::exception_handler($e);
+	}
+	function alternative_error_handler($errno, $errstr, $errfile, $errline) {
+		return C::error_handler($errno, $errstr, $errfile, $errline);
+	}
+}
 
 /*
 if(function_exists('spl_autoload_register')) {

@@ -79,7 +79,7 @@ if(class_exists('DB')){
 }
 
 $trace = array();
-$tmp = &trace();
+$tmp = trace();
 $trace['base'] = array();
 $trace['process'] = &$tmp['process'];
 $trace['error'] = &$tmp['error'];

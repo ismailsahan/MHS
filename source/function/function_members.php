@@ -15,28 +15,13 @@ function subusersqlformula($formula = null, $selector = '*', $addtbl = null) {
 
 		$formula = str_replace(array('&&', '||'), array('AND', 'OR'), $formula);
 
-		$formula = preg_replace_callback('/(league|department) IN\s*\(([^\(\)]+)\)/is', function($matches){
-			$prop = $matches[1];
-			$id = explode(',', $matches[2]);
-			foreach($id as &$val)
-				$val = $prop.'='.intval($val);
-			return '('.implode(' OR ', $id).')';
-		}, $formula);
+		$formula = preg_replace_callback('/(league|department) IN\s*\(([^\(\)]+)\)/is', 'subusersqlformula_callback1', $formula);
 
-		$formula = preg_replace_callback('/(league|department)\s*=\s*(\d+)/is', function($matches){
-			$prop = $matches[1];
-			$id = intval($matches[2]);
-			//return "FIND_IN_SET('{$id}'," . DB::table('users_profile') . ".`{$prop}`)";
-			return "FIND_IN_SET('{$id}', {$prop})";
-		}, $formula);
+		$formula = preg_replace_callback('/(league|department)\s*=\s*(\d+)/is', 'subusersqlformula_callback2', $formula);
 
-		$formula = preg_replace_callback('/(status|adminid|groupid|manhour)/is', function($matches){
-			return DB::table('users').".`{$matches[1]}`";
-		}, $formula);
+		$formula = preg_replace_callback('/(status|adminid|groupid|manhour)/is', 'subusersqlformula_callback3', $formula);
 
-		$formula = preg_replace_callback('/(gender|grade|academy|specialty|class|league|department)/is', function($matches){
-			return DB::table('users_profile').".`{$matches[1]}`";
-		}, $formula);
+		$formula = preg_replace_callback('/(gender|grade|academy|specialty|class|league|department)/is', 'subusersqlformula_callback4', $formula);
 
 		$sql .= '('.$formula.')';
 
@@ -48,6 +33,29 @@ function subusersqlformula($formula = null, $selector = '*', $addtbl = null) {
 	//trace($sql);
 
 	return $sql;
+}
+
+function subusersqlformula_callback1($matches) {
+	$prop = $matches[1];
+	$id = explode(',', $matches[2]);
+	foreach($id as &$val)
+		$val = $prop.'='.intval($val);
+	return '('.implode(' OR ', $id).')';
+}
+
+function subusersqlformula_callback2($matches) {
+	$prop = $matches[1];
+	$id = intval($matches[2]);
+	//return "FIND_IN_SET('{$id}'," . DB::table('users_profile') . ".`{$prop}`)";
+	return "FIND_IN_SET('{$id}', {$prop})";
+}
+
+function subusersqlformula_callback3($matches) {
+	return DB::table('users').".`{$matches[1]}`";
+}
+
+function subusersqlformula_callback4($matches) {
+	return DB::table('users_profile').".`{$matches[1]}`";
 }
 
 function checkformulasyntax($formula, $operators, $tokens) {
