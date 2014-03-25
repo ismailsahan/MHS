@@ -409,6 +409,7 @@ $hitokoto = array (
   344 => '{"hitokoto":"只要一息尚存，就还有希望。","cat":"f","author":"漠伦","source":"格言","like":0,"date":"2014.02.06 00:13:21","catname":"来自网络","id":1391663601000}',
   345 => '{"hitokoto":"但是，这一次你将不再孤独。","cat":"d","author":"liyulong729","source":"魔法禁书目录","like":10,"date":"2011.12.20 08:12:38","catname":"Novel - 小说","id":1324386758000}',
   346 => '{"hitokoto":"错的不是我， 错的是世界。","cat":"a","author":"雪丶风","source":"School Day","like":45,"date":"2011.10.18 12:53:47","catname":"Anime - 动画","id":1318956827000}',
+  347 => '{"hitokoto":"离别并不痛苦，因为我们都微笑着。","cat":"a","author":"腹黑小兔","source":"青之驱魔师","like":29,"date":"2011.10.18 12:59:28","catname":"Anime - 动画","id":1318957168000}',
 );
 
 

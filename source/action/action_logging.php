@@ -110,7 +110,7 @@ class LoggingAction extends Action {
 			}elseif(!isemail($email)){						// 邮箱格式不正确
 				$errmsg = 'email_illegal';
 			}else{
-				$errno = checkemail($value);
+				$errno = checkemail($email);
 				if($errno === -4){
 					$errmsg = 'email_illegal';
 				}elseif($errno === 1){

@@ -8,6 +8,7 @@ $lang = array(
 	'time_now'					=> 'GMT{_G/timenow/offset}, {_G/timenow/time}',
 	'tip'						=> '系统提示',
 	'redirector'				=> '如果您的浏览器没有自动跳转，请点击这里',
+	'announcements'				=> '公告',
 	
 	//'invalid_request'			=> '系统检测到无效的提交请求，请确认是否未重复提交、表单是否过期或进行任何非法操作！',
 	//'invalid_request'			=> '提交请求无效！这可能是因为长时间未提交表单、重复提交或者是进行了非法操作',

@@ -1,1807 +1,1085 @@
 {extends 'common_main.html'}
 {block subtitle}{lang nav/home}{/block}
 {block pagestyle}
-<link href="assets/css/pages/tasks.css" rel="stylesheet" type="text/css"/>
+<link href="assets/css/pages/tasks.css" rel="stylesheet" type="text/css" />
+<style type="text/css" media="screen">
+.dashboard-stat .visual i { font-size: 65px; line-height: 65px;	}
+</style>
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/jquery.vmap.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/maps/jquery.vmap.russia.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/maps/jquery.vmap.world.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/maps/jquery.vmap.europe.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/maps/jquery.vmap.germany.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/maps/jquery.vmap.usa.js"></script>
-	<script type="text/javascript" src="assets/plugins/jqvmap/jqvmap/data/jquery.vmap.sampledata.js"></script>
 	<script type="text/javascript" src="assets/plugins/flot/jquery.flot.js"></script>
 	<script type="text/javascript" src="assets/plugins/flot/jquery.flot.resize.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-daterangepicker/moment.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-	<script type="text/javascript" src="assets/plugins/gritter/js/jquery.gritter.js"></script>
-	<!-- IMPORTANT! fullcalendar depends on jquery-ui-1.10.3.custom.min.js for drag & drop support -->
-	<script type="text/javascript" src="assets/plugins/fullcalendar/fullcalendar/fullcalendar.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/flot/jquery.flot.categories.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-easy-pie-chart/jquery.easy-pie-chart.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery.sparkline.min.js"></script>
-	<script type="text/javascript" src="assets/scripts/index.js"></script>
-	<script type="text/javascript" src="assets/scripts/tasks.js"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
+		var EcommerceIndex = function () {
+
+		    function showTooltip(x, y, labelX, labelY) {
+		        $('<div id="tooltip" class="chart-tooltip">' + (labelY.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')) + 'USD<\/div>').css({
+		            position: 'absolute',
+		            display: 'none',
+		            top: y - 40,
+		            left: x - 60,
+		            border: '0px solid #ccc',
+		            padding: '2px 6px',
+		            'background-color': '#fff',
+		        }).appendTo("body").fadeIn(200);
+		    }
+
+		    var initChart1 = function () {
+
+		        var data = [
+		            ['01/2013', 0],
+		            ['02/2013', 8],
+		            ['03/2013', 10],
+		            ['04/2013', 12],
+		            ['05/2013', 2125],
+		            ['06/2013', 324],
+		            ['07/2013', 1223],
+		            ['08/2013', 1365],
+		            ['09/2013', 250],
+		            ['10/2013', 999],
+		            ['11/2013', 390],
+		        ];
+
+		            var plot_statistics = $.plot(
+		                $("#statistics_1"), 
+		                [
+		                    {
+		                        data:data,
+		                        lines: {
+		                            fill: 0.6,
+		                            lineWidth: 0,
+		                        },
+		                        color: ['#f89f9f']
+		                    },
+		                    {
+		                        data: data,
+		                        points: {
+		                            show: true,
+		                            fill: true,
+		                            radius: 5,
+		                            fillColor: "#f89f9f",
+		                            lineWidth: 3
+		                        },
+		                        color: '#fff',
+		                        shadowSize: 0
+		                    },
+		                ], 
+		                {
+
+		                    xaxis: {
+		                        tickLength: 0,
+		                        tickDecimals: 0,                        
+		                        mode: "categories",
+		                        min: 2,
+		                        font: {
+		                            lineHeight: 15,
+		                            style: "normal",
+		                            variant: "small-caps",
+		                            color: "#6F7B8A"
+		                        }
+		                    },
+		                    yaxis: {
+		                        ticks: 3,
+		                        tickDecimals: 0,
+		                        tickColor: "#f0f0f0",
+		                        font: {
+		                            lineHeight: 15,
+		                            style: "normal",
+		                            variant: "small-caps",
+		                            color: "#6F7B8A"
+		                        }
+		                    },
+		                    grid: {
+		                        backgroundColor: {
+		                            colors: ["#fff", "#fff"]
+		                        },
+		                        borderWidth: 1,
+		                        borderColor: "#f0f0f0",
+		                        margin: 0,
+		                        minBorderMargin: 0,
+		                        labelMargin: 20,
+		                        hoverable: true,
+		                        clickable: true,
+		                        mouseActiveRadius: 6
+		                    },
+		                    legend: {
+		                        show: false
+		                    }
+		                }
+		            );
+
+		            var previousPoint = null;
+
+		            $("#statistics_1").bind("plothover", function (event, pos, item) {
+		                $("#x").text(pos.x.toFixed(2));
+		                $("#y").text(pos.y.toFixed(2));
+		                if (item) {
+		                    if (previousPoint != item.dataIndex) {
+		                        previousPoint = item.dataIndex;
+
+		                        $("#tooltip").remove();
+		                        var x = item.datapoint[0].toFixed(2),
+		                            y = item.datapoint[1].toFixed(2);
+
+		                        showTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1]);
+		                    }
+		                } else {
+		                    $("#tooltip").remove();
+		                    previousPoint = null;
+		                }
+		            });
+
+		    }
+
+		    var initChart2 = function() {
+
+		        var data = [
+		            ['01/2013', 10],
+		            ['02/2013', 0],
+		            ['03/2013', 10],
+		            ['04/2013', 12],
+		            ['05/2013', 212],
+		            ['06/2013', 324],
+		            ['07/2013', 122],
+		            ['08/2013', 136],
+		            ['09/2013', 250],
+		            ['10/2013', 99],
+		            ['11/2013', 190],
+		        ];
+
+		            var plot_statistics = $.plot(
+		                $("#statistics_2"), 
+		                [
+		                    {
+		                        data:data,
+		                        lines: {
+		                            fill: 0.6,
+		                            lineWidth: 0,
+		                        },
+		                        color: ['#BAD9F5']
+		                    },
+		                    {
+		                        data: data,
+		                        points: {
+		                            show: true,
+		                            fill: true,
+		                            radius: 5,
+		                            fillColor: "#BAD9F5",
+		                            lineWidth: 3
+		                        },
+		                        color: '#fff',
+		                        shadowSize: 0
+		                    },
+		                ], 
+		                {
+
+		                    xaxis: {
+		                        tickLength: 0,
+		                        tickDecimals: 0,                        
+		                        mode: "categories",
+		                        min: 2,
+		                        font: {
+		                            lineHeight: 14,
+		                            style: "normal",
+		                            variant: "small-caps",
+		                            color: "#6F7B8A"
+		                        }
+		                    },
+		                    yaxis: {
+		                        ticks: 3,
+		                        tickDecimals: 0,
+		                        tickColor: "#f0f0f0",
+		                        font: {
+		                            lineHeight: 14,
+		                            style: "normal",
+		                            variant: "small-caps",
+		                            color: "#6F7B8A"
+		                        }
+		                    },
+		                    grid: {
+		                        backgroundColor: {
+		                            colors: ["#fff", "#fff"]
+		                        },
+		                        borderWidth: 1,
+		                        borderColor: "#f0f0f0",
+		                        margin: 0,
+		                        minBorderMargin: 0,
+		                        labelMargin: 20,
+		                        hoverable: true,
+		                        clickable: true,
+		                        mouseActiveRadius: 6
+		                    },
+		                    legend: {
+		                        show: false
+		                    }
+		                }
+		            );
+
+		            var previousPoint = null;
+
+		            $("#statistics_2").bind("plothover", function (event, pos, item) {
+		                $("#x").text(pos.x.toFixed(2));
+		                $("#y").text(pos.y.toFixed(2));
+		                if (item) {
+		                    if (previousPoint != item.dataIndex) {
+		                        previousPoint = item.dataIndex;
+
+		                        $("#tooltip").remove();
+		                        var x = item.datapoint[0].toFixed(2),
+		                            y = item.datapoint[1].toFixed(2);
+
+		                       showTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1]);
+		                    }
+		                } else {
+		                    $("#tooltip").remove();
+		                    previousPoint = null;
+		                }
+		            });
+
+		    }
+
+		    return {
+
+		        //main function
+		        init: function () {
+		            initChart1();
+
+		            $('#statistics_amounts_tab').on('shown.bs.tab', function (e) {
+		                initChart2();
+		            });
+		        }
+
+		    };
+
+		}();
 		$(document).ready(function() {
+			announcement();
 			App.init();
+			EcommerceIndex.init();
 			//IdleTimeout.init();
 		});
 	</script>
 {/block}
 {block pgcontent}
-<!--{*
-<div id="pt" class="bm cl">
-	{if empty($gid) && $announcements}
-	<div class="y">
-		<div id="an">
-			<dl class="cl">
-				<dt class="z xw1">{lang announcements}:&nbsp;</dt>
-				<dd>
-					<div id="anc"><ul id="ancl">$announcements</ul></div>
-				</dd>
-			</dl>
-		</div>
-		<script type="text/javascript">announcement();</script>
-	</div>
-	{/if}
-	<div class="z">
-		<a href="./" class="nvhm" title="{lang homepage}">$_G[setting][bbname]</a><em>&raquo;</em><a href="forum.php">{$_G[setting][navs][2][navname]}</a>$navigation
-	</div>
-	<div class="z">{hook/index_status_extra}</div>
-</div>
-*}-->
+			<div id="ann">
+				<dl>
+					<dt>{lang announcements}:</dt>
+					<dd>
+						<div id="annbody"><ul id="annbodylis">
+							<li><a href="http://hitokoto.us/view/1324011466000" target="_blank">既不回头，何必不忘；既然无缘，何须誓言；今日种种，似水无痕；明夕何夕，君已陌路<em>(2014-3-25)</em></a></li>
+							<li><a href="#">公告标题1<em>(2014-3-25)</em></a></li>
+							<li><a href="#">公告标题2<em>(2014-3-25)</em></a></li>
+						</ul></div>
+					</dd>
+				</dl>
+			</div>
 			<!-- BEGIN DASHBOARD STATS -->
 			<div class="row">
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 					<div class="dashboard-stat blue">
 						<div class="visual">
 							<i class="fa fa-comments"></i>
 						</div>
 						<div class="details">
-							<div class="number">
-								1349
-							</div>
-							<div class="desc">                           
-								New Feedbacks
-							</div>
+							<div class="number">64</div>
+							<div class="desc">工时总数</div>
 						</div>
-						<a class="more" href="#">
-						View more <i class="m-icon-swapright m-icon-white"></i>
-						</a>                 
+						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="dashboard-stat green">
-						<div class="visual">
-							<i class="fa fa-shopping-cart"></i>
-						</div>
-						<div class="details">
-							<div class="number">549</div>
-							<div class="desc">New Orders</div>
-						</div>
-						<a class="more" href="#">
-						View more <i class="m-icon-swapright m-icon-white"></i>
-						</a>                 
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 					<div class="dashboard-stat purple">
 						<div class="visual">
 							<i class="fa fa-globe"></i>
 						</div>
 						<div class="details">
-							<div class="number">+89%</div>
-							<div class="desc">Brand Popularity</div>
+							<div class="number">2nd</div>
+							<div class="desc">工时排名</div>
 						</div>
-						<a class="more" href="#">
-						View more <i class="m-icon-swapright m-icon-white"></i>
-						</a>                 
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="dashboard-stat yellow">
-						<div class="visual">
-							<i class="fa fa-bar-chart-o"></i>
-						</div>
-						<div class="details">
-							<div class="number">12,5M$</div>
-							<div class="desc">Total Profit</div>
-						</div>
-						<a class="more" href="#">
-						View more <i class="m-icon-swapright m-icon-white"></i>
-						</a>                 
+						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
 					</div>
 				</div>
 			</div>
 			<!-- END DASHBOARD STATS -->
-			<div class="clearfix"></div>
 			<div class="row">
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN PORTLET-->
-					<div class="portlet solid bordered light-grey">
+				<div class="col-md-6">
+					<!-- Begin: life time stats -->
+					<div class="portlet box yellow">
 						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-bar-chart-o"></i>Site Visits</div>
+							<div class="caption">
+								<i class="fa fa-thumb-tack"></i>Overview
+							</div>
 							<div class="tools">
-								<div class="btn-group" data-toggle="buttons">
-									<label class="btn default btn-sm active">
-									<input type="radio" name="options" class="toggle" id="option1">Users
-									</label>
-									<label class="btn default btn-sm">
-									<input type="radio" name="options" class="toggle" id="option2">Feedbacks
-									</label>
-								</div>
+								<a href="javascript:;" class="collapse">
+								</a>
+								<a href="#portlet-config" data-toggle="modal" class="config">
+								</a>
+								<a href="javascript:;" class="reload">
+								</a>
+								<a href="javascript:;" class="remove">
+								</a>
 							</div>
 						</div>
 						<div class="portlet-body">
-							<div id="site_statistics_loading">
-								<img src="assets/img/loading.gif" alt="loading"/>
-							</div>
-							<div id="site_statistics_content" class="display-none">
-								<div id="site_statistics" class="chart"></div>
-							</div>
-						</div>
-					</div>
-					<!-- END PORTLET-->
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN PORTLET-->
-					<div class="portlet solid light-grey bordered">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-bullhorn"></i>Activities</div>
-							<div class="tools">
-								<div class="btn-group pull-right" data-toggle="buttons">
-									<a href="" class="btn blue btn-sm active">Users</a>
-									<a href="" class="btn blue btn-sm">Orders</a>
-								</div>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div id="site_activities_loading">
-								<img src="assets/img/loading.gif" alt="loading"/>
-							</div>
-							<div id="site_activities_content" class="display-none">
-								<div id="site_activities" style="height: 100px;"></div>
-							</div>
-						</div>
-					</div>
-					<!-- END PORTLET-->
-					<!-- BEGIN PORTLET-->
-					<div class="portlet solid bordered light-grey">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-signal"></i>Server Load</div>
-							<div class="tools">
-								<div class="btn-group pull-right" data-toggle="buttons">
-									<a href="" class="btn red btn-sm active">Database</a>
-									<a href="" class="btn red btn-sm">Web</a>
-								</div>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div id="load_statistics_loading">
-								<img src="assets/img/loading.gif" alt="loading" />
-							</div>
-							<div id="load_statistics_content" class="display-none">
-								<div id="load_statistics" style="height: 108px;"></div>
-							</div>
-						</div>
-					</div>
-					<!-- END PORTLET-->
-				</div>
-			</div>
-			<div class="clearfix"></div>
-			<div class="row ">
-				<div class="col-md-6 col-sm-6">
-					<div class="portlet box blue">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-bell-o"></i>Recent Activities</div>
-							<div class="actions">
-								<div class="btn-group">
-									<a class="btn btn-sm default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-									Filter By
-									<i class="fa fa-angle-down"></i>
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a href="#overview_1" data-toggle="tab">
+										 Top Selling
 									</a>
-									<div class="dropdown-menu hold-on-click dropdown-checkboxes pull-right">
-										<label><input type="checkbox" /> Finance</label>
-										<label><input type="checkbox" checked="" /> Membership</label>
-										<label><input type="checkbox" /> Customer Support</label>
-										<label><input type="checkbox" checked="" /> HR</label>
-										<label><input type="checkbox" /> System</label>
+								</li>
+								<li>
+									<a href="#overview_2" data-toggle="tab">
+										 Most Viewed
+									</a>
+								</li>
+								<li>
+									<a href="#overview_3" data-toggle="tab">
+										 New Customers
+									</a>
+								</li>
+								<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										 Orders <i class="fa fa-angle-down"></i>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="#overview_4" tabindex="-1" data-toggle="tab">
+												 Latest 10 Orders
+											</a>
+										</li>
+										<li>
+											<a href="#overview_4" tabindex="-1" data-toggle="tab">
+												 Pending Orders
+											</a>
+										</li>
+										<li>
+											<a href="#overview_4" tabindex="-1" data-toggle="tab">
+												 Completed Orders
+											</a>
+										</li>
+										<li>
+											<a href="#overview_4" tabindex="-1" data-toggle="tab">
+												 Rejected Orders
+											</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="overview_1">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover table-bordered">
+										<thead>
+										<tr>
+											<th>
+												 Product Name
+											</th>
+											<th>
+												 Price
+											</th>
+											<th>
+												 Sold
+											</th>
+											<th>
+											</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td>
+												<a href="#">
+													 Apple iPhone 4s - 16GB - Black
+												</a>
+											</td>
+											<td>
+												 $625.50
+											</td>
+											<td>
+												 809
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Samsung Galaxy S III SGH-I747 - 16GB
+												</a>
+											</td>
+											<td>
+												 $915.50
+											</td>
+											<td>
+												 6709
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Motorola Droid 4 XT894 - 16GB - Black
+												</a>
+											</td>
+											<td>
+												 $878.50
+											</td>
+											<td>
+												 784
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Regatta Luca 3 in 1 Jacket
+												</a>
+											</td>
+											<td>
+												 $25.50
+											</td>
+											<td>
+												 1245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Samsung Galaxy Note 3
+												</a>
+											</td>
+											<td>
+												 $925.50
+											</td>
+											<td>
+												 21245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Inoval Digital Pen
+												</a>
+											</td>
+											<td>
+												 $125.50
+											</td>
+											<td>
+												 1245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Metronic - Responsive Admin + Frontend Theme
+												</a>
+											</td>
+											<td>
+												 $20.00
+											</td>
+											<td>
+												 11190
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										</tbody>
+										</table>
 									</div>
 								</div>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="scroller" style="height: 300px;" data-always-visible="1" data-rail-visible="0">
-								<ul class="feeds">
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-info">                        
-														<i class="fa fa-check"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 4 pending tasks.
-														<span class="label label-sm label-warning ">
-														Take action 
-														<i class="fa fa-share"></i>
-														</span>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												Just now
-											</div>
-										</div>
-									</li>
-									<li>
-										<a href="#">
-											<div class="col1">
-												<div class="cont">
-													<div class="cont-col1">
-														<div class="label label-sm label-success">                        
-															<i class="fa fa-bar-chart-o"></i>
-														</div>
-													</div>
-													<div class="cont-col2">
-														<div class="desc">
-															Finance Report for year 2013 has been released.   
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col2">
-												<div class="date">
-													20 mins
-												</div>
-											</div>
-										</a>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-danger">                      
-														<i class="fa fa-user"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 5 pending membership that requires a quick review.                       
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												24 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-info">                        
-														<i class="fa fa-shopping-cart"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														New order received with <span class="label label-sm label-success">Reference Number: DR23923</span>             
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												30 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-success">                      
-														<i class="fa fa-user"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 5 pending membership that requires a quick review.                       
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												24 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-default">                        
-														<i class="fa fa-bell-o"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														Web server hardware needs to be upgraded. 
-														<span class="label label-sm label-default ">Overdue</span>             
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												2 hours
-											</div>
-										</div>
-									</li>
-									<li>
-										<a href="#">
-											<div class="col1">
-												<div class="cont">
-													<div class="cont-col1">
-														<div class="label label-sm label-default">                        
-															<i class="fa fa-briefcase"></i>
-														</div>
-													</div>
-													<div class="cont-col2">
-														<div class="desc">
-															IPO Report for year 2013 has been released.   
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col2">
-												<div class="date">
-													20 mins
-												</div>
-											</div>
-										</a>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-info">                        
-														<i class="fa fa-check"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 4 pending tasks.
-														<span class="label label-sm label-warning ">
-														Take action 
-														<i class="fa fa-share"></i>
-														</span>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												Just now
-											</div>
-										</div>
-									</li>
-									<li>
-										<a href="#">
-											<div class="col1">
-												<div class="cont">
-													<div class="cont-col1">
-														<div class="label label-sm label-danger">                        
-															<i class="fa fa-bar-chart-o"></i>
-														</div>
-													</div>
-													<div class="cont-col2">
-														<div class="desc">
-															Finance Report for year 2013 has been released.   
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col2">
-												<div class="date">
-													20 mins
-												</div>
-											</div>
-										</a>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-default">                      
-														<i class="fa fa-user"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 5 pending membership that requires a quick review.                       
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												24 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-info">                        
-														<i class="fa fa-shopping-cart"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														New order received with <span class="label label-sm label-success">Reference Number: DR23923</span>             
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												30 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-success">                      
-														<i class="fa fa-user"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														You have 5 pending membership that requires a quick review.                       
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												24 mins
-											</div>
-										</div>
-									</li>
-									<li>
-										<div class="col1">
-											<div class="cont">
-												<div class="cont-col1">
-													<div class="label label-sm label-warning">                        
-														<i class="fa fa-bell-o"></i>
-													</div>
-												</div>
-												<div class="cont-col2">
-													<div class="desc">
-														Web server hardware needs to be upgraded. 
-														<span class="label label-sm label-default ">Overdue</span>             
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col2">
-											<div class="date">
-												2 hours
-											</div>
-										</div>
-									</li>
-									<li>
-										<a href="#">
-											<div class="col1">
-												<div class="cont">
-													<div class="cont-col1">
-														<div class="label label-sm label-info">                        
-															<i class="fa fa-briefcase"></i>
-														</div>
-													</div>
-													<div class="cont-col2">
-														<div class="desc">
-															IPO Report for year 2013 has been released.   
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col2">
-												<div class="date">
-													20 mins
-												</div>
-											</div>
-										</a>
-									</li>
-								</ul>
-							</div>
-							<div class="scroller-footer">
-								<div class="pull-right">
-									<a href="#">See All Records <i class="m-icon-swapright m-icon-gray"></i></a> &nbsp;
+								<div class="tab-pane" id="overview_2">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover table-bordered">
+										<thead>
+										<tr>
+											<th>
+												 Product Name
+											</th>
+											<th>
+												 Price
+											</th>
+											<th>
+												 Views
+											</th>
+											<th>
+											</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td>
+												<a href="#">
+													 Metronic - Responsive Admin + Frontend Theme
+												</a>
+											</td>
+											<td>
+												 $20.00
+											</td>
+											<td>
+												 11190
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Regatta Luca 3 in 1 Jacket
+												</a>
+											</td>
+											<td>
+												 $25.50
+											</td>
+											<td>
+												 1245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Apple iPhone 4s - 16GB - Black
+												</a>
+											</td>
+											<td>
+												 $625.50
+											</td>
+											<td>
+												 809
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Samsung Galaxy S III SGH-I747 - 16GB
+												</a>
+											</td>
+											<td>
+												 $915.50
+											</td>
+											<td>
+												 6709
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Motorola Droid 4 XT894 - 16GB - Black
+												</a>
+											</td>
+											<td>
+												 $878.50
+											</td>
+											<td>
+												 784
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Samsung Galaxy Note 3
+												</a>
+											</td>
+											<td>
+												 $925.50
+											</td>
+											<td>
+												 21245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Inoval Digital Pen
+												</a>
+											</td>
+											<td>
+												 $125.50
+											</td>
+											<td>
+												 1245
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										</tbody>
+										</table>
+									</div>
 								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<div class="portlet box green tasks-widget">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-check"></i>Tasks</div>
-							<div class="tools">
-								<a href="#portlet-config" data-toggle="modal" class="config"></a>
-								<a href="" class="reload"></a>
-							</div>
-							<div class="actions">
-								<div class="btn-group">
-									<a class="btn default btn-xs" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-									More
-									<i class="fa fa-angle-down"></i>
-									</a>
-									<ul class="dropdown-menu pull-right">
-										<li><a href="#"><i class="i"></i> All Project</a></li>
-										<li class="divider"></li>
-										<li><a href="#">AirAsia</a></li>
-										<li><a href="#">Cruise</a></li>
-										<li><a href="#">HSBC</a></li>
-										<li class="divider"></li>
-										<li><a href="#">Pending <span class="badge badge-important">4</span></a></li>
-										<li><a href="#">Completed <span class="badge badge-success">12</span></a></li>
-										<li><a href="#">Overdue <span class="badge badge-warning">9</span></a></li>
-									</ul>
+								<div class="tab-pane" id="overview_3">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover table-bordered">
+										<thead>
+										<tr>
+											<th>
+												 Customer Name
+											</th>
+											<th>
+												 Total Orders
+											</th>
+											<th>
+												 Total Amount
+											</th>
+											<th>
+											</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td>
+												<a href="#">
+													 David Wilson
+												</a>
+											</td>
+											<td>
+												 3
+											</td>
+											<td>
+												 $625.50
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Amanda Nilson
+												</a>
+											</td>
+											<td>
+												 4
+											</td>
+											<td>
+												 $12625.50
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Jhon Doe
+												</a>
+											</td>
+											<td>
+												 2
+											</td>
+											<td>
+												 $125.00
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Bill Chang
+												</a>
+											</td>
+											<td>
+												 45
+											</td>
+											<td>
+												 $12,125.70
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Paul Strong
+												</a>
+											</td>
+											<td>
+												 1
+											</td>
+											<td>
+												 $890.85
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Jane Hilson
+												</a>
+											</td>
+											<td>
+												 5
+											</td>
+											<td>
+												 $239.85
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Patrick Walker
+												</a>
+											</td>
+											<td>
+												 2
+											</td>
+											<td>
+												 $1239.85
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										</tbody>
+										</table>
+									</div>
 								</div>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="task-content">
-								<div class="scroller" style="height: 305px;" data-always-visible="1" data-rail-visible1="1">
-									<!-- START TASK LIST -->
-									<ul class="task-list">
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Present 2013 Year IPO Statistics at Board Meeting</span>
-												<span class="label label-sm label-success">Company</span>
-												<span class="task-bell"><i class="fa fa-bell-o"></i></span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-													<i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""/>                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Hold An Interview for Marketing Manager Position</span>
-												<span class="label label-sm label-danger">Marketing</span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-													<i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""/>                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">AirAsia Intranet System Project Internal Meeting</span>
-												<span class="label label-sm label-success">AirAsia</span>
-												<span class="task-bell"><i class="fa fa-bell-o"></i></span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-													<i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Technical Management Meeting</span>
-												<span class="label label-sm label-warning">Company</span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Kick-off Company CRM Mobile App Development</span>
-												<span class="label label-sm label-info">Internal Products</span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">
-												Prepare Commercial Offer For SmartVision Website Rewamp 
+								<div class="tab-pane" id="overview_4">
+									<div class="table-responsive">
+										<table class="table table-striped table-hover table-bordered">
+										<thead>
+										<tr>
+											<th>
+												 Customer Name
+											</th>
+											<th>
+												 Date
+											</th>
+											<th>
+												 Amount
+											</th>
+											<th>
+												 Status
+											</th>
+											<th>
+											</th>
+										</tr>
+										</thead>
+										<tbody>
+										<tr>
+											<td>
+												<a href="#">
+													 David Wilson
+												</a>
+											</td>
+											<td>
+												 3 Jan, 2013
+											</td>
+											<td>
+												 $625.50
+											</td>
+											<td>
+												<span class="label label-sm label-warning">
+													 Pending
 												</span>
-												<span class="label label-sm label-danger">SmartVision</span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Sign-Off The Comercial Agreement With AutoSmart</span>
-												<span class="label label-sm label-default">AutoSmart</span>
-												<span class="task-bell"><i class="fa fa-bell-o"></i></span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li>
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">Company Staff Meeting</span>
-												<span class="label label-sm label-success">Cruise</span>
-												<span class="task-bell"><i class="fa fa-bell-o"></i></span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-										<li class="last-line">
-											<div class="task-checkbox">
-												<input type="checkbox" class="liChild" value=""  />                                       
-											</div>
-											<div class="task-title">
-												<span class="task-title-sp">KeenThemes Investment Discussion</span>
-												<span class="label label-sm label-warning">KeenThemes</span>
-											</div>
-											<div class="task-config">
-												<div class="task-config-btn btn-group">
-													<a class="btn btn-xs default" href="#" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-cog"></i><i class="fa fa-angle-down"></i></a>
-													<ul class="dropdown-menu pull-right">
-														<li><a href="#"><i class="fa fa-check"></i> Complete</a></li>
-														<li><a href="#"><i class="fa fa-pencil"></i> Edit</a></li>
-														<li><a href="#"><i class="fa fa-trash-o"></i> Cancel</a></li>
-													</ul>
-												</div>
-											</div>
-										</li>
-									</ul>
-									<!-- END START TASK LIST -->
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Amanda Nilson
+												</a>
+											</td>
+											<td>
+												 13 Feb, 2013
+											</td>
+											<td>
+												 $12625.50
+											</td>
+											<td>
+												<span class="label label-sm label-warning">
+													 Pending
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Jhon Doe
+												</a>
+											</td>
+											<td>
+												 20 Mar, 2013
+											</td>
+											<td>
+												 $125.00
+											</td>
+											<td>
+												<span class="label label-sm label-success">
+													 Success
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Bill Chang
+												</a>
+											</td>
+											<td>
+												 29 May, 2013
+											</td>
+											<td>
+												 $12,125.70
+											</td>
+											<td>
+												<span class="label label-sm label-info">
+													 In Process
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Paul Strong
+												</a>
+											</td>
+											<td>
+												 1 Jun, 2013
+											</td>
+											<td>
+												 $890.85
+											</td>
+											<td>
+												<span class="label label-sm label-success">
+													 Success
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Jane Hilson
+												</a>
+											</td>
+											<td>
+												 5 Aug, 2013
+											</td>
+											<td>
+												 $239.85
+											</td>
+											<td>
+												<span class="label label-sm label-danger">
+													 Canceled
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<a href="#">
+													 Patrick Walker
+												</a>
+											</td>
+											<td>
+												 6 Aug, 2013
+											</td>
+											<td>
+												 $1239.85
+											</td>
+											<td>
+												<span class="label label-sm label-success">
+													 Success
+												</span>
+											</td>
+											<td>
+												<a href="#" class="btn default btn-xs green-stripe">
+													 View
+												</a>
+											</td>
+										</tr>
+										</tbody>
+										</table>
+									</div>
 								</div>
-							</div>
-							<div class="task-footer">
-								<span class="pull-right">
-								<a href="#">See All Tasks <i class="m-icon-swapright m-icon-gray"></i></a> &nbsp;
-								</span>
 							</div>
 						</div>
 					</div>
+					<!-- End: life time stats -->
 				</div>
-			</div>
-			<div class="clearfix"></div>
-			<div class="row ">
-				<div class="col-md-6 col-sm-6">
-					<div class="portlet box purple">
+				<div class="col-md-6">
+					<!-- Begin: life time stats -->
+					<div class="portlet box blue tabbable">
 						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-calendar"></i>General Stats</div>
-							<div class="actions">
-								<a href="javascript:;" class="btn btn-sm yellow easy-pie-chart-reload"><i class="fa fa-repeat"></i> Reload</a>
+							<div class="caption">
+								<i class="fa fa-bar-chart-o"></i>Revenue
 							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="row">
-								<div class="col-md-4">
-									<div class="easy-pie-chart">
-										<div class="number transactions" data-percent="55"><span>+55</span>%</div>
-										<a class="title" href="#">Transactions <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-								<div class="margin-bottom-10 visible-sm"></div>
-								<div class="col-md-4">
-									<div class="easy-pie-chart">
-										<div class="number visits" data-percent="85"><span>+85</span>%</div>
-										<a class="title" href="#">New Visits <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-								<div class="margin-bottom-10 visible-sm"></div>
-								<div class="col-md-4">
-									<div class="easy-pie-chart">
-										<div class="number bounce" data-percent="46"><span>-46</span>%</div>
-										<a class="title" href="#">Bounce <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<div class="portlet box blue">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-calendar"></i>Server Stats</div>
 							<div class="tools">
-								<a href="" class="collapse"></a>
-								<a href="#portlet-config" data-toggle="modal" class="config"></a>
-								<a href="" class="reload"></a>
-								<a href="" class="remove"></a>
+								<a href="#portlet-config" data-toggle="modal" class="config">
+								</a>
+								<a href="javascript:;" class="reload">
+								</a>
 							</div>
 						</div>
 						<div class="portlet-body">
-							<div class="row">
-								<div class="col-md-4">
-									<div class="sparkline-chart">
-										<div class="number" id="sparkline_bar"></div>
-										<a class="title" href="#">Network <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-								<div class="margin-bottom-10 visible-sm"></div>
-								<div class="col-md-4">
-									<div class="sparkline-chart">
-										<div class="number" id="sparkline_bar2"></div>
-										<a class="title" href="#">CPU Load <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-								<div class="margin-bottom-10 visible-sm"></div>
-								<div class="col-md-4">
-									<div class="sparkline-chart">
-										<div class="number" id="sparkline_line"></div>
-										<a class="title" href="#">Load Rate <i class="m-icon-swapright"></i></a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="clearfix"></div>
-			<div class="row ">
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN REGIONAL STATS PORTLET-->
-					<div class="portlet">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-globe"></i>Regional Stats</div>
-							<div class="tools">
-								<a href="" class="collapse"></a>
-								<a href="#portlet-config" data-toggle="modal" class="config"></a>
-								<a href="" class="reload"></a>
-								<a href="" class="remove"></a>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div id="region_statistics_loading">
-								<img src="assets/img/loading.gif" alt="loading"/>
-							</div>
-							<div id="region_statistics_content" class="display-none">
-								<div class="btn-toolbar margin-bottom-10">
-									<div class="btn-group" data-toggle="buttons">
-										<a href="" class="btn default btn-sm active">Users</a>
-										<a href="" class="btn default btn-sm">Orders</a> 
-									</div>
-									<div class="btn-group pull-right">
-										<a href="" class="btn default btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-										Select Region <span class="fa fa-angle-down"></span>
+							<div class="portlet-tabs">
+								<ul class="nav nav-tabs" style="margin-right: 50px">
+									<li>
+										<a href="#portlet_tab2" data-toggle="tab" id="statistics_amounts_tab">
+											 Amounts
 										</a>
-										<ul class="dropdown-menu pull-right">
-											<li><a href="javascript:;" id="regional_stat_world">World</a></li>
-											<li><a href="javascript:;" id="regional_stat_usa">USA</a></li>
-											<li><a href="javascript:;" id="regional_stat_europe">Europe</a></li>
-											<li><a href="javascript:;" id="regional_stat_russia">Russia</a></li>
-											<li><a href="javascript:;" id="regional_stat_germany">Germany</a></li>
-										</ul>
-									</div>
-								</div>
-								<div id="vmap_world" class="vmaps display-none"></div>
-								<div id="vmap_usa" class="vmaps display-none"></div>
-								<div id="vmap_europe" class="vmaps display-none"></div>
-								<div id="vmap_russia" class="vmaps display-none"></div>
-								<div id="vmap_germany" class="vmaps display-none"></div>
-							</div>
-						</div>
-					</div>
-					<!-- END REGIONAL STATS PORTLET-->
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN PORTLET-->
-					<div class="portlet paddingless">
-						<div class="portlet-title line">
-							<div class="caption"><i class="fa fa-bell-o"></i>Feeds</div>
-							<div class="tools">
-								<a href="" class="collapse"></a>
-								<a href="#portlet-config" data-toggle="modal" class="config"></a>
-								<a href="" class="reload"></a>
-								<a href="" class="remove"></a>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<!--BEGIN TABS-->
-							<div class="tabbable tabbable-custom">
-								<ul class="nav nav-tabs">
-									<li class="active"><a href="#tab_1_1" data-toggle="tab">System</a></li>
-									<li><a href="#tab_1_2" data-toggle="tab">Activities</a></li>
-									<li><a href="#tab_1_3" data-toggle="tab">Recent Users</a></li>
+									</li>
+									<li class="active">
+										<a href="#portlet_tab1" data-toggle="tab">
+											 Orders
+										</a>
+									</li>
 								</ul>
 								<div class="tab-content">
-									<div class="tab-pane active" id="tab_1_1">
-										<div class="scroller" style="height: 290px;" data-always-visible="1" data-rail-visible="0">
-											<ul class="feeds">
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-success">                        
-																	<i class="fa fa-bell-o"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	You have 4 pending tasks.
-																	<span class="label label-sm label-danger ">
-																	Take action 
-																	<i class="fa fa-share"></i>
-																	</span>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															Just now
-														</div>
-													</div>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New version v1.4 just lunched!   
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																20 mins
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-danger">                      
-																	<i class="fa fa-bolt"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	Database server #12 overloaded. Please fix the issue.                      
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															24 mins
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															30 mins
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-success">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															40 mins
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-warning">                        
-																	<i class="fa fa-plus"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New user registered.                
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															1.5 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-success">                        
-																	<i class="fa fa-bell-o"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	Web server hardware needs to be upgraded. 
-																	<span class="label label-sm label-default ">Overdue</span>             
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															2 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-default">                       
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															3 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-warning">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															5 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															18 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-default">                       
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															21 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															22 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-default">                       
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															21 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															22 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-default">                       
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															21 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															22 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-default">                       
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															21 hours
-														</div>
-													</div>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-info">                        
-																	<i class="fa fa-bullhorn"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	New order received. Please take care of it.                 
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															22 hours
-														</div>
-													</div>
-												</li>
-											</ul>
+									<div class="tab-pane active" id="portlet_tab1">
+										<div id="statistics_1" class="chart">
 										</div>
 									</div>
-									<div class="tab-pane" id="tab_1_2">
-										<div class="scroller" style="height: 290px;" data-always-visible="1" data-rail-visible1="1">
-											<ul class="feeds">
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New order received 
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																10 mins
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<div class="col1">
-														<div class="cont">
-															<div class="cont-col1">
-																<div class="label label-sm label-danger">                      
-																	<i class="fa fa-bolt"></i>
-																</div>
-															</div>
-															<div class="cont-col2">
-																<div class="desc">
-																	Order #24DOP4 has been rejected.    
-																	<span class="label label-sm label-danger ">Take action <i class="fa fa-share"></i></span>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="col2">
-														<div class="date">
-															24 mins
-														</div>
-													</div>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-												<li>
-													<a href="#">
-														<div class="col1">
-															<div class="cont">
-																<div class="cont-col1">
-																	<div class="label label-sm label-success">                        
-																		<i class="fa fa-bell-o"></i>
-																	</div>
-																</div>
-																<div class="cont-col2">
-																	<div class="desc">
-																		New user registered
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div class="col2">
-															<div class="date">
-																Just now
-															</div>
-														</div>
-													</a>
-												</li>
-											</ul>
-										</div>
-									</div>
-									<div class="tab-pane" id="tab_1_3">
-										<div class="scroller" style="height: 290px;" data-always-visible="1" data-rail-visible1="1">
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Robert Nilson</a> 
-															<span class="label label-sm label-success label-mini">Approved</span>
-														</div>
-														<div>29 Jan 2013 10:45AM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-info">Pending</span>
-														</div>
-														<div>19 Jan 2013 10:45AM</div>
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Eric Kim</a> 
-															<span class="label label-sm label-info">Pending</span>
-														</div>
-														<div>19 Jan 2013 12:45PM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-danger">In progress</span>
-														</div>
-														<div>19 Jan 2013 11:55PM</div>
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Eric Kim</a> 
-															<span class="label label-sm label-info">Pending</span>
-														</div>
-														<div>19 Jan 2013 12:45PM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-danger">In progress</span>
-														</div>
-														<div>19 Jan 2013 11:55PM</div>
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div><a href="#">Eric Kim</a> <span class="label label-sm label-info">Pending</span></div>
-														<div>19 Jan 2013 12:45PM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-danger">In progress</span>
-														</div>
-														<div>19 Jan 2013 11:55PM</div>
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div><a href="#">Eric Kim</a> <span class="label label-sm label-info">Pending</span></div>
-														<div>19 Jan 2013 12:45PM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-danger">In progress</span>
-														</div>
-														<div>19 Jan 2013 11:55PM</div>
-													</div>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Eric Kim</a> 
-															<span class="label label-sm label-info">Pending</span>
-														</div>
-														<div>19 Jan 2013 12:45PM</div>
-													</div>
-												</div>
-												<div class="col-md-6 user-info">
-													<img alt="" src="assets/img/avatar.png" class="img-responsive" />
-													<div class="details">
-														<div>
-															<a href="#">Lisa Miller</a> 
-															<span class="label label-sm label-danger">In progress</span>
-														</div>
-														<div>19 Jan 2013 11:55PM</div>
-													</div>
-												</div>
-											</div>
+									<div class="tab-pane" id="portlet_tab2">
+										<div id="statistics_2" class="chart">
 										</div>
 									</div>
 								</div>
 							</div>
-							<!--END TABS-->
-						</div>
-					</div>
-					<!-- END PORTLET-->
-				</div>
-			</div>
-			<div class="clearfix"></div>
-			<div class="row ">
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN PORTLET-->
-					<div class="portlet box blue calendar">
-						<div class="portlet-title">
-							<div class="caption"><i class="fa fa-calendar"></i>Calendar</div>
-						</div>
-						<div class="portlet-body light-grey">
-							<div id="calendar"></div>
-						</div>
-					</div>
-					<!-- END PORTLET-->
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<!-- BEGIN PORTLET-->
-					<div class="portlet">
-						<div class="portlet-title line">
-							<div class="caption"><i class="fa fa-comments"></i>Chats</div>
-							<div class="tools">
-								<a href="" class="collapse"></a>
-								<a href="#portlet-config" data-toggle="modal" class="config"></a>
-								<a href="" class="reload"></a>
-								<a href="" class="remove"></a>
-							</div>
-						</div>
-						<div class="portlet-body" id="chats">
-							<div class="scroller" style="height: 435px;" data-always-visible="1" data-rail-visible1="1">
-								<ul class="chats">
-									<li class="in">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar1.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Bob Nilson</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="out">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar2.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Lisa Wong</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="in">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar1.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Bob Nilson</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="out">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar3.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Richard Doe</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="in">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar3.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Richard Doe</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="out">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar1.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Bob Nilson</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="in">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar3.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Richard Doe</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, 
-											sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-											</span>
-										</div>
-									</li>
-									<li class="out">
-										<img class="avatar img-responsive" alt="" src="assets/img/avatar1.jpg" />
-										<div class="message">
-											<span class="arrow"></span>
-											<a href="#" class="name">Bob Nilson</a>
-											<span class="datetime">at Jul 25, 2012 11:09</span>
-											<span class="body">
-											Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. sed diam nonummy nibh euismod tincidunt ut laoreet.
-											</span>
-										</div>
-									</li>
-								</ul>
-							</div>
-							<div class="chat-form">
-								<div class="input-cont">   
-									<input class="form-control" type="text" placeholder="Type a message here..." />
-								</div>
-								<div class="btn-cont"> 
-									<span class="arrow"></span>
-									<a href="" class="btn blue icn-only"><i class="fa fa-check icon-white"></i></a>
+							<div class="well no-margin no-border">
+								<div class="row">
+									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
+										<span class="label label-success">
+											 Revenue:
+										</span>
+										<h3>$1,234,112.20</h3>
+									</div>
+									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
+										<span class="label label-info">
+											 Tax:
+										</span>
+										<h3>$134,90.10</h3>
+									</div>
+									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
+										<span class="label label-danger">
+											 Shipment:
+										</span>
+										<h3>$1,134,90.10</h3>
+									</div>
+									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
+										<span class="label label-warning">
+											 Orders:
+										</span>
+										<h3>235090</h3>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<!-- END PORTLET-->
+					<!-- End: life time stats -->
 				</div>
 			</div>
 {/block}
