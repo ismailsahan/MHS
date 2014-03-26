@@ -17,5 +17,8 @@ uc_client/data/cache/**
 *.tmp
 *_.*
 *.psd
+*.7z
+*.rar
+*.zip
 Thumbs.db
 config.inc.php
