@@ -1342,6 +1342,68 @@ function ajaxReturn($data, $type='', $encoded=false) {
 }
 
 /**
+ * 	清除缓存
+ */
+function clearcache($opt = 1) {
+	$options = array(
+		'setting'	=> 0,
+		'tos'		=> 0,
+		'template'	=> 0,
+	);
+	$clearall = false;
+
+	if(is_string($opt) && $opt!='all') {
+		$options[$opt] = 1;
+	}elseif(is_array($opt)) {
+		$options = array_merge($options, $opt);
+	}else{
+		$clearall = true;
+		foreach ($options as $k => $v) {
+			$options[$k] = 1;
+		}
+	}
+
+	if($clearall) {
+		Cache::clean();
+	} else {
+		if($options['setting']) {
+			Cache::delete('setting');
+		}
+		if($options['tos']) {
+			Cache::delete('tos');
+		}
+	}
+
+	if($options['template']) {
+		global $template;
+		$template->clearAllCache();
+
+		clearstaticcache();
+	}
+}
+
+/**
+ * 清除由静态引擎产生的缓存
+ */
+function clearstaticcache($path = array('/', '/tpl/', '/cfg/', '/sessions/')) {
+	if(is_array($path)) {
+		foreach ($$path as $val) {
+			clearstaticcache($val);
+		}
+		return;
+	}
+
+	$files = glob(APP_FRAMEWORK_ROOT.'/cache'.$path.'*');
+	foreach($files as $cache) {
+		if(is_file($cache) && !in_array(basename($cache), array('index.htm', 'index.html'))) {
+			unlink($cache);
+		}
+	}
+
+	return;
+}
+
+/**
  * 取得文件后缀/类型
  * 
  * @param string $filename 文件名或文件路径

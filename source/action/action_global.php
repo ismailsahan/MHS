@@ -232,11 +232,12 @@ class GlobalAction extends Action {
 
 	private function _update($name, $val, $type){
 		global $_G;
-		return DB::query("UPDATE %t SET `svalue`=%{$type} WHERE `skey`=%s LIMIT 1", array(
+		DB::query("UPDATE %t SET `svalue`=%{$type} WHERE `skey`=%s LIMIT 1", array(
 			'setting',
 			$val,
 			$name
 		));
+		clearcache('setting');
 	}
 
 	private function _ajaxError($msg){
