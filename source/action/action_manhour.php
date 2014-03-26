@@ -27,25 +27,15 @@ class ManhourAction extends Action {
 	}
 
 	public function applylog(){
-		$this->_developing();
+		show_developing('mhour');
 	}
 
 	public function checklog(){
-		$this->_developing();
+		show_developing('mhour');
 	}
 
 	public function manage(){
-		$this->_developing();
-	}
-
-	private function _developing(){
-		global $_G, $template;
-		if(!$template->isCached('developing')){
-			$template->assign('sidebarMenu', defaultNav());
-			$template->assign('adminNav', adminNav());
-			$template->assign('menuset', array('mhour', OPERATION_NAME));
-		}
-		$template->display('developing');
+		show_developing('mhour');
 	}
 
 }

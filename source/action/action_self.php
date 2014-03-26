@@ -194,13 +194,7 @@ class SelfAction extends Action {
 	public function pm(){
 		global $_G, $template;
 
-		if(!$template->isCached('developing')){
-			$template->assign('sidebarMenu', defaultNav());
-			$template->assign('adminNav', adminNav());
-			$template->assign('menuset', array('self', OPERATION_NAME));
-		}
-		$template->display('developing');
-		exit;
+		show_developing('self');
 
 		if(IS_AJAX){
 			;

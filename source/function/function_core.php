@@ -1653,57 +1653,67 @@ function show_error($message, $status_code = 500, $heading = 'An Error Was Encou
 	exit;
 }
 
-// ------------------------------------------------------------------------
-
 /**
-* 404 Page Handler
-*
-* This function is similar to the show_error() function above
-* However, instead of the standard error template it displays
-* 404 errors.
-*
-* @access	public
-* @return	void
-*/
+ * 显示404错误页面
+ */
 function show_404($page = '', $log_error = TRUE) {
-	$_error = & load_class('Exceptions', 'core');
-	$_error->show_404($page, $log_error);
+	global $template;
+
+	if(IS_AJAX) {
+		ajaxReturn(array(
+			'errno' => 404,
+			'msg' => '您所访问的文件已经找不到了...'
+		), 'AUTO');
+
+		exit;
+	}
+
+	if(!function_exists('defaultNav')) {
+		require_once libfile('function/nav');
+	}
+
+	/*
+	$template->force_compile = true;
+	$template->assign('sidebarMenu', defaultNav());
+	$template->assign('adminNav', adminNav());
+	$template->assign('menuset', array('mhour', OPERATION_NAME));
+	*/
+
+	$template->display('404');
+
 	exit;
 }
 
 /**
-* Exception Handler
-*
-* This is the custom exception handler that is declaired at the top
-* of Codeigniter.php.  The main reason we use this is to permit
-* PHP errors to be logged in our own log files since the user may
-* not have access to server logs. Since this function
-* effectively intercepts PHP errors, however, we also need
-* to display errors based on the current error_reporting level.
-* We do that with the use of a PHP error template.
-*
-* @access	private
-* @return	void
-*/
-function _exception_handler($severity, $message, $filepath, $line) {
-	 // We don't bother with "strict" notices since they tend to fill up
-	 // the log file with excess information that isn't normally very helpful.
-	 // For example, if you are running PHP 5 and you use version 4 style
-	 // class functions (without prefixes like "public", "private", etc.)
-	 // you'll get notices telling you that these have been deprecated.
-	if ($severity == E_STRICT)
-	{
-		return;
+ * 显示暂未上线
+ */
+function show_developing($action='', $operation='') {
+	global $template;
+
+	if(IS_AJAX) {
+		ajaxReturn(array(
+			'errno' => 501,
+			'msg' => '暂未上线，请稍候访问'
+		), 'AUTO');
+
+		exit;
 	}
-	$_error = & load_class('Exceptions', 'core');
-	// Should we display the error? We'll get the current error_reporting
-	// level and add its bits with the severity bits to find out.
-	if (($severity & error_reporting()) == $severity) {
-		$_error->show_php_error($severity, $message, $filepath, $line);
+
+	if(!function_exists('defaultNav')) {
+		require_once libfile('function/nav');
 	}
-	// Should we log the error?  No?  We're done...
-	if (config_item('log_threshold') == 0) {
-		return;
-	}
-	$_error->log_exception($severity, $message, $filepath, $line);
+
+	if(empty($action))
+		$action = ACTION_NAME;
+	if(empty($operation))
+		$operation = OPERATION_NAME;
+
+	$template->force_compile = true;
+	$template->assign('sidebarMenu', defaultNav());
+	$template->assign('adminNav', adminNav());
+	$template->assign('menuset', array($action, $operation));
+
+	$template->display('developing');
+
+	exit;
 }

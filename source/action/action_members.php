@@ -19,13 +19,7 @@ class MembersAction extends Action {
 	public function index(){
 		//redirect(U('members/info'));
 
-		global $_G, $template;
-		if(!$template->isCached('developing')){
-			$template->assign('sidebarMenu', defaultNav());
-			$template->assign('adminNav', adminNav());
-			$template->assign('menuset', array('members', OPERATION_NAME));
-		}
-		$template->display('developing');
+		show_developing('members');
 	}
 
 	public function user(){
