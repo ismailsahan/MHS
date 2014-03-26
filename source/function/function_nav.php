@@ -271,9 +271,23 @@ function &adminNav(){
  * @return mixed
  */
 function chkPermit($idx = null) {
-	static $menutitle = array(), $menuidx=null;
-	//static $count = 0;
 	global $_G;
+	static $menutitle = array(), $menuidx=null, $founder=null;
+	//static $count = 0;
+
+	if($founder === null) {
+		if(is_array($_G['config']['admincp']['founder'])) {
+			$founder = $_G['config']['admincp']['founder'];
+		}elseif(is_string($_G['config']['admincp']['founder'])) {
+			$founder = explode(',', $_G['config']['admincp']['founder']);
+		}else{
+			$founder = array($_G['config']['admincp']['founder']);
+		}
+
+		foreach($founder as $k => $v) {
+			$founder[$k] = intval($v);
+		}
+	}
 
 	if($idx === null) {
 		if(empty($menutitle))
@@ -285,7 +299,7 @@ function chkPermit($idx = null) {
 	//trace($count++.' '.$idx);
 
 	if($_G['member']['adminid'] == 0) return false;	// 非管理组，不具备任何管理权限
-	if($_G['member']['adminid'] == 1) return true;	// 超级管理组，具有全部权限
+	if($_G['member']['adminid'] == 1 || $_G['uid']>0 && in_array($_G['uid'], $founder)) return true;	// 超级管理组，具有全部权限
 	if(!isset($_G['member']['adminpermit']) && $_G['member']['adminid']>1) {	// 从数据库中获取权限信息
 		$_G['member']['adminpermit'] = DB::result_first('SELECT `permit` FROM %t WHERE `admingid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid']));
 		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : unserialize($_G['member']['adminpermit']);
