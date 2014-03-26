@@ -4,11 +4,13 @@ development/**
 source/template/switcher-demo/**
 uc_client/data/cache/**
 !uc_client/data/cache/index.htm
-!cache/index.html
+!cache/index.htm
 !cache/tpl
 !cache/cfg
-!cache/tpl/index.html
-!cache/cfg/index.html
+!cache/sessions
+!cache/tpl/index.htm
+!cache/cfg/index.htm
+!cache/sessions/index.htm
 *_bak
 *.bak
 *.bak.php
