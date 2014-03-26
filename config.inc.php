@@ -92,7 +92,7 @@ $_config['output']['tplrefresh']				= 1;
 // -----------------------------  COOKIE 设置 ----------------------------- //
 $_config['cookie']['cookiepre'] 				= 'mhs_'; 			// COOKIE前缀
 $_config['cookie']['cookiedomain'] 				= ''; 				// COOKIE作用域
-$_config['cookie']['cookiepath'] 				= '/'; 				// COOKIE作用路径
+$_config['cookie']['cookiepath'] 				= '/MHS/'; 			// COOKIE作用路径
 
 
 

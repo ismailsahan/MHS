@@ -1,7 +1,12 @@
 cache/**
 assets/**
 development/**
+source/template/switcher-demo/**
+uc_client/data/cache/**
+!uc_client/data/cache/index.htm
 !cache/index.html
+!cache/tpl
+!cache/cfg
 !cache/tpl/index.html
 !cache/cfg/index.html
 *_bak
@@ -10,5 +15,7 @@ development/**
 *_bak.php
 *.log
 *.tmp
+*_.*
+*.psd
 Thumbs.db
 config.inc.php
