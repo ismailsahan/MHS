@@ -21,6 +21,14 @@ class MainAction extends Action {
 			$template->assign('adminNav', adminNav());
 			$template->assign('menuset', array('home'));
 		}
+
+		$total_manhour = DB::result_first('SELECT sum(`manhour`) FROM %t WHERE `uid`=%d AND `status`=1', array('manhours', $_G['uid']));
+		DB::query('SET @rank=0');
+		$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']), null, false);
+		trace($manhour);
+
+		$template->assign('total_manhour', $total_manhour, true);
+		$template->assign('rank', $manhour['rank'], true);
 		$template->display('main_index');
 	}
 

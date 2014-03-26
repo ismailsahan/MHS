@@ -137,8 +137,8 @@ class DB {
 	 * @param string $sql 查询语句
 	 * @return array
 	 */
-	public static function fetch_first($sql, $arg = array(), $silent = false) {
-		$res = self::query($sql, $arg, $silent, false);
+	public static function fetch_first($sql, $arg = array(), $silent = false, $checkquery = true) {
+		$res = self::query($sql, $arg, $silent, false, $checkquery);
 		$ret = self::$db->fetch_array($res);
 		self::$db->free_result($res);
 		return $ret ? $ret : array();
@@ -154,10 +154,10 @@ class DB {
 	 * @param boolean	$silent
 	 * @return array
 	 */
-	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent=false) {
+	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent=false, $checkquery = true) {
 
 		$data = array();
-		$query = self::query($sql, $arg, $silent, false);
+		$query = self::query($sql, $arg, $silent, false, $checkquery);
 		while ($row = self::$db->fetch_array($query)) {
 			if ($keyfield && isset($row[$keyfield])) {
 				$data[$row[$keyfield]] = $row;
@@ -185,8 +185,8 @@ class DB {
 	 * @param string $sql SQL查询语句
 	 * @return unknown
 	 */
-	public static function result_first($sql, $arg = array(), $silent = false) {
-		$res = self::query($sql, $arg, $silent, false);
+	public static function result_first($sql, $arg = array(), $silent = false, $checkquery = true) {
+		$res = self::query($sql, $arg, $silent, false, $checkquery);
 		$ret = self::$db->result($res, 0);
 		self::$db->free_result($res);
 		return $ret;
@@ -202,7 +202,7 @@ class DB {
 	 * @param boolean	$unbuffered
 	 * @return Resource OR Result
 	 */
-	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false) {
+	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false, $checkquery = true) {
 		if (!empty($arg)) {
 			if (is_array($arg)) {
 				$sql = self::format($sql, $arg);
@@ -213,7 +213,10 @@ class DB {
 				$unbuffered = true;
 			}
 		}
-		self::checkquery($sql);
+
+		if($checkquery) {
+			self::checkquery($sql);
+		}
 
 		$ret = self::$db->query($sql, $silent, $unbuffered);
 		if (!$unbuffered && $ret) {
@@ -545,6 +548,7 @@ class database_safecheck {
 			}
 
 			if ($check < 1) {
+				trace('SQL checkquery: $check='.$check);
 				throw new DbException('It is not safe to do this query', 0, $sql);
 				//DB::$db->halt('It is not safe to do this query', $sql);
 				//DB::$db->halt('not_safe', $sql);
