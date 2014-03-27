@@ -2,9 +2,7 @@
 {block subtitle}{lang nav/home}{/block}
 {block pagestyle}
 <link href="assets/css/pages/tasks.css" rel="stylesheet" type="text/css" />
-<style type="text/css" media="screen">
-.dashboard-stat .visual i { font-size: 65px; line-height: 65px;	}
-</style>
+<link href="assets/css/pages/index.css" rel="stylesheet" type="text/css" />
 {/block}
 {block pageplugins}
 	<script type="text/javascript" src="assets/plugins/flot/jquery.flot.js"></script>
@@ -280,19 +278,19 @@
 			</div>
 			<!-- BEGIN DASHBOARD STATS -->
 			<div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 					<div class="dashboard-stat blue">
 						<div class="visual">
-							<i class="fa fa-comments"></i>
+							<i class="fa fa-bar-chart-o"></i>
 						</div>
 						<div class="details">
-							<div class="number">{$total_manhour}</div>
+							<div class="number">{$total_manhour|default:0}</div>
 							<div class="desc">工时总数</div>
 						</div>
 						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
 					</div>
 				</div>
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
 					<div class="dashboard-stat purple">
 						<div class="visual">
 							<i class="fa fa-globe"></i>
@@ -300,6 +298,30 @@
 						<div class="details">
 							<div class="number">{$rank}</div>
 							<div class="desc">工时排名</div>
+						</div>
+						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+					<div class="dashboard-stat yellow">
+						<div class="visual">
+							<i class="fa fa-sign-in"></i>
+						</div>
+						<div class="details">
+							<div class="number lastlogin">{nocache}{dgmdate($_G.member.lastlogin, 'd')}{/nocache}</div>
+							<div class="desc">上次登录</div>
+						</div>
+						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+					<div class="dashboard-stat green">
+						<div class="visual">
+							<i class="fa fa-group"></i>
+						</div>
+						<div class="details">
+							<div class="number">{nocache}{if empty($onlinenum)}?{else}{$onlinenum}{/if}{/nocache}</div>
+							<div class="desc">当前在线</div>
 						</div>
 						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
 					</div>
