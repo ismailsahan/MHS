@@ -10,6 +10,7 @@
 
 class template extends Smarty{
 	public static $suffix = '.html';
+	public static $default_tplname = 'metronic';
 	public static $default_compile_id;
 	public static $default_cache_id;
 
@@ -20,8 +21,13 @@ class template extends Smarty{
 		self::$default_cache_id = null;
 		self::$default_compile_id = $_G['language'];
 
-		$this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/'.$_G['setting']['template'].'/');
-		if($_G['setting']['template'] != 'metronic') $this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/metronic/');
+		if(!empty($_G['setting']['template'])) {
+			$this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/'.$_G['setting']['template'].'/');
+		}
+		if($_G['setting']['template'] != self::$default_tplname) {
+			$this->addTemplateDir(APP_FRAMEWORK_ROOT.'/source/template/'.self::$default_tplname.'/');
+		}
+
 		$this->setCompileDir(APP_FRAMEWORK_ROOT.'/cache/tpl');
 		$this->setConfigDir(APP_FRAMEWORK_ROOT.'/cache/cfg');
 		$this->setCacheDir(APP_FRAMEWORK_ROOT.'/cache');
@@ -177,8 +183,12 @@ class StaticEngine {
 	private function getTemplateDir(){
 		global $_G;
 		$tpl = array();
-		$tpl[] = APP_FRAMEWORK_ROOT.'/source/template/'.$_G['setting']['template'].'/';
-		if($_G['setting']['template'] != 'metronic') $tpl[] = APP_FRAMEWORK_ROOT.'/source/template/metronic/';
+		if(!empty($_G['setting']['template'])) {
+			$tpl[] = APP_FRAMEWORK_ROOT.'/source/template/'.$_G['setting']['template'].'/';
+		}
+		if($_G['setting']['template'] != template::$default_tplname) {
+			$tpl[] = APP_FRAMEWORK_ROOT.'/source/template/'.template::$default_tplname.'/';
+		}
 		return $tpl;
 	}
 

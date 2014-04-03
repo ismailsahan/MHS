@@ -82,6 +82,7 @@ $lang = array(
 	'unknown_error'				=> '发生了未知错误',
 
 	'invalid_request'			=> '无效的提交请求！',
+	'invalid_req_tip'			=> '若多次提示无效提交请求，请清除所有浏览数据',
 	'token_expired'				=> '表单已过期！请重新操作',
 	'undefined_err'				=> '发生了未知错误，请联系管理员',
 	'session_expired'			=> '会话超时，请尝试重新登录',

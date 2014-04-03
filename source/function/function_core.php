@@ -1268,6 +1268,10 @@ function submitcheck($var, &$errmsg, $keepToken=0, $allowget=0, $seccodecheck=nu
 	$time = 1440;
 	$name = $var;
 	$session = $_SESSION[$name.'Token'];
+	if(empty($session)){
+		//trace($_SESSION);
+		return false;
+	}
 	if($unsetToken) {
 		unset($_SESSION[$name.'Token']);
 	} else {
@@ -1275,7 +1279,12 @@ function submitcheck($var, &$errmsg, $keepToken=0, $allowget=0, $seccodecheck=nu
 	}
 	//$var = md5($var . '_Token_' . $_SERVER['HTTP_USER_AGENT'] . $_G['authkey'] . $_SERVER['HTTP_HOST'] . $_G['clientip']);
 	$var = $session['name'];
-	if(empty($_REQUEST[$var])) return false;
+	if(empty($_REQUEST[$var])) {
+		//$errmsg = 'request_invalid';
+		//trace($session);
+		//trace($_REQUEST);
+		return false;
+	}
 	$token = $allowget ? $_GET[$var] : $_POST[$var];
 	$seccodecheck = $seccodecheck === null ? need_seccode($name) : $seccodecheck;
 	if($session['time'] < TIMESTAMP-$time){

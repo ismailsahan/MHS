@@ -414,7 +414,7 @@ class core {
 	 * 分配SESSION
 	 */
 	private function _init_session() {
-		if($this->var['setting']['session']){
+		if($this->var['setting']['session'] && $this->var['uid']){
 			$ip = explode('.', $this->var['clientip']);
 			$session = DB::result_first('SELECT count(*) FROM %t WHERE `sid`=%s AND `ip1`=%d AND `ip2`=%d AND `ip3`=%d AND `ip4`=%d AND `uid`=%d AND `username`=%s LIMIT 1', array('session', $this->var['sid'], $ip[0], $ip[1], $ip[2], $ip[3], $this->var['uid'], $this->var['username']));
 			if($session == 0){

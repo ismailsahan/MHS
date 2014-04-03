@@ -27,7 +27,7 @@ class MainAction extends Action {
 		$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']), null, false);
 		trace($manhour);
 
-		$onlinenum = DB::result_first('SELECT count(*) FROM %t WHERE `lastactivity`>=%d-1440', array('session', TIMESTAMP));
+		$onlinenum = DB::result_first('SELECT count(*) FROM %t WHERE `lastactivity`>=%d AND `uid`>0', array('session', TIMESTAMP-1440));
 
 		$template->assign('total_manhour', $total_manhour, true);
 		$template->assign('rank', $manhour['rank'], true);

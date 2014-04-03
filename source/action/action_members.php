@@ -158,4 +158,16 @@ class MembersAction extends Action {
 		}
 	}
 
+	public function admingroup(){
+		global $_G, $template;
+
+		has_permit('admingroup');
+
+		if(IS_AJAX) {
+			;
+		}else{
+			;
+		}
+	}
+
 }
