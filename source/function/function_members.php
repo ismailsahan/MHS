@@ -15,11 +15,11 @@ function subusersqlformula($formula = null, $selector = '*', $addtbl = null) {
 
 		$formula = str_replace(array('&&', '||'), array('AND', 'OR'), $formula);
 
-		$formula = preg_replace_callback('/(league|department) IN\s*\(([^\(\)]+)\)/is', 'subusersqlformula_callback1', $formula);
+		$formula = preg_replace_callback('/(uid|league|department) IN\s*\(([^\(\)]+)\)/is', 'subusersqlformula_callback1', $formula);
 
 		$formula = preg_replace_callback('/(league|department)\s*=\s*(\d+)/is', 'subusersqlformula_callback2', $formula);
 
-		$formula = preg_replace_callback('/(status|adminid|groupid|manhour)/is', 'subusersqlformula_callback3', $formula);
+		$formula = preg_replace_callback('/(uid|status|adminid|groupid|manhour)/is', 'subusersqlformula_callback3', $formula);
 
 		$formula = preg_replace_callback('/(gender|grade|academy|specialty|class|league|department)/is', 'subusersqlformula_callback4', $formula);
 
