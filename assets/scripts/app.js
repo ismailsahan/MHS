@@ -868,6 +868,8 @@ var App = function () {
 		$('.layout-option, .header-option, .sidebar-option, .footer-option', panel).change(setLayout);
 
 		if ($.cookie('style_color')) {
+			$('ul > li', panel).removeClass("current");
+			$('ul > li[data-style="'+$.cookie('style_color')+'"]', panel).addClass("current");
 			setColor($.cookie('style_color'));
 		}
 	}
