@@ -39,6 +39,12 @@ class GlobalAction extends Action {
 					}
 					$this->_update('sitename', $value, 's');
 					break;
+				case 'logopath':
+					if(!is_string($value) || empty($value)){
+						$this->_ajaxError('LOGO文件路径不能为空');
+					}
+					$this->_update('logopath', $value, 's');
+					break;
 				case 'copyright':
 					if(!is_string($value) || empty($value)){
 						$this->_ajaxError('不能为空');
@@ -76,7 +82,7 @@ class GlobalAction extends Action {
 					$this->_update('closereason', $value, 's');
 					break;
 				default:
-					$this->_ajaxError('非法请求');
+					$this->_ajaxError('非法请求'.$name);
 			}
 			send_http_status(200);
 			exit;
