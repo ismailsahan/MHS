@@ -355,7 +355,7 @@ Header and header elements.
   margin-right: 0;
   padding-left: 0;
   padding-right: 0;
-  width: 225px;
+  max-width: 225px;
 }
 
 .header .navbar-brand img {
