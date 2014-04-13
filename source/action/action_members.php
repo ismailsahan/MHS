@@ -28,7 +28,35 @@ class MembersAction extends Action {
 		has_permit('user');
 
 		if(IS_AJAX){
-			;
+			$ret = array(
+				'errno' => -1,
+				'msg' => '未定义操作'
+			);
+
+			switch($_REQUEST['type']) {
+				case 'deluser':
+					$uid = intval($_POST['uid']);
+					$uc = $_POST['deluc'] ? true : false;
+
+					require_once libfile('function/logging');
+
+					if($uid == $_G['uid']) {
+						$ret['msg'] = '你不能删除自己的账号！';
+					} elseif(!DB::result_first(subusersqlformula(null, 'count(*)', null, 'AND uid='.$uid))) {
+						$ret['msg'] = '你不能删除不存在或你无权管理的用户！';
+					} else {
+						$errno = deluser($uid, $uc);
+						$ret['errno'] = $errno ? 0 : 1;
+						$ret['msg'] = $errno ? '删除成功' : '删除失败';
+					}
+					break;
+				case 'getuser':
+					break;
+				case 'edituser':
+					break;
+			}
+
+			ajaxReturn($ret, 'JSON');
 		}else{
 			$sql = subusersqlformula();
 			$users = DB::fetch_all($sql);
@@ -163,10 +191,22 @@ class MembersAction extends Action {
 
 		has_permit('admingroup');
 
+		require_once libfile('class/group');
+
 		if(IS_AJAX) {
 			;
 		}else{
-			;
+
+			if(!$template->isCached('members_admingroup')){
+				$template->assign('sidebarMenu', defaultNav());
+				$template->assign('adminNav', adminNav());
+				$template->assign('menuset', array('members', 'admingroup'));
+			}
+
+			$agrp = group::getgroups('admin');
+
+			$template->assign('agrp', $agrp, true);
+			$template->display('members_admingroup');
 		}
 	}
 

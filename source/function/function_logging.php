@@ -248,15 +248,19 @@ function edituser($username, $oldpw, $newpw=null, $email=null, $ignoreoldpw=fals
  * 
  * @param mixed $uid 用户ID
  * @param bool  $uc  同步到UCenter
- * @return int
+ * @return int  1成功 0失败 2工时系统成功UC失败
  */
 function deluser($uid, $uc=false){
+	$return = 0;
 	DB::query(str_repeat('DELETE FROM %t WHERE `uid` IN (%n);', 3), array('users', $uid, 'users_profile', $uid, 'users_connect', $uid));
-	if($uc){
+	if($uc) {
 		require_once libfile('client', '/uc_client');
-		return uc_user_delete($uid);
+		$return = uc_user_delete($uid);
 	}
-	return 1;
+	if($return && DB::affected_rows() == 0) {
+		$return++;
+	}
+	return $return;
 }
 
 /**

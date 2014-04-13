@@ -17,7 +17,7 @@ $lang = array(
 	'tool_detail'			=> '',
 	'interface'				=> '界面',
 	'interface_detail'		=> '',
-	'mhdict'				=> '资料',
+	'mhdict'				=> '内容',
 	'mhdict_detail'			=> '',
 	''						=> '拒绝访问',
 	'_detail'				=> '',
@@ -88,11 +88,13 @@ $lang = array(
 	'manage'				=> '工时管理',
 	'manage_detail'			=> '',
 
-	/* 资料 */
+	/* 内容 */
 	'activity'				=> '活动列表',
 	'activity_detail'		=> '',
 	'basic'					=> '基础信息',
 	'basic_detail'			=> '',
 	'league'				=> '社团资料',
 	'league_detail'			=> '',
+	'ann'					=> '站点公告',
+	'ann_detail'			=> '',
 );

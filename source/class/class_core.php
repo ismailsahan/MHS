@@ -212,14 +212,15 @@ class core {
 		$this->var['staticurl'] = STATICURL;
 
 		//SESSION 初始化
-		session_set_cookie_params(0, $this->config['cookie']['cookiepath'], $this->config['cookie']['cookiedomain'], IS_HTTPS, true);
 		@ini_set('session.use_cookies', true);
 		@ini_set('session.use_only_cookies', false);
 		@ini_set('session.cookie_lifetime', 0);
 		@ini_set('session.hash_function', 1);
+		session_set_cookie_params(0, $this->config['cookie']['cookiepath'], $this->config['cookie']['cookiedomain'], IS_HTTPS, true);
 		session_cache_limiter('private');
+		session_cache_expire(60);
 
-		if(!is_writable(ini_get('session.save_path'))){
+		if(!is_writable(session_save_path())){
 			if(!is_dir(APP_FRAMEWORK_ROOT.'/cache/sessions')) mkdir(APP_FRAMEWORK_ROOT.'/cache/sessions');
 			if(!file_exists(APP_FRAMEWORK_ROOT.'/cache/sessions/index.htm')) touch(APP_FRAMEWORK_ROOT.'/cache/sessions/index.htm');
 			session_save_path(APP_FRAMEWORK_ROOT.'/cache/sessions');
@@ -459,8 +460,16 @@ class core {
 
 		//站点关闭
 		if($this->var['setting']['closed']){
-			$template->display('closed');
-			exit;
+			if(!in_array(ACTION_NAME, array('api', 'seccode', 'logging')) || ACTION_NAME=='logging' && OPERATION_NAME!='login') {
+				if(!$this->var['uid']) {
+					redirect(U('logging/login?siteclosed=1'));
+				} else {
+					require_once libfile('function/nav');
+					if(!chkPermit('globalaccess')) {
+						redirect(U('logging/login?noaccess=1'));
+					}
+				}
+			}
 		}
 	}
 

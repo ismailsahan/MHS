@@ -1,6 +1,16 @@
 {extends 'common_logging.html'}
 {block subtitle}{lang logging/register}{/block}
-{*block pageplugins prepend}<script type="text/javascript" src="assets/plugins/jquery.pwstrength.bootstrap/src/pwstrength.js"></script>{/block*}
+{block pagestyle append}
+<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
+<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+{/block}
+{block pageplugins prepend}
+<!--<script type="text/javascript" src="assets/plugins/jquery.pwstrength.bootstrap/src/pwstrength.js"></script>-->
+<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="assets/plugins/bootstrap-markdown/lib/markdown.js"></script>
+{/block}
+
 {block logging}
 		<!-- BEGIN REGISTRATION FORM -->
 		<form class="register-form" action="{U logging/register}" method="post">
@@ -52,7 +62,7 @@
 			</div>
 			{/if}
 			<div class="form-group">
-				<label><input type="checkbox" name="tnc"/> 我接受站点的 <a href="#">服务条款</a> 和 <a href="#">隐私保护政策</a></label>  
+				<label><input type="checkbox" name="tnc" id="tnc" /> 我已阅读并同意站点的 <a href="#" id="tnc-link">服务条款</a></label>  
 				<div id="register_tnc_error"></div>
 			</div>
 			<div class="form-actions">

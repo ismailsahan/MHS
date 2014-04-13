@@ -219,6 +219,58 @@ function announcement() {
 	ann.announcementScroll();
 }
 
+function showann(id) {
+	if(!$.fn.modal) {
+		return $.getScript("assets/plugins/bootstrap-modal/js/bootstrap-modal.js", function() {
+			showann(id);
+		});
+	}
+	if($("#ann-modal").size() == 0) {
+		var html;
+		html += '<div id="ann-modal" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">';
+		html += 	'<div class="modal-header">';
+		html += 		'<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>';
+		html += 		'<h4 class="modal-title">公告详情</h4>';
+		html += 	'</div>';
+		html += 	'<div class="modal-body"></div>';
+		html += 	'<div class="modal-footer">';
+		html += 		'<button type="button" data-dismiss="modal" class="btn blue">确定</button>';
+		html += 	'</div>';
+		html += '</div>';
+		$("body").append(html);
+	}
+	$.get("index.php?action=api&operation=getann", {"id":id}, function(data) {
+		var msg = '<dl class="dl-horizontal">';
+		if(data.subject) {
+			msg += "<dt>主题</dt>";
+			msg += "<dd>" + data.subject + "</dd>";
+		} else {
+			msg = "获取公告失败";
+		}
+		if(data.author) {
+			msg += "<dt>作者</dt>";
+			msg += "<dd>" + data.author + "</dd>";
+		}
+		if(data.starttime) {
+			msg += "<dt>开始时间</dt>";
+			msg += "<dd>" + data.starttime + "</dd>";
+		}
+		if(data.endtime) {
+			msg += "<dt>结束时间</dt>";
+			msg += "<dd>" + data.endtime + "</dd>";
+		}
+		if(data.message) {
+			msg += "<dt>内容</dt>";
+			msg += "<dd>" + data.message + "</dd>";
+		}
+		if(data.subject) {
+			msg += "</dl>";
+		}
+		$("#ann-modal .modal-body").html(msg);
+		$("#ann-modal").modal("show");
+	}, "JSON");
+}
+
 function AC_FL_RunContent() {
 	var str = '';
 	var ret = AC_GetArgs(arguments, "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash");

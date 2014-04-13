@@ -19,6 +19,12 @@ function &defaultNav(){
 		),
 		array(
 			'title' => 'self',
+			'link' => 'self/profile',
+			'icon' => 'user',
+			'children' => array()
+		),
+		/*array(
+			'title' => 'self',
 			'link' => 'self/index',
 			'icon' => 'user',
 			'children' => array(
@@ -36,7 +42,7 @@ function &defaultNav(){
 					'children' => array()
 				)
 			)
-		),
+		),*/
 	);
 }
 
@@ -125,12 +131,12 @@ function &adminNav(){
 					'icon' => '',
 					'children' => array()
 				),*/
-				array(
+				/*array(
 					'title' => 'sdmsg',
 					'link' => 'members/sdmsg',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				/*array(
 					'title' => 'userban',
 					'link' => 'members/userban',
@@ -258,6 +264,12 @@ function &adminNav(){
 					'icon' => '',
 					'children' => array()
 				),
+				array(
+					'title' => 'ann',
+					'link' => 'mhdict/ann',
+					'icon' => '',
+					'children' => array()
+				),
 			)
 		),
 	);
@@ -298,10 +310,10 @@ function chkPermit($idx = null) {
 
 	//trace($count++.' '.$idx);
 
-	if($_G['member']['adminid'] == 0) return false;	// 非管理组，不具备任何管理权限
 	if($_G['member']['adminid'] == 1 || $_G['uid']>0 && in_array($_G['uid'], $founder)) return true;	// 超级管理组，具有全部权限
-	if(!isset($_G['member']['adminpermit']) && $_G['member']['adminid']>1) {	// 从数据库中获取权限信息
-		$_G['member']['adminpermit'] = DB::result_first('SELECT `permit` FROM %t WHERE `admingid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid']));
+	if($_G['member']['adminid'] == 0) return false;														// 非管理组，不具备任何管理权限
+	if(!isset($_G['member']['adminpermit']) && $_G['member']['adminid']>1) {							// 从数据库中获取权限信息
+		$_G['member']['adminpermit'] = DB::result_first('SELECT `permit` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid']));
 		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : unserialize($_G['member']['adminpermit']);
 	}
 

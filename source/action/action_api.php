@@ -19,6 +19,9 @@ class ApiAction extends Action {
 		exit;
 	}
 
+	/**
+	 * 空操作
+	 */
 	public function _empty(){
 		exit;
 	}
@@ -122,6 +125,31 @@ class ApiAction extends Action {
 		exit('感谢你反馈信息，我们会尽快修复问题的<br/><br/>你提交的内容是：<br/>'.$data);
 	}
 
+	public function getann(){
+		$id = $_REQUEST['id'];
+		$ann = DB::fetch_first('SELECT `author`,`subject`,`type`,`starttime`,`endtime`,`message` FROM %t WHERE `id`=%d LIMIT 1', array('announcement', $id));
+		if(!empty($ann)) {
+			if($ann['starttime'] != 0) {
+				$ann['starttime'] = dgmdate($ann['starttime'], 'd');
+			} else {
+				unset($ann['starttime']);
+			}
+
+			if($ann['endtime'] != 0) {
+				$ann['endtime'] = dgmdate($ann['endtime'], 'd');
+			} else {
+				unset($ann['endtime']);
+			}
+
+			if($ann['type'] == 1) {
+				$ann['message'] = nl2br($ann['message']);
+			}
+
+			unset($ann['type']);
+		}
+		ajaxReturn($ann, 'JSON');
+	}
+
 	/**
 	 * 获取网站服务条款
 	 */
@@ -144,7 +172,7 @@ class ApiAction extends Action {
 	 */
 	public function stat(){
 		$uid = intval($_REQUEST['uid']);
-		$result = DB::fetch_first('SELECT `manhour` FROM %t WHERE `uid`=%d LIMIT 1');
+		$result = DB::fetch_first('SELECT `username`,`manhour` FROM %t WHERE `uid`=%d LIMIT 1');
 
 		ajaxReturn($result, 'AUTO');
 	}

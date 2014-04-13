@@ -42,7 +42,7 @@
 					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
 				</div>
 			</div>
-			<div id="act-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+			<div id="user-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
 					<h4 class="modal-title">活动详情</h4>
@@ -83,49 +83,21 @@
 					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
 				</div>
 			</div>
-			<div id="mh-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
+			<div id="deluser-confirm" class="modal fade modal-scroll" tabindex="-1" data-width="760">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">工时详情</h4>
+					<h4 class="modal-title">确认删除用户</h4>
 				</div>
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-md-6">
-							<p class="col-md-3">活动名称:</p>
-							<p class="col-md-9" data-mh="actname">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">工时数:</p>
-							<p class="col-md-9" data-mh="manhour">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">时间:</p>
-							<p class="col-md-9" data-mh="time">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">状态:</p>
-							<p class="col-md-9" data-mh="status">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">申请时间:</p>
-							<p class="col-md-9" data-mh="applytime">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">审查时间:</p>
-							<p class="col-md-9" data-mh="verifytime">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">申请留言:</p>
-							<p class="col-md-9" data-mh="remark">-</p>
-						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">验证留言:</p>
-							<p class="col-md-9" data-mh="verifytext">-</p>
-						</div>
+					<div class="note note-danger">
+						<h4 class="block">警告</h4>
+						<p>你正在请求删除用户 <em>efe</em>！<br />该操作将不可恢复，确认要继续删除吗？</p>
 					</div>
+					<label><input type="checkbox" /> 同时从 UCenter 删除用户数据</label>
 				</div>
 				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+					<button type="button" data-dismiss="modal" class="btn red">删除</button>
+					<button type="button" data-dismiss="modal" class="btn default">取消</button>
 				</div>
 			</div>
 			<div id="applymh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
@@ -235,7 +207,7 @@
 						<tbody>
 							{foreach $users as $user}
 							<tr class="odd gradeX">
-								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$user.id}" /></td>
+								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$user.uid}" /></td>
 								<td><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$user.uid}{/nocache}&size=small" width="48" height="48" /></td>
 								<td>{$user.uid}</td>
 								<td>{$user.username}</td>

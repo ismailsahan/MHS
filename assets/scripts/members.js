@@ -235,15 +235,25 @@ var Members = function () {
 				$(this).text(getTime($(this).data("time")));
 			});
 
+			$("#users tr:gt(0)" + nthchild("extra", columns)).each(function() {
+				$(this).find(".blue-stripe").click(function() {
+					;
+				});
+				$(this).find(".red-stripe").click(function() {
+					$("#deluser-confirm :checkbox").prop("checked", false);
+					$("#deluser-confirm em").text($(this).closest("tr").find(nthchild("username", columns)).html() + "(" + $(this).closest("tr").find(nthchild("realname", columns)).html() + ")").data("uid", $(this).closest("tr").find(":checkbox:first").val());
+					$("#deluser-confirm").modal("show");
+				});
+			});
+
+			$("#deluser-confirm .modal-footer .red").click(function() {
+				showloading();
+				$.post("{U members/user?inajax=1}", {type:"deluser", uid:$("#deluser-confirm em").data("uid"), deluc:$("#deluser-confirm :checkbox").prop("checked")?1:0}, function(data) {
+					modalAlert(data.msg);
+				}, 'JSON');
+			});
+
 			initDT(columns);
-
-			$('#users td:nth-child(6) a.btn').click(function() {
-				detail("manhour", $(this).closest('tr').find("td:first :checkbox").val());
-			});
-
-			$('#users td:nth-child(3) a').click(function() {
-				detail("activity", $(this).data("aid"));
-			});
 
 		},
 
@@ -366,6 +376,20 @@ var Members = function () {
 					}
 				}, "json");
 			});
+		},
+
+		initadmingrp: function () {
+			var columns = {
+				"checkbox"	: 0,
+				"uid"		: 1,
+				"name"		: 2,
+				"parent"	: 3,
+				"note"		: 4,
+				"extra"		: 5
+			};
+
+			initDT(columns);
+
 		}
 
 	};

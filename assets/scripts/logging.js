@@ -178,7 +178,7 @@ var Logging = function () {
 					pattern: "{lang logging/verifycode_invalid}"
 				},
 				tnc: {
-					required: "请先同意我们的服务条款和隐私保护政策"
+					required: "你必须同意我们的服务条款才能使用系统"
 				}
 			},
 
@@ -211,6 +211,61 @@ var Logging = function () {
 			}
 		});
 
+		$('#tnc-link').on('click', function(){
+			if($('#tnc-modal').size() == 0){
+				var html = "";
+				html += '<div id="tnc-modal" class="modal container fade modal-scroll" tabindex="-1">';
+				html += 	'<div class="modal-header">';
+				html += 		'<h4 class="modal-title">服务条款</h4>';
+				html += 	'</div>';
+				html += 	'<div class="modal-body"></div>';
+				html += 	'<div class="modal-footer">';
+				html += 		'<button type="button" class="btn red">我拒绝</button>';
+				html += 		'<button type="button" class="btn blue">我接受</button>';
+				html += 	'</div>';
+				html += '</div>';
+				$("body").append(html);
+			}
+			if($('#tnc-modal').data("inited")){
+				$("#tnc-modal").modal();
+			}else{
+				$.blockUI({
+					message: '<img src="assets/img/ajax-loading.gif" />',
+					css: {
+						border: 'none',
+						backgroundColor: 'none'
+					},
+					overlayCSS: {
+						backgroundColor: '#000',
+						opacity: 0.2,
+						cursor: 'wait'
+					},
+					baseZ: 11000
+				});
+				$.get("{U api/tos}", function(text){
+					if(typeof markdown == 'object') {
+						text = markdown.toHTML(text);
+					}else if(typeof marked == 'function') {
+						text = marked(text);
+					}else{
+						text = nl2br(text);
+					}
+					$("#tnc-modal .modal-body").html(text);
+					$('#tnc-modal').data("inited", true);
+					$("#tnc-modal .modal-footer .red").click(function(){
+						$("#tnc-modal").modal("hide");
+						$("#tnc").prop("checked", false).uniform.update();
+					});
+					$("#tnc-modal .modal-footer .blue").click(function(){
+						$("#tnc-modal").modal("hide");
+						$("#tnc").prop("checked", true).uniform.update();
+					});
+					$.unblockUI();
+					$("#tnc-modal").modal();
+				});
+			}
+		});
+
 		if($.fn.pwstrength) {
 			/*$("#register_password").keydown(function () {
 				if (initialized === false) {
@@ -231,10 +286,10 @@ var Logging = function () {
 					initialized = true;
 				}
 			});*/
-			$("#register_password").pwstrength({
+			/*$("#register_password").pwstrength({
 				raisePower: 1.4,
 				minChar: 6
-			})/*.pwstrength("addRule", "demoRule", function (options, word, score) {
+			})*//*.pwstrength("addRule", "demoRule", function (options, word, score) {
 				return word.match(/[a-z].[0-9]/) && score;
 			}, 10, true)*/;
 		}

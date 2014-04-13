@@ -1355,9 +1355,10 @@ function ajaxReturn($data, $type='', $encoded=false) {
  */
 function clearcache($opt = 1) {
 	$options = array(
-		'setting'	=> 0,
-		'tos'		=> 0,
-		'template'	=> 0,
+		'setting'    => 0,
+		'tos'        => 0,
+		'template'   => 0,
+		//'admingroup' => 0,
 	);
 	$clearall = false;
 

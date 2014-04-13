@@ -161,6 +161,8 @@ var Activate = function () {
 							text = markdown.toHTML(text);
 						}else if(typeof marked == 'function') {
 							text = marked(text);
+						}else{
+							text = nl2br(text);
 						}
 						$("#agreement-modal .modal-body .col-md-12").html(text);
 						$('#agreement-modal').data("inited", true);

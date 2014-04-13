@@ -39,7 +39,13 @@ class LoggingAction extends Action {
 	public function login(){
 		global $_G, $template;
 
-		$errmsg = '';
+		if(isset($_GET['noaccess'])) {
+			$errmsg = 'siteclosed_logindenied';
+		} elseif(isset($_GET['siteclosed'])) {
+			$errmsg = 'siteclosed';
+		} else {
+			$errmsg = '';
+		}
 
 		if(submitcheck('Login', $errmsg)){//登录
 			$username = $_POST['username'];

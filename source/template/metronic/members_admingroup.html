@@ -1,0 +1,155 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/user}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<style type="text/css" media="screen">
+#users tr, #users td {
+	vertical-align: middle;
+}
+</style>
+{/block}
+{block pageplugins}
+	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="{static 'assets/scripts/members.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			//IdleTimeout.init();
+			Members.initadmingrp();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">提示信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row"><div class="col-md-12"></div></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="edituser" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">编辑用户审核资料</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U members/verifyuser}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">活动<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><select class="select2 form-control" id="aid" name="aid" required><option value=""></option></select></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">工时<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="manhour" value="" required /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">时间<span class="required">*</span></label>
+							<div class="col-xs-9 col-sm-10">
+								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+0d">
+									<input type="text" name="time" class="form-control" required />
+									<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">留言<span class="required">&nbsp;</span></label>
+							<div class="col-xs-9 col-sm-10"><textarea class="form-control" name="remark" rows="4"></textarea></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">申报</button>
+				</div>
+			</div>
+			<div id="verifyuser" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">审核用户</h4>
+				</div>
+				<div class="modal-body">
+					<form action="{U members/verifyuser}" class="form-horizontal">
+						<input type="hidden" name="type" value="" />
+						<input type="hidden" name="uids" value="" />
+						<div class="form-group">
+							<label class="control-label col-xs-12"><p class="text-left">已选择用户</p></label>
+							<div class="col-xs-12"><p class="form-control-static"></p></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-12"><p class="text-left">审核附言</p></label>
+							<div class="col-xs-12"><textarea class="form-control" name="verifytext" rows="6"></textarea></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn blue">提交</button>
+				</div>
+			</div>
+			<div id="delog" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">删除记录</h4>
+				</div>
+				<div class="modal-body">
+					<div class="note note-danger">
+						<h4 class="block">警告</h4>
+						<p>删除申请记录后任何人将无法查看已删除的申请记录，确定要继续吗？</p>
+					</div>
+					<div class="row">
+						<div class="col-md-12">即将删除的记录：</div>
+						<div class="col-md-12" id="ready2del"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn red">继续</button>
+				</div>
+			</div>
+			<div class="portlet box grey">
+				<div class="portlet-title">
+					<div class="caption"><i class="fa fa-user"></i> 管理组</div>
+				</div>
+				<div class="portlet-body">
+					<div class="table-toolbar">
+						<button id="addgrp-button" class="btn green"><i class="fa fa-plus"></i> 添加组</button>
+						<button id="delgrp-button" class="btn red"><i class="fa fa-times"></i> 删除组</button>
+						<button id="showgraph-button" class="btn blue"><i class="fa fa-leaf"></i> 显示管理组结构图</button>
+					</div>
+					<table class="table table-striped table-bordered table-hover" id="users">
+						<thead><tr>
+							<th style="width:41px"><input type="checkbox" class="group-checkable" data-set="#users .checkboxes" /></th>
+							<th>ID</th>
+							<th>组头衔</th>
+							<th>上级</th>
+							<th>备注</th>
+							<th>管理</th>
+						</tr></thead>
+						<tbody>
+							{foreach $agrp as $grp}
+							<tr class="odd gradeX">
+								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$grp.gid}" /></td>
+								<td>{$grp.gid}</td>
+								<td>{$grp.name}</td>
+								<td>{$grp.parent|default:'-'}</td>
+								<td>{$grp.note|default:'-'}</td>
+								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">权限详情</a></td>
+							</tr>
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+{/block}
