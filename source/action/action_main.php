@@ -20,23 +20,26 @@ class MainAction extends Action {
 			$template->assign('sidebarMenu', defaultNav());
 			$template->assign('adminNav', adminNav());
 			$template->assign('menuset', array('home'));
+
+			$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE (`type`=1 OR `type`=2) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', TIMESTAMP, TIEMSTAMP));
+			$template->assign('announcement', $announcement);
 		}
 
 		//$total_manhour = DB::result_first('SELECT sum(`manhour`) FROM %t WHERE `uid`=%d AND `status`=1', array('manhours', $_G['uid']));
+		database_safecheck::setconfigstatus(false);
 		DB::query('SET @rank=0');
-		$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']), null, false);
+		$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']));
 		$topmh = DB::fetch_all('SELECT `username`, `manhour` FROM %t ORDER BY `manhour` DESC LIMIT 10', array('users'));
-		$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE (`type`=1 OR `type`=2) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', TIMESTAMP, TIEMSTAMP));
+		database_safecheck::restoreconfigstatus();
 		//trace($manhour);
 
 		//$onlinenum = DB::result_first('SELECT count(*) FROM %t WHERE `lastactivity`>=%d AND `uid`>0', array('session', TIMESTAMP-1440));
-
 		//$template->assign('total_manhour', $total_manhour, true);
 		$template->assign('manhour', $manhour['manhour'], true);
 		$template->assign('rank', $manhour['rank'], true);
 		//$template->assign('onlinenum', $onlinenum, true);
 		$template->assign('topmh', $topmh, true);
-		$template->assign('announcement', $announcement, true);
+		
 		$template->display('main_index');
 	}
 

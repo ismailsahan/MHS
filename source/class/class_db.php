@@ -10,6 +10,13 @@ class DB {
 	public static $db;
 	public static $driver;
 
+	/**
+	 * 初始化数据库连接配置
+	 * 
+	 * @param string $driver 连接引擎 MySQL | MySQLi
+	 * @param array  $config 数据库配置数组，格式参见配置文件中的 $_config[db]
+	 * @return void
+	 */
 	public static function init($driver, $config) {
 		self::$driver = $driver;
 		self::$db = new $driver;
@@ -19,18 +26,16 @@ class DB {
 
 	/**
 	 * 返回 DB object 指针
-	 *
-	 * @return pointer of db object from discuz core
 	 */
 	public static function object() {
 		return self::$db;
 	}
 
 	/**
-	 * 返回表名(pre_$table)
+	 * 返回实际数据表名(pre_$table)
 	 *
-	 * @param 原始表名 $table
-	 * @return 增加pre之后的名字
+	 * @param string $table 原始表名
+	 * @return string
 	 */
 	public static function table($table) {
 		return self::$db->table_name($table);
@@ -39,10 +44,10 @@ class DB {
 	/**
 	 * 删除一条或者多条记录
 	 *
-	 * @param string $table 原始表名
-	 * @param string $condition 条件语句，不需要写WHERE
-	 * @param int $limit 删除条目数
-	 * @param boolean $unbuffered 立即返回？
+	 * @param string $table			原始表名
+	 * @param string $condition		条件语句，不需要写WHERE
+	 * @param int $limit			删除的最大数目，为0表示不限制
+	 * @param boolean $unbuffered	是否获取和缓存结果的行
 	 */
 	public static function delete($table, $condition, $limit = 0, $unbuffered = true) {
 		if (empty($condition)) {
@@ -64,11 +69,11 @@ class DB {
 	/**
 	 * 插入一条记录
 	 *
-	 * @param string $table 原始表名
-	 * @param array $data 数组field->vlaue 对
-	 * @param boolen $return_insert_id 返回 InsertID?
-	 * @param boolen $replace 是否是REPLACE模式
-	 * @param boolen $silent 屏蔽错误？
+	 * @param string $table				原始表名
+	 * @param array  $data				关联数组
+	 * @param boolen $return_insert_id	是否返回InsertID
+	 * @param boolen $replace			设置插入方法是否为REPLACE，默认为INSERT
+	 * @param boolen $silent			安静模式
 	 * @return InsertID or Result
 	 */
 	public static function insert($table, $data, $return_insert_id = false, $replace = false, $silent = false) {
@@ -86,11 +91,11 @@ class DB {
 	/**
 	 * 更新一条或者多条数据记录
 	 *
-	 * @param string $table 原始表名
-	 * @param array $data 数据field-value
-	 * @param string $condition 条件语句，不需要写WHERE
-	 * @param boolean $unbuffered 迅速返回？
-	 * @param boolan $low_priority 延迟更新？
+	 * @param string $table			原始表名
+	 * @param array $data			关联数组
+	 * @param string $condition		条件语句，不需要写WHERE
+	 * @param boolean $unbuffered	是否获取和缓存结果的行
+	 * @param boolan $low_priority	该UPDATE操作是否为低优先级
 	 * @return result
 	 */
 	public static function update($table, $data, $condition, $unbuffered = false, $low_priority = false) {
@@ -98,7 +103,7 @@ class DB {
 		if(empty($sql)) {
 			return false;
 		}
-		$cmd = "UPDATE " . ($low_priority ? 'LOW_PRIORITY' : '');
+		$cmd = 'UPDATE ' . ($low_priority ? 'LOW_PRIORITY' : '');
 		$table = self::table($table);
 		$where = '';
 		if (empty($condition)) {
@@ -124,8 +129,14 @@ class DB {
 	/**
 	 * 依据查询结果，返回一行数据
 	 *
-	 * @param resourceID $resourceid
+	 * @param resource $resourceid Query资源对象
+	 * @param string   $type       返回的数组索引方式 可能的值: MYSQL_ASSOC, MYSQL_NUM, MYSQL_BOTH
 	 * @return array
+	 * 
+	 * MYSQL_ASSOC, MYSQL_NUM 和 MYSQL_BOTH 的说明
+	 * 如果用了 MYSQL_BOTH，将得到一个同时包含关联和数字索引的数组
+	 * 用 MYSQL_ASSOC 只得到关联索引
+	 * 用 MYSQL_NUM 只得到数字索引
 	 */
 	public static function fetch($resourceid, $type = 'MYSQL_ASSOC') {
 		return self::$db->fetch_array($resourceid, $type);
@@ -134,10 +145,12 @@ class DB {
 	/**
 	 * 依据SQL文，返回一条查询结果
 	 *
-	 * @param string $sql 查询语句
+	 * @param string	$sql		查询语句
+	 * @param array		$arg		参数数组
+	 * @param boolean	$silent		安静模式
 	 * @return array
 	 */
-	public static function fetch_first($sql, $arg = array(), $silent = false, $checkquery = true) {
+	public static function fetch_first($sql, $arg = array(), $silent = false) {
 		$res = self::query($sql, $arg, $silent, false, $checkquery);
 		$ret = self::$db->fetch_array($res);
 		self::$db->free_result($res);
@@ -148,13 +161,13 @@ class DB {
 	 * 依据查询语句，返回所有数据
 	 * 以数组方式返回查询多条记录数据，且可以设置数据的 KEY 值使用某字段值
 	 *
-	 * @param string	$sql
-	 * @param array		$arg format参数数组
-	 * @param string	$keyfield
-	 * @param boolean	$silent
+	 * @param string	$sql		SQL语句
+	 * @param array		$arg		format参数数组
+	 * @param string	$keyfield	把哪个字段的值作为数组索引，若未设置则使用数字
+	 * @param boolean	$silent		安静模式
 	 * @return array
 	 */
-	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent=false, $checkquery = true) {
+	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent = false) {
 
 		$data = array();
 		$query = self::query($sql, $arg, $silent, false, $checkquery);
@@ -172,7 +185,8 @@ class DB {
 	/**
 	 * 依据查询结果，返回结果数值
 	 *
-	 * @param resourceid $resourceid
+	 * @param resourceid $resourceid Query资源对象
+	 * @param int        $row        行索引
 	 * @return string or int
 	 */
 	public static function result($resourceid, $row = 0) {
@@ -182,10 +196,12 @@ class DB {
 	/**
 	 * 依据查询语句，返回结果数值
 	 *
-	 * @param string $sql SQL查询语句
-	 * @return unknown
+	 * @param string	$sql		SQL查询语句
+	 * @param array		$arg		参数数组
+	 * @param boolean	$silent		安静模式
+	 * @return string
 	 */
-	public static function result_first($sql, $arg = array(), $silent = false, $checkquery = true) {
+	public static function result_first($sql, $arg = array(), $silent = false) {
 		$res = self::query($sql, $arg, $silent, false, $checkquery);
 		$ret = self::$db->result($res, 0);
 		self::$db->free_result($res);
@@ -196,13 +212,19 @@ class DB {
 	 * 执行查询
 	 * 在非UNBUFFERED的情况下：INSERT SQL 语句返回 insert_id();UPDATE 和 DELETE SQL 语句返回 affected_rows()
 	 *
-	 * @param string	$sql SQL语句
-	 * @param array		$arg SQL中的foramt参数数组，为向后兼容允许使用本参数设置$silent或$unbuffered
-	 * @param boolean	$silent
-	 * @param boolean	$unbuffered
+	 * @param string	$sql		SQL语句
+	 * @param array		$arg		SQL中的foramt参数数组，为向后兼容允许使用本参数设置$silent或$unbuffered
+	 * @param boolean	$silent		是否为安静模式，为false时若出错则抛出错误并终止执行
+	 * @param boolean	$unbuffered	是否获取和缓存结果的行，即选择使用mysql_unbuffered_query还是mysql_query函数来执行查询
 	 * @return Resource OR Result
+	 * 
+	 * mysql_unbuffered_query 和 mysql_query 的区别
+	 * mysql_unbuffered_query() 向 MySQL 发送一条 SQL 查询
+	 * 但不像 mysql_query() 那样自动获取并缓存结果集
+	 * 一方面，这在处理很大的结果集时会节省可观的内存
+	 * 另一方面，可以在获取第一行后立即对结果集进行操作，而不用等到整个 SQL 语句都执行完毕
 	 */
-	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false, $checkquery = true) {
+	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false) {
 		if (!empty($arg)) {
 			if (is_array($arg)) {
 				$sql = self::format($sql, $arg);
@@ -233,9 +255,9 @@ class DB {
 	}
 
 	/**
-	 * 返回select的结果行数
+	 * 返回 SELECT 的结果行数
 	 *
-	 * @param resource $resourceid
+	 * @param resource $resourceid Query资源对象
 	 * @return int
 	 */
 	public static function num_rows($resourceid) {
@@ -280,7 +302,7 @@ class DB {
 	}
 
 	/**
-	 * 检查 SQL 语句安全威胁
+	 * 检查 SQL 语句是否具有安全威胁并尝试清除非法字符
 	 * 
 	 * @param string $sql SQL语句
 	 * @return boolean true
@@ -293,7 +315,7 @@ class DB {
 	 * 转换为安全的值
 	 * 
 	 * @param mixed $str     输入的值
-	 * @param bool  $noarray 不允许数组？
+	 * @param bool  $noarray 是否允许数组作为值
 	 * @return string
 	 */
 	public static function quote($str, $noarray = false) {
@@ -322,10 +344,10 @@ class DB {
 	}
 
 	/**
-	 * 给字段加上反引号
+	 * 给字段名加上反引号
 	 * 
-	 * @param string|array $field 字段
-	 * @return mixed
+	 * @param string|array $field 字段名
+	 * @return string|array
 	 */
 	public static function quote_field($field) {
 		if (is_array($field)) {
@@ -341,7 +363,7 @@ class DB {
 	}
 
 	/**
-	 * 生成 SQL 语句中的 LIMIT 条件
+	 * 返回 SQL 语句中的 LIMIT 部分
 	 * 
 	 * @param int|string $start 起始数据索引
 	 * @param int|string $limit 最大数目
@@ -361,6 +383,13 @@ class DB {
 		}
 	}
 
+	/**
+	 * 返回 SQL 语句中 ORDER BY 后的部分
+	 * 
+	 * @param string $field 字段名
+	 * @param string $order 排序方式，ASC | DESC
+	 * @return string
+	 */
 	public static function order($field, $order = 'ASC') {
 		if(empty($field)) {
 			return '';
@@ -369,6 +398,14 @@ class DB {
 		return self::quote_field($field) . ' ' . $order;
 	}
 
+	/**
+	 * 返回字段与值之间的关系SQL
+	 * 
+	 * @param string $field 字段名
+	 * @param mixed  $val   值
+	 * @param string $glue  运算符
+	 * @return string
+	 */
 	public static function field($field, $val, $glue = '=') {
 
 		$field = self::quote_field($field);
@@ -417,6 +454,13 @@ class DB {
 		}
 	}
 
+	/**
+	 * 格式化field字段和value，并组成一个字符串
+	 *
+	 * @param array  $array 关联数组
+	 * @param string $glue  分隔符
+	 * @return string
+	 */
 	public static function implode($array, $glue = ',') {
 		$sql = $comma = '';
 		$glue = ' ' . trim($glue) . ' ';
@@ -428,10 +472,11 @@ class DB {
 	}
 
 	/**
+	 * DB::implode 的别名
 	 * 格式化field字段和value，并组成一个字符串
 	 *
-	 * @param array $array 格式为 key=>value 数组
-	 * @param 分割符 $glue
+	 * @param array  $array 关联数组
+	 * @param string $glue  分隔符
 	 * @return string
 	 */
 	public static function implode_field_value($array, $glue = ',') {
@@ -439,8 +484,8 @@ class DB {
 	}
 
 	/**
-	 * SQL 语句 format 的支持
-	 * 支持的fomat有：
+	 * 格式化 SQL 语句
+	 * 支持的fomat语法有：
 	 * %t 数据库表名	DB::table()
 	 * %d 整型数据		intval()
 	 * %s 字符串		addslashes()
@@ -448,9 +493,9 @@ class DB {
 	 * %f 浮点型数据	sprintf('%f', $var)
 	 * %i 直接使用不进行处理
 	 * 
-	 * @param type $sql
-	 * @param type $arg 
-	 * @return type
+	 * @param string $sql SQL语句
+	 * @param array  $arg 参数数组
+	 * @return string
 	 */
 	public static function format($sql, $arg) {
 		$count = substr_count($sql, '%');
@@ -501,10 +546,10 @@ class DB {
 	}
 
 	/**
-	 * 返回某表结构信息
+	 * 返回指定数据表结构信息
 	 *
-	 * @param string $table
-	 * @param 详尽数据开关 $detail
+	 * @param string $table  数据表名
+	 * @param bool   $detail 详尽数据
 	 * @return array
 	 */
 	public static function tbl_structure($table, $detail = false) {
@@ -512,11 +557,11 @@ class DB {
 	}
 
 	/**
-	 * 返回某表索引信息
+	 * 返回指定数据表索引信息
 	 *
-	 * @param string $table
-	 * @param 详尽数据开关 $detail
-	 * @return array OR string
+	 * @param string $table  数据表名
+	 * @param bool   $detail 详尽数据
+	 * @return array
 	 */
 	public static function tbl_keys($table, $detail = false) {
 		return self::$db->tbl_keys($table, (boolean)$detail);
@@ -529,11 +574,21 @@ class DB {
 
 }
 
+
+/**
+ * SQL 安全隐患检查类
+ */
 class database_safecheck {
 
 	protected static $checkcmd = array('SEL'=>1, 'UPD'=>1, 'INS'=>1, 'REP'=>1, 'DEL'=>1);
 	protected static $config;
 
+	/**
+	 * 检查 SQL 并尝试清除非法字符
+	 * 
+	 * @param string $sql SQL语句
+	 * @return bool
+	 */
 	public static function checkquery($sql) {
 		if (self::$config === null) {
 			self::$config = getglobal('config/security/querysafe');
@@ -557,6 +612,12 @@ class database_safecheck {
 		return true;
 	}
 
+	/**
+	 * 内部方法 检查 SQL 并尝试清除非法字符
+	 * 
+	 * @param string $sql SQL语句
+	 * @return bool
+	 */
 	private static function _do_query_safe($sql) {
 		$sql = str_replace(array('\\\\', '\\\'', '\\"', '\'\''), '', $sql);
 		$mark = $clean = '';
@@ -658,8 +719,21 @@ class database_safecheck {
 		return 1;
 	}
 
+	/**
+	 * 设置是否检查 SQL 安全隐患
+	 * 
+	 * @param bool $data
+	 * @return void
+	 */
 	public static function setconfigstatus($data) {
 		self::$config['status'] = $data ? 1 : 0;
+	}
+
+	/**
+	 * 恢复 SQL 安全隐患检查状态
+	 */
+	public static function restoreconfigstatus() {
+		self::$config['status'] = getglobal('config/security/querysafe/status') ? 1 : 0;
 	}
 
 }
