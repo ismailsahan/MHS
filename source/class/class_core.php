@@ -388,7 +388,7 @@ class core {
 	private function _init_user(){
 		//判断用户是否已登录
 		if(!empty($this->var['cookie']['auth'])){
-			if(isset($_SESSION['auth']) && $_SESSION['auth'] === $this->var['cookie']['auth']){
+			if(isset($_SESSION['user']['auth']) && $_SESSION['user']['auth'] === $this->var['cookie']['auth']){
 				if($_SESSION['user']['expiry'] >= TIMESTAMP - 1440){
 					$this->var['uid'] = $_SESSION['user']['uid'];
 					$this->var['username'] = $_SESSION['user']['username'];

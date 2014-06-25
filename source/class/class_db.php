@@ -9,6 +9,7 @@ class DB {
 
 	public static $db;
 	public static $driver;
+	private static $connected = false;
 
 	/**
 	 * 初始化数据库连接配置
@@ -21,7 +22,10 @@ class DB {
 		self::$driver = $driver;
 		self::$db = new $driver;
 		self::$db->set_config($config);
-		self::$db->connect();
+		if(!$config[1]['connonuse']) {
+			self::$db->connect();
+			self::$connected = true;
+		}
 	}
 
 	/**
@@ -62,7 +66,7 @@ class DB {
 			$where = $condition;
 		}
 		$limit = dintval($limit);
-		$sql = "DELETE FROM " . self::table($table) . " WHERE $where " . ($limit > 0 ? "LIMIT $limit" : '');
+		$sql = 'DELETE FROM ' . self::table($table) . " WHERE $where " . ($limit > 0 ? "LIMIT $limit" : '');
 		return self::query($sql, ($unbuffered ? 'UNBUFFERED' : ''));
 	}
 
@@ -225,6 +229,11 @@ class DB {
 	 * 另一方面，可以在获取第一行后立即对结果集进行操作，而不用等到整个 SQL 语句都执行完毕
 	 */
 	public static function query($sql, $arg = array(), $silent = false, $unbuffered = false) {
+		if(!self::$connected) {
+			self::$db->connect();
+			self::$connected = true;
+		}
+
 		if (!empty($arg)) {
 			if (is_array($arg)) {
 				$sql = self::format($sql, $arg);

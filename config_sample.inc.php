@@ -25,6 +25,7 @@ $_config['db'][1]['dbuser']		= '';				// 用户
 $_config['db'][1]['dbpw']		= '';				// 密码
 $_config['db'][1]['dbcharset']	= 'utf8';			// 字符集
 $_config['db'][1]['pconnect']	= 0;				// 是否持续连接
+$_config['db'][1]['connonuse']	= 1;				// 按需连接
 $_config['db'][1]['dbname']		= '';				// 数据库
 $_config['db'][1]['tablepre']	= 'mhs_';			// 表名前缀
 

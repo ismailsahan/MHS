@@ -72,7 +72,7 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 		if($session['activated']){
 			$profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
 			$_SESSION['user'] = array_merge($profile, $user, $session);
-			$url = empty($_G['referer']) ? U('main/index') : $_G['referer'];
+			$url = empty($_G['referer']) || strexists($_G['referer'], 'login') ? U('main/index') : $_G['referer'];
 		}else{
 			$_SESSION['user'] = $session;
 			$url = U('logging/activate');
