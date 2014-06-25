@@ -1720,6 +1720,7 @@ function error($message, $vars = array(), $return = false) {
  * 终止执行并抛出错误信息
  */
 function halt($error, $param=array()){
+	if(!class_exists('framework_error')) exit("\xEF\xBB\xBF".lang('error', $error, $param));
 	exit(framework_error::halt($error, $param));
 }
 
