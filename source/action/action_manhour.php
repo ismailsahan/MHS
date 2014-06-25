@@ -11,7 +11,7 @@ class ManhourAction extends Action {
 	public $allowed_method = array('index');
 
 	public function __construct(){
-		if(!chklogin()) redirect(U('logging/login'));
+		if(!chklogin()) showlogin();
 		require libfile('function/nav');
 	}
 

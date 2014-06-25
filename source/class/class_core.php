@@ -388,7 +388,25 @@ class core {
 	private function _init_user(){
 		//判断用户是否已登录
 		if(!empty($this->var['cookie']['auth'])){
-			@list($uid, $username, $email) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
+			if(isset($_SESSION['auth']) && $_SESSION['auth'] === $this->var['cookie']['auth']){
+				if($_SESSION['user']['expiry'] >= TIMESTAMP - 1440){
+					$this->var['uid'] = $_SESSION['user']['uid'];
+					$this->var['username'] = $_SESSION['user']['username'];
+					$this->var['member'] = $_SESSION['user'];
+					$_SESSION['user']['expiry'] = TIMESTAMP;
+				}elseif(!in_array(ACTION_NAME, array('api', 'seccode'))){//会话超时
+					dsetcookie('auth');
+					//unset($_SESSION['user']);
+					$url = U('logging/expired?referer');
+					if(IS_AJAX){
+						ajaxReturn(array('errno'=>'-255', 'url'=>$url));
+					}else{
+						redirect($url);
+					}
+					exit;
+				}
+			}
+			/*@list($uid, $username, $email) = daddslashes(explode("\t", authcode($this->var['cookie']['auth'], 'DECODE')));
 			if(isset($_SESSION['user']) && $_SESSION['user']['uid'] === $uid){
 				if($_SESSION['user']['expiry'] >= TIMESTAMP - 1440){
 					$this->var['uid'] = $_SESSION['user']['uid'];
@@ -407,7 +425,7 @@ class core {
 					}
 					exit;
 				}
-			}
+			}*/
 		}
 	}
 

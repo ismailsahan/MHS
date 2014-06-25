@@ -43,6 +43,8 @@ class LoggingAction extends Action {
 			$errmsg = 'siteclosed_logindenied';
 		} elseif(isset($_GET['siteclosed'])) {
 			$errmsg = 'siteclosed';
+		} elseif(isset($_GET['msg'])) {
+			$errmsg = urldecode($_GET['msg']);
 		} else {
 			$errmsg = '';
 		}
@@ -226,7 +228,7 @@ class LoggingAction extends Action {
 		global $_G, $template;
 
 		if(!$_G['uid']){					// 未登录
-			redirect(U('logging/login'));
+			showlogin();
 		}
 
 		if($_G['member']['activated']){		// 已激活
@@ -271,7 +273,7 @@ class LoggingAction extends Action {
 						$_G['uid'],							// 用户ID
 						$_G['member']['email'],				// 邮箱
 						$_G['username'],					// 用户名
-						0,									// 审核状态，0等待审核，1通过审核，2未通过审核
+						$_G['uid']===1 ? 1 : 0,				// 审核状态，0等待审核，1通过审核，2未通过审核
 						TIMESTAMP,							// 申请时间
 						0,									// 审核时间
 						$_POST['realname'],					// 真实名字
@@ -300,7 +302,7 @@ class LoggingAction extends Action {
 							'avatarstatus'		=> 0,
 							'videophotostatus'	=> 0,
 							'adminid'			=> 1,
-							'groupid'			=> 1,
+							'groupid'			=> 0,
 							'groupexpiry'		=> 0,
 							'extgroupids'		=> '',
 							'regdate'			=> TIMESTAMP,

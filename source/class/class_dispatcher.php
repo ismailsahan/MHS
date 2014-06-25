@@ -146,6 +146,7 @@ class Dispatcher {
 			parse_str($info['query'], $params);
 			$vars = array_merge($params, $vars);
 		}
+		if(isset($vars['referer']) && empty($vars['referer'])) $vars['referer']=urlencode($_G['referer'] ? $_G['referer'] : $_G['currenturl']);
 		
 		// URL组装
 		$depr = $config['url_pathinfo_depr'];

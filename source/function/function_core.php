@@ -826,6 +826,23 @@ function chklogin(){
 }
 
 /**
+ * 显示未登录提示页面
+ */
+function showlogin($msg = '您尚未登录或会话已超时，请登录后再试'){
+	global $_G, $template;
+	if(IS_AJAX) {
+		ajaxReturn(array('errno'=>401, 'msg'=>$msg));
+	} else {
+		redirect(U('logging/login', array(
+			'msg' => urlencode($msg),
+			'referer' => urlencode($_G['currenturl'])
+		)));
+		//$template->display('notlogin');
+	}
+	exit;
+}
+
+/**
  * 浏览器友好的变量输出
  * @param mixed $var 变量
  * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串

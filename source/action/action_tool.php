@@ -11,6 +11,7 @@ class ToolAction extends Action {
 	public $allowed_method = array('index');
 
 	public function __construct(){
+		if(!chklogin()) showlogin();
 		require libfile('function/nav');
 	}
 

@@ -72,6 +72,7 @@ h2{
 <?php echo nl2br($e['trace']);?>
 </p>
 <?php }?>
+<p><a href="<?php echo $_G['siteroot']; ?>"><?php echo $_SERVER['HTTP_HOST']; ?></a> 已经将此出错信息详细记录, 由此给您带来的访问不便我们深感歉意</p>
 </div>
 </div>
 </body>

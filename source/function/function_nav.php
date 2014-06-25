@@ -322,20 +322,24 @@ function chkPermit($idx = null) {
 
 /**
  * 检查管理权限（后台用）
+ * 若未登录则显示未登录提示
  * 若无权限则显示拒绝访问
  * 
  * @param string $idx 菜单/权限索引
  * @return mixed
  */
 function has_permit($idx) {
-	if(!chkPermit($idx)) {
+	global $_G, $template;
+
+	if(!chklogin()) { // 未登录
+		showlogin();
+	}elseif(!chkPermit($idx)) { // 无权限
 		if(IS_AJAX) {
 			ajaxReturn(array(
 				'errno' => 401,
 				'msg' => '拒绝访问'
 			), 'AUTO');
 		}
-		global $template;
 		$template->display('noaccess');
 		exit;
 	}

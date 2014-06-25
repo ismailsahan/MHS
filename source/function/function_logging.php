@@ -63,8 +63,9 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 		$session['authkey'] = $_G['authkey'];
 		$session['expiry'] = TIMESTAMP;
 		$session['activated'] = count($user) > 0 ? true : false;
+		$session['auth'] = authcode("{$uid}\t{$username}\t{$email}\t".random(8), 'ENCODE');
 
-		dsetcookie('auth', authcode("{$uid}\t{$username}\t{$email}", 'ENCODE'), 0, 1, 1);
+		dsetcookie('auth', $session['auth'], 0, 1, 1);
 
 		if(!empty($failedlogin)) DB::query('DELETE FROM %t WHERE `ip`=%s LIMIT 1', array('failedlogin', $_G['clientip']), 'UNBUFFERED');
 
