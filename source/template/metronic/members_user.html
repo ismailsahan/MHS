@@ -208,7 +208,7 @@
 							{foreach $users as $user}
 							<tr class="odd gradeX">
 								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$user.uid}" /></td>
-								<td><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$user.uid}{/nocache}&size=small" width="48" height="48" /></td>
+								<td><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={$user.uid}&size=small" width="48" height="48" /></td>
 								<td>{$user.uid}</td>
 								<td>{$user.username}</td>
 								<td>{$user.realname}</td>
