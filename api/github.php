@@ -45,6 +45,7 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	}
 
 	foreach($files['update'] as $file) {
+		if(in_array($file, array('.gitattributes', '.gitignore', 'config.inc.php', 'README.md'))) continue;
 		echo "Update: $file  ";
 		try {
 			$data = file_get_contents('https://raw.githubusercontent.com/WHUT-SIA/MHS/master/'.$file);
