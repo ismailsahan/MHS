@@ -57,11 +57,11 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	}
 }
 
-echo "\n\n==================== HTTP Body ====================\n";
+echo "\n\n======================================== HTTP Body ========================================\n";
 echo "User-Agent: {$_SERVER['HTTP_USER_AGENT']}\n";
 echo "X-GitHub-Delivery: {$_SERVER['HTTP_X_GITHUB_DELIVERY']}\n";
 echo "X-GitHub-Event: {$_SERVER['HTTP_X_GITHUB_EVENT']}\n";
 echo "X-Hub-Signature: {$_SERVER['HTTP_X_HUB_SIGNATURE']}\n";
 
-echo "\n\n===================== Payload =====================\n";
+echo "\n\n========================================= Payload =========================================\n";
 print_r($input);
