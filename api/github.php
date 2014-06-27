@@ -38,13 +38,13 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 		$files['delete'] = $input['commits'][0]['removed'];
 	}
 
-	foreach($files['update'] as $file) {
+	foreach($files['delete'] as $file) {
 		echo "Delete: $file  [";
 		echo (unlink('../'.$file) ? 'Success' : 'Failed!');
 		echo "]\n";
 	}
 
-	foreach($files['delete'] as $file) {
+	foreach($files['update'] as $file) {
 		echo "Update: $file  ";
 		try {
 			$data = file_get_contents('https://raw.githubusercontent.com/WHUT-SIA/MHS/master/'.$file);
@@ -57,4 +57,5 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	}
 }
 
+echo "\n\n======= Payload =======\n";
 print_r($input);
