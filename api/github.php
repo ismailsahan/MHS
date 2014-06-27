@@ -49,7 +49,9 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 		echo "Update: $file  ";
 		try {
 			$data = file_get_contents('https://raw.githubusercontent.com/WHUT-SIA/MHS/master/'.$file);
-			file_put_contents('../'.$file, $data);
+			$dir = dirname('../'.$file);
+			if(!is_dir($dir)) mkdirs($dir);
+			if(file_put_contents('../'.$file, $data) === false) throw new Exception("Save file $file failed!");
 		} catch (Exception $e) {
 			echo "[Failed!]\n";
 			continue;

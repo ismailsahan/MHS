@@ -1441,6 +1441,36 @@ function fileext($filename) {
 }
 
 /**
+ * 递归创建文件夹
+ */
+function mkdirs($dir) {
+	if(!is_dir($dir)) {
+		if(!mkdirs(dirname($dir))) {
+			return false;
+		}
+		if(!mkdir($dir, 0777)){
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * 递归删除文件夹
+ */
+function rmdirs($dir) {
+	$d = dir($dir);
+	while (false !== ($child = $d->read())){
+		if($child != '.' && $child != '..'){
+			if(is_dir($dir.'/'.$child)) rmdirs($dir.'/'.$child);
+			else unlink($dir.'/'.$child);
+		}
+	}
+	$d->close();
+	rmdir($dir);
+}
+
+/**
  * 随机生成一组字符串
  */
 function build_count_rand($number, $length=4, $mode=1) {
