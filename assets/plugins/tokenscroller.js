@@ -43,6 +43,8 @@
             this.forcestop = 0;
             this.rows = [];
 
+            this.items = this.$elm.find(this.opts.itemSelector);
+            this.itemnum = this.items.length;
             if (this.opts.fillitems) this.fillitems();
             this.$elm.find(this.opts.itemSelector).slice(0, this.opts.visiblerownum * this.opts.itemunit).clone(true).appendTo(this.$elm);
 
@@ -53,8 +55,8 @@
             for (var i = 0; i < this.rowcount - this.opts.visiblerownum + 1; i += this.opts.step)
                 this.rows.push(this.items[this.opts.itemunit * i].offsetTop - this.items[0].offsetTop);
 
-            this.items = null;
-            this.rowcount = null;
+            delete this.items;
+            delete this.rowcount;
             this.lastrow = this.rows.length - 1;
 
             if (this.rows.length * this.opts.step <= this.opts.visiblerownum) return;
@@ -116,7 +118,6 @@
             return options;
         },
         fillitems: function() {
-            this.items = this.$elm.find(this.opts.itemSelector);
             while (this.$elm.find(this.opts.itemSelector).size() % this.opts.itemunit != 0) {
                 this.items.clone(true).appendTo(this.$elm);
             }
@@ -139,11 +140,14 @@
         destroy: function() {
             clearInterval(scrollers[this.idx].interval);
             scrollers[this.idx] = null;
+            var lastitemidx = this.itemnum,
+                itemSelector = this.itemSelector;
             this.$elm.off("mouseover").off("mouseout");
             this.$elm.animate({
                 scrollTop: "0px"
             }, this.opts.speed, this.opts.easing, function() {
                 $(this).data("scroller", -1);
+                $(this).find(itemSelector).slice(lastitemidx).remove();
             });
         }
     };
