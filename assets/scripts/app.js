@@ -262,18 +262,83 @@ var App = function() {
             });
         });
 
-        var badges = [];
+        var badges = [],
+            badges_detail = {},
+            badges_tips = {
+                "profile/pm": "您有 %d 条新短消息",
+                "global/info": "全局 - 站点信息 需要更新",
+                "members/verifyuser": "您有 %d 个新的用户需要审核",
+                "manhour/applylog": "您有 %d 个工时申报记录需要审核",
+                "manhour/checklog": "您有 %d 个工时复查记录需要审核",
+            };
         $('.page-sidebar li span.badge').each(function() {
+            var idx = $(this).html(),
+                type = $(this).prop("class").substr(12);
             badges.push({
                 name: "badge[]",
-                value: $(this).html()
+                value: idx
             });
+            badges_detail[idx] = {
+                "type": type.substr(0, type.indexOf(" ")),
+                "icon": $(this).closest("li:has(i.fa)").find("i.fa").prop("class").substr(6)
+            };
         });
         if (badges.length) {
             $.get("index.php?action=api&operation=badge", badges, function(data) {
                 $('.page-sidebar li span.badge').each(function() {
                     var idx = $(this).html();
-                    if (typeof data[idx] != "undefined" && data[idx] != "" && data[idx] != 0) $(this).html(data[idx]).removeClass("hidden");
+                    if (data[idx] && data[idx] != "0") $(this).html(data[idx]).removeClass("hidden");
+                    else $(this).remove();
+                });
+                for (var badge in badges_detail) {
+                    if (data[badge] && data[badge] != "0") $("#header_notification_bar .dropdown-menu-list").append('<li><a href="#"><span class="label label-icon label-' + badges_detail[badge].type + '"><i class="fa fa-' + badges_detail[badge].icon + '"></i></span>' + badges_tips[badge].replace("%d", data[badge]) + '</a></li>');
+                }
+                $("#header_notification_bar span:lt(2)").html($("#header_notification_bar .dropdown-menu-list li").size());
+                $('.page-sidebar li:has(span.arrow)').each(function() {
+                    var num = 0;
+                    $(this).find("span.badge").each(function() {
+                        num += parseInt($(this).html());
+                    });
+                    if (num) $(this).find("a:has(span.arrow)").append('<span class="badge badge-warning">' + num + '</span>');
+                });
+
+                $(document).ready(function() {
+                    setTimeout(function() {
+                        $.extend($.gritter.options, {
+                            position: 'top-left'
+                        });
+
+                        var unique_id = $.gritter.add({
+                            // (string | mandatory) the heading of the notification
+                            title: '系统提示',
+                            // (string | mandatory) the text inside the notification
+                            text: '你有 ' + $("#header_notification_bar .dropdown-menu-list li").size() + ' 个新提醒！',
+                            // (string | optional) the image to display on the left
+                            image1: './assets/img/image1.jpg',
+                            // (bool | optional) if you want it to fade out on its own or just sit there
+                            sticky: true,
+                            // (int | optional) the time you want it to be alive for before fading out
+                            time: '',
+                            // (string | optional) the class name you want to apply to that specific message
+                            class_name: 'my-sticky-class'
+                        });
+
+                        setTimeout(function() {
+                            $.gritter.remove(unique_id, {
+                                fade: true
+                            });
+                        }, 4000);
+
+                        $.extend($.gritter.options, {
+                            position: 'top-right'
+                        });
+
+                        $('#header_notification_bar').pulsate({
+                            color: "#bb3319",
+                            repeat: 8
+                        });
+
+                    }, 1000);
                 });
             }, "json");
         }

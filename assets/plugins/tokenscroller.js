@@ -57,6 +57,7 @@
 
             delete this.items;
             delete this.rowcount;
+            delete this.itemcontainer;
             this.lastrow = this.rows.length - 1;
 
             if (this.rows.length * this.opts.step <= this.opts.visiblerownum) return;

@@ -3,6 +3,7 @@
 <link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
 <link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
 <link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+<link href="assets/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" type="text/css"/>
 {$smarty.block.child}
 {/block}
 {block pageplugins}
@@ -17,6 +18,8 @@
 	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimeout.js"></script>
 	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimer.js"></script>
 	<script type="text/javascript" src="assets/scripts/idle-timeout.js"></script>
+	<script type="text/javascript" src="assets/plugins/jquery.pulsate.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/gritter/js/jquery.gritter.js"></script>
 	{$smarty.block.child}
 {/block}
 {block bodyclass}page-header-fixed{/block}
@@ -39,24 +42,14 @@
 			<!-- BEGIN TOP NAVIGATION MENU -->
 			<ul class="nav navbar-nav pull-right">
 				<!-- BEGIN NOTIFICATION DROPDOWN -->
-				{*<li class="dropdown" id="header_notification_bar">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-warning"></i><span class="badge">6</span></a>
+				<li class="dropdown" id="header_notification_bar">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-warning"></i><span class="badge">0</span></a>
 					<ul class="dropdown-menu extended notification">
-						<li><p>You have 14 new notifications</p></li>
-						<li><ul class="dropdown-menu-list scroller" style="height: 250px;">
-							<li><a href="#"><span class="label label-icon label-success"><i class="fa fa-plus"></i></span>New user registered.<span class="time">Just now</span></a></li>
-							<li><a href="#"><span class="label label-icon label-danger"><i class="fa fa-bolt"></i></span>Server #12 overloaded. <span class="time">15 mins</span></a></li>
-							<li><a href="#"><span class="label label-icon label-warning"><i class="fa fa-bell-o"></i></span>Server #2 not responding.<span class="time">22 mins</span></a></li>
-							<li><a href="#"><span class="label label-icon label-info"><i class="fa fa-bullhorn"></i></span>Application error.<span class="time">40 mins</span></a></li>
-							<li><a href="#"><span class="label label-icon label-danger"><i class="fa fa-bolt"></i></span>Database overloaded 68%. <span class="time">2 hrs</span></a></li>
-							<li><a href="#"><span class="label label-icon label-danger"><i class="fa fa-bolt"></i></span>2 user IP blocked.<span class="time">5 hrs</span></a></li>
-							<li><a href="#"><span class="label label-icon label-warning"><i class="fa fa-bell-o"></i></span>Storage Server #4 not responding.<span class="time">45 mins</span></a></li>
-							<li><a href="#"><span class="label label-icon label-info"><i class="fa fa-bullhorn"></i></span>System Error.<span class="time">55 mins</span></a></li>
-							<li><a href="#"><span class="label label-icon label-danger"><i class="fa fa-bolt"></i></span>Database overloaded 68%. <span class="time">2 hrs</span></a></li>
-						</ul></li>
-						<li class="external"><a href="#">See all notifications <i class="m-icon-swapright"></i></a></li>
+						<li><p>你有 <span>0</span> 个新提醒</p></li>
+						<li><ul class="dropdown-menu-list scroller" style="height: 250px;"></ul></li>
+						<!--<li class="external"><a href="#">显示全部提醒 <i class="m-icon-swapright"></i></a></li>-->
 					</ul>
-				</li>*}
+				</li>
 				<!-- END NOTIFICATION DROPDOWN -->
 				<!-- BEGIN INBOX DROPDOWN -->
 				{*<li class="dropdown" id="header_inbox_bar">
