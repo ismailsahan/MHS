@@ -46,6 +46,7 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 
 	$files['update'] = array_unique($files['update']);
 	$files['delete'] = array_unique($files['delete']);
+	//$files['update'] = array_diff($files['update'], $files['delete']);
 
 	foreach($files['delete'] as $file) {
 		echo "Delete: $file  [";
