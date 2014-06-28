@@ -258,7 +258,11 @@
 		}();
 		$(document).ready(function() {
 			//announcement();
-			$(".annbodylis").scroller();
+			$("#annbodylis").scroller({
+				delay: 3000,
+				speed: 300,
+				easing: "easeOutBounce"
+			});
 			App.init();
 			EcommerceIndex.init();
 			//IdleTimeout.init();
