@@ -104,6 +104,7 @@
             if (!options.visiblerownum) {
                 var containerHeight = $(elm).height(),
                     itemHeight = $(elm).find(options.itemSelector).outerHeight(true);
+                if ($(elm).parent().height() < containerHeight) containerHeight = $(elm).parent().height();
                 options.visiblerownum = Math.round(containerHeight / itemHeight);
             }
 
