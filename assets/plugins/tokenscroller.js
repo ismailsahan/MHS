@@ -40,6 +40,7 @@
         init: function() {
             this.st = 0;
             this.stop = 0;
+            this.forcestop = 0;
             this.rows = [];
 
             if (this.opts.fillitems) this.fillitems();
@@ -61,10 +62,13 @@
             var idx = scrollers.length;
             this.idx = idx;
             this.$elm.data("scroller", this.idx);
+            delete this.init;
+            delete this.chkopt;
+            delete this.fillitems;
             scrollers.push(this);
             this.interval = setInterval(function() {
                 var $this = scrollers[idx];
-                if ($this.stop) return;
+                if ($this.stop || $this.forcestop) return;
                 $this.$elm.animate({
                     scrollTop: $this.rows[$this.rownum] + "px"
                 }, $this.opts.speed, $this.opts.easing, function() {
@@ -124,10 +128,10 @@
             }
         },
         stop: function() {
-            scrollers[this.idx].stop = 1;
+            scrollers[this.idx].forcestop = 1;
         },
         start: function() {
-            scrollers[this.idx].stop = 0;
+            scrollers[this.idx].forcestop = 0;
         },
         setOption: function(options) {
             scrollers[this.idx].opts = $.extend({}, this.opts, options);
