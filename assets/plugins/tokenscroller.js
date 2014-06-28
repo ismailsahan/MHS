@@ -141,7 +141,7 @@
             clearInterval(scrollers[this.idx].interval);
             scrollers[this.idx] = null;
             var lastitemidx = this.itemnum,
-                itemSelector = this.itemSelector;
+                itemSelector = this.opts.itemSelector;
             this.$elm.off("mouseover").off("mouseout");
             this.$elm.animate({
                 scrollTop: "0px"
