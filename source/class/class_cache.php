@@ -7,6 +7,7 @@ class Cache {
 	private static $object;
 	private static $prefix;
 	public static $storage;
+	public static $cachingtime = 604800;
 	public static $count = array(
 		'set' => 0,
 		'get' => 0,
@@ -36,8 +37,9 @@ class Cache {
 		return self::$object;
 	}
 
-	public static function set($keyword, $value = '', $time = 300, $option = array()) {
+	public static function set($keyword, $value = '', $time = null, $option = array()) {
 		self::$count['set']++;
+		$time = $time===null ? self::$cachingtime : $time;
 		return self::$object->set(self::$prefix.$keyword, $value, $time, $option);
 	}
 
@@ -80,8 +82,9 @@ class Cache {
 		return self::$object->decrement(self::$prefix.$keyword, $step, $option);
 	}
 
-	public static function touch($keyword, $time = 300, $option = array()) {
+	public static function touch($keyword, $time = null, $option = array()) {
 		self::$count['touch']++;
+		$time = $time===null ? self::$cachingtime : $time;
 		return self::$object->decrement(self::$prefix.$keyword, $time, $option);
 	}
 

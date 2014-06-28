@@ -33,6 +33,7 @@ class template extends Smarty{
 		$this->setCacheDir(APP_FRAMEWORK_ROOT.'/cache');
 		$this->caching = true;
 		$this->merge_compiled_includes = true;
+		$this->cache_lifetime = 604800;
 		//$this->cache_lifetime = -1;
 		//$this->debugging = APP_FRAMEWORK_DEBUG;
 		$this->compile_check = true;//APP_FRAMEWORK_DEBUG;

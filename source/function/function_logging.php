@@ -148,7 +148,7 @@ function reguser($username, $password, $email){
 function adduser($uid, $user=array(), $profile=array()){
 	if(empty($profile)) $profile = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $uid));
 	if(empty($profile)) return false;
-	if(empty($user)) $user = array(
+	$defaults = array(
 		'status'			=> 1,
 		'emailstatus'		=> 0,
 		'avatarstatus'		=> 0,
@@ -163,9 +163,10 @@ function adduser($uid, $user=array(), $profile=array()){
 		'newpm'				=> '',
 		'newprompt'			=> '',
 		'accessmasks'		=> '',
-		'allowadmincp'		=> 1,
+		'allowadmincp'		=> 0,
 		'conisbind'			=> 0
 	);
+	$user = array_merge($defaults, $user);
 	DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `password`, `status`, `emailstatus`, `avatarstatus`, `videophotostatus`, `adminid`, `groupid`, `groupexpiry`, `extgroupids`, `regdate`, `credits`, `timeoffset`, `newpm`, `newprompt`, `accessmasks`, `allowadmincp`, `conisbind`) VALUES (%d, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d, %s, %d, %d, %d, %d, %d, %d, %d, %d)', array(
 		'users', 					// 表
 		$uid,						// 用户ID
