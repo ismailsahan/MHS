@@ -38,15 +38,15 @@
 
     Scroller.prototype = {
         init: function() {
-            this.st = 0;
             this.stop = 0;
             this.forcestop = 0;
             this.rows = [];
 
             this.items = this.$elm.find(this.opts.itemSelector);
             this.itemnum = this.items.length;
+            this.itemcontainer = this.items.parent();
             if (this.opts.fillitems) this.fillitems();
-            this.$elm.find(this.opts.itemSelector).slice(0, this.opts.visiblerownum * this.opts.itemunit).clone(true).appendTo(this.$elm);
+            this.$elm.find(this.opts.itemSelector).slice(0, this.opts.visiblerownum * this.opts.itemunit).clone(true).appendTo(this.itemcontainer);
 
             this.items = this.$elm.find(this.opts.itemSelector);
             this.rownum = 1;
@@ -119,12 +119,12 @@
         },
         fillitems: function() {
             while (this.$elm.find(this.opts.itemSelector).size() % this.opts.itemunit != 0) {
-                this.items.clone(true).appendTo(this.$elm);
+                this.items.clone(true).appendTo(this.itemcontainer);
             }
             if (this.opts.step > 1) {
                 this.items = this.$elm.find(this.opts.itemSelector);
                 while ((this.$elm.find(this.opts.itemSelector).size() / this.opts.itemunit) % this.opts.step != 0) {
-                    this.items.clone(true).appendTo(this.$elm);
+                    this.items.clone(true).appendTo(this.itemcontainer);
                 }
             }
         },
