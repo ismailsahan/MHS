@@ -25,6 +25,12 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	);
 
 	if(count($input['commits']) > 1) {
+		$input['commits'] = array_reverse($input['commits']);
+		foreach($input as $commit) {
+			$files['update'] = array_merge($files['update'], $commit['added'], $commit['modified']);
+			$files['delete'] = array_merge($files['delete'], $commit['removed']);
+		}
+
 		$json = file_get_contents($input['compare']);
 		$json = json_decode($json, true);
 
@@ -37,6 +43,9 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 		$files['update'] = array_merge($input['commits'][0]['added'], $input['commits'][0]['modified']);
 		$files['delete'] = $input['commits'][0]['removed'];
 	}
+
+	$files['update'] = array_unique($files['update']);
+	$files['delete'] = array_unique($files['delete']);
 
 	foreach($files['delete'] as $file) {
 		echo "Delete: $file  [";

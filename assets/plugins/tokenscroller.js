@@ -29,7 +29,8 @@
 
     function Scroller(elm, options) {
         this.$elm = $(elm);
-        if (this.$elm.data("scroller") != undefined) return scrollers[this.$elm.data("scroller")];
+        this.idx = this.$elm.data("scroller");
+        if (this.idx != undefined && this.idx > -1 && scrollers[this.idx] != null) return scrollers[this.idx];
         this.opts = this.chkopt(elm, options);
         this.init();
         return this;
@@ -138,7 +139,7 @@
             this.$elm.animate({
                 scrollTop: "0px"
             }, this.opts.speed, this.opts.easing, function() {
-                $(this).data("scroller", undefined);
+                $(this).data("scroller", -1);
             });
         }
     };
