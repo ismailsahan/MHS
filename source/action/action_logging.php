@@ -267,7 +267,7 @@ class LoggingAction extends Action {
 				}elseif(!DB::result_first('SELECT count(*) FROM %t WHERE `id`=%d', array('profile_academies', intval($_POST['academy'])))){	// 学院不合法
 					$errmsg = 'academy_illeagal';
 				}else{
-					$_POST['remarks'] = htmlentities($_POST['remarks']);
+					$_POST['remarks'] = htmlspecialchars($_POST['remarks']);
 					DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `status`, `submittime`, `verifytime`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`, `remark`, `operator`,`operatorname`, `verifytext`) VALUES (%d, %s, %s, %d, %d, %d, %s, %d, %s, %s, %d, %d, %d, %d, %s, %s, %s, %s, %d, %s, %s)', array(
 						'activation',						// 表名
 						$_G['uid'],							// 用户ID
