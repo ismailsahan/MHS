@@ -32,11 +32,11 @@ function filter($val, $level = 0){
 
 ?>
 <style type="text/css">
-@keyframes tptt{0%{height:0;}100%{height:250px;}}
-@-webkit-keyframes tptt{0%{height:0;}100%{height:250px;}}
-@-moz-keyframes tptt{0%{height:0;}100%{height:250px;}}
-@-ms-keyframes tptt{0%{height:0;}100%{height:250px;}}
-@-o-keyframes tptt{0%{height:0;}100%{height:250px;}}
+@keyframes tptt{0%{height:0;}100%{height:auto;}}
+@-webkit-keyframes tptt{0%{height:0;}100%{height:auto;}}
+@-moz-keyframes tptt{0%{height:0;}100%{height:auto;}}
+@-ms-keyframes tptt{0%{height:0;}100%{height:auto;}}
+@-o-keyframes tptt{0%{height:0;}100%{height:auto;}}
 #think_page_trace_tab{
 	transition:all .25s ease;
 	animation-duration:0.5s;
@@ -55,7 +55,7 @@ function filter($val, $level = 0){
 }
 </style>
 <div id="think_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:'微软雅黑';">
-<div id="think_page_trace_tab" style="display:none;background:white;margin:0;height:250px;">
+<div id="think_page_trace_tab" style="display:none;background:white;margin:0;">
 <div id="think_page_trace_tab_tit" style="padding:6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px;overflow:auto;height:38px">
 	<?php foreach($trace as $key => $value){ ?>
     <span style="color:#000;padding-right:12px;height:30px;line-height:30px;display:inline-block;margin-right:3px;cursor:pointer;font-weight:700"><?php echo lang('debug', $key); ?></span>

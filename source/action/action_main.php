@@ -22,7 +22,7 @@ class MainAction extends Action {
 			$template->assign('adminNav', adminNav());
 			$template->assign('menuset', array('home'));
 
-			$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE (`type`=1 OR `type`=2) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', TIMESTAMP, TIEMSTAMP));
+			$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE (`type`=1 OR `type`=2) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', TIMESTAMP, TIMESTAMP));
 			$template->assign('announcement', $announcement);
 		}
 

@@ -19,7 +19,8 @@ class DbException extends Exception{
 		), true);
 		$message = lang('error', ((empty($message) || strexists($message, ' ')) ? '' : 'db_').$message);
 		$message .= '<br/>'.$errmsg;*/
-		//parent::__construct($message, $code);
+		parent::__construct($message, $code);
+		return;
 
 		if($code){
 			$dberror = '';

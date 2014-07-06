@@ -134,7 +134,8 @@ class db_driver_mysqli {
 				return $this->curlink->query($sql, 'RETRY'.$silent);
 			}
 			if(!$silent) {
-				$this->halt($this->error(), $this->errno(), $sql);
+				$this->halt('query_error', $this->errno(), $sql);
+				//$this->halt($this->error(), $this->errno(), $sql);
 			}
 		}
 

@@ -155,7 +155,7 @@ class DB {
 	 * @return array
 	 */
 	public static function fetch_first($sql, $arg = array(), $silent = false) {
-		$res = self::query($sql, $arg, $silent, false, $checkquery);
+		$res = self::query($sql, $arg, $silent, false);
 		$ret = self::$db->fetch_array($res);
 		self::$db->free_result($res);
 		return $ret ? $ret : array();
@@ -174,7 +174,7 @@ class DB {
 	public static function fetch_all($sql, $arg = array(), $keyfield = '', $silent = false) {
 
 		$data = array();
-		$query = self::query($sql, $arg, $silent, false, $checkquery);
+		$query = self::query($sql, $arg, $silent, false);
 		while ($row = self::$db->fetch_array($query)) {
 			if ($keyfield && isset($row[$keyfield])) {
 				$data[$row[$keyfield]] = $row;
@@ -206,7 +206,7 @@ class DB {
 	 * @return string
 	 */
 	public static function result_first($sql, $arg = array(), $silent = false) {
-		$res = self::query($sql, $arg, $silent, false, $checkquery);
+		$res = self::query($sql, $arg, $silent, false);
 		$ret = self::$db->result($res, 0);
 		self::$db->free_result($res);
 		return $ret;
@@ -245,9 +245,7 @@ class DB {
 			}
 		}
 
-		if($checkquery) {
-			self::checkquery($sql);
-		}
+		self::checkquery($sql);
 
 		$ret = self::$db->query($sql, $silent, $unbuffered);
 		if (!$unbuffered && $ret) {
@@ -613,7 +611,8 @@ class database_safecheck {
 
 			if ($check < 1) {
 				trace('SQL checkquery: $check='.$check);
-				throw new DbException('It is not safe to do this query', 0, $sql);
+				throw new DbException('not_safe', 0, $sql);
+				//throw new DbException('It is not safe to do this query', 0, $sql);
 				//DB::$db->halt('It is not safe to do this query', $sql);
 				//DB::$db->halt('not_safe', $sql);
 			}

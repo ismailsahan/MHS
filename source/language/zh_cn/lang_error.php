@@ -6,6 +6,7 @@ $lang = array(
 	'LIBRARY_FILE_NONEXISTENT'=>'必需组件 {str} 不存在！',
 
 	'System Message' => '站点信息',
+	'error_unknow' => '未知错误',
 
 	'REQUEST_TAINTING' => '非法的提交请求！',
 	'config_notfound' => '配置文件未找到或者无法访问， 请确认您已经正确安装了程序',

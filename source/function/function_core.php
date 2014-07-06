@@ -1751,7 +1751,8 @@ function error($message, $vars = array(), $return = false) {
  */
 function halt($error, $param=array()){
 	if(!class_exists('framework_error')) exit("\xEF\xBB\xBF".lang('error', $error, $param));
-	exit(framework_error::halt($error, $param));
+	framework_error::system_error($error);
+	//exit(framework_error::halt($error, $param));
 }
 
 

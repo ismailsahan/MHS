@@ -635,8 +635,7 @@ class core {
 		$time = date("Y-m-d H:i:s", TIMESTAMP);
 		$file =  APP_FRAMEWORK_ROOT.'/cache/log/errorlog_'.date("Ym").'.php';
 		$message = "<?php !defined('IN_LOGHANDLE') && exit('Access Denied');?>\t{$time}:\t".str_replace(array("\t", "\r", "\n"), " ", $message)."\n";
-		//error_log($message, 3, $file);
-		file_put_contents($file, $message);
+		error_log($message, 3, $file);
 	}
 
 	public static function autoload($class) {
@@ -743,11 +742,6 @@ class core {
 		}
 	}
 
-	public static function handleException($exception) {
-		framework_error::exception_error($exception);
-	}
-
-
 	public static function handleError($errno, $errstr, $errfile, $errline) {
 		framework_error::system_error($errstr, false, true, false);
 	}
@@ -763,27 +757,7 @@ class core {
 	 * @param mixed $e 异常对象
 	 */
 	public static function exception_handler($e) {
-		$error = array();
-		$error['message'] = $e->getMessage();
-		$trace = $e->getTrace();
-		if(APP_FRAMEWORK_DEBUG){
-			if('throw_exception' == $trace[0]['function']){
-				$error['file'] = $trace[0]['file'];
-				$error['line'] = $trace[0]['line'];
-			}else{
-				$error['file'] = $e->getFile();
-				$error['line'] = $e->getLine();
-			}
-			/*if(empty($trace)){
-				ob_start();
-				debug_print_backtrace();
-				$error['trace'] = ob_get_clean();
-			}else{
-				$error['trace'] = &$trace;
-			}*/
-		}
-		//Log::record($error['message'],Log::ERR);
-		halt($error);
+		framework_error::exception_error($e);
 	}
 
 	/**
@@ -802,23 +776,14 @@ class core {
 			case E_CORE_ERROR:
 			case E_COMPILE_ERROR:
 			case E_USER_ERROR:
-				//ob_end_clean();
-				// 页面压缩输出支持
-				/*if(C('OUTPUT_ENCODE')){
-					$zlib = ini_get('zlib.output_compression');
-					if(empty($zlib)) ob_start('ob_gzhandler');
-				}*/
-				$errorStr = "{$errstr} {$errfile} 第 {$errline} 行.";
-				err($errorStr);
-				//if(C('LOG_RECORD')) Log::write("[$errno] ".$errorStr,Log::ERR);
-				//function_exists('halt') ? halt($errorStr) : exit('ERROR:'.$errorStr);
-				class_exists('framework_error') ? halt($errorStr) : exit('ERROR:'.$errorStr);
+				err("{$errstr} {$errfile}:{$errline}");
+				class_exists('framework_error') ? framework_error::system_error($errstr, false, true, false) : exit('ERROR:'.$errstr);
 				break;
 			case E_STRICT:
 			case E_USER_WARNING:
 			case E_USER_NOTICE:
 			default:
-				$errorStr = "[{$errno}] {$errstr} {$errfile} 第 {$errline} 行.";
+				$errorStr = "[{$errno}] {$errstr} {$errfile}:{$errline}";
 				//trace($errorStr,'','NOTIC');
 				err($errorStr);
 				break;
@@ -839,8 +804,12 @@ class core {
 				case E_CORE_ERROR:
 				case E_COMPILE_ERROR:
 				case E_USER_ERROR:  
-					//ob_end_clean();
-					function_exists('halt') ? halt($e) : exit('ERROR:'.$e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>');
+					$errmsg = $e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>';
+					if(class_exists('framework_error')) {
+						list($phpmsg, $logtrace) = framework_error::debug_backtrace();
+						framework_error::write_error_log($errmsg.'<br /><b>PHP:</b> '.$logtrace);
+					}
+					function_exists('halt') ? halt($errmsg) : exit('ERROR: '.$errmsg);
 					break;
 			}
 		}

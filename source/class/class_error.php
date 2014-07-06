@@ -14,16 +14,12 @@ class framework_error {
 		list($showtrace, $logtrace) = framework_error::debug_backtrace();
 
 		if($save) {
-			$messagesave = '<b>'.$message.'</b><br><b>PHP:</b>'.$logtrace;
+			$messagesave = '<b>'.$message.'</b><br /><b>PHP:</b>'.$logtrace;
 			framework_error::write_error_log($messagesave);
 		}
 
 		if($show) {
-			if(!defined('IN_MOBILE')) {
-				framework_error::show_error('system', "<li>$message</li>", $showtrace, 0);
-			} else {
-				framework_error::mobile_show_error('system', "<li>$message</li>", $showtrace, 0);
-			}
+			framework_error::show_error($message, $showtrace);
 		}
 
 		if($halt) {
@@ -40,117 +36,103 @@ class framework_error {
 		framework_error::system_error($message);
 	}
 
-	public static function halt($error, $param=array()) {
-		static $halted = false;
-		if(!$halted){
-			$e = array();
-			//ob_clean();
-			$halted = true;
-			ob_end_clean();
-			ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
-			if(APP_FRAMEWORK_DEBUG) {
-				if(!is_array($error)) {
-					$trace = debug_backtrace();
-					$e['message'] = $error;
-					$e['file'] = $trace[0]['file'];
-					$e['line'] = $trace[0]['line'];
-					ob_start();
-					debug_print_backtrace();
-					$e['trace'] = ob_get_clean();
-				} else {
-					$e = $error;
-				}
-				foreach($e as $k => $v){
-					if(is_array($v)){
-						foreach($v as $sk => $sv){
-							$e[$k][$sk] = str_replace(APP_FRAMEWORK_ROOT, '.', $sv);
-						}
-					}elseif(is_string($v)){
-						$e[$k] = str_replace(APP_FRAMEWORK_ROOT, '.', $v);
-					}
-				}
-			} else {
-				$e['message'] = is_array($error) ? $error['message'] : $error;
-			}
-			$e['message'] = lang('error', $e['message'], empty($param) ? null : (is_array($param) ? $param : array('str' => $param)));
-			process('错误：'.$e['message']);
-			if(!APP_FRAMEWORK_DEBUG && isset($param['__ERRMSG__'])) $e['message'] = lang('error', $param['__ERRMSG__']);
-
-			send_http_status(500);
-			if(defined('IS_AJAX') && IS_AJAX) ajaxReturn(array(
-				'errno' => 500,
-				'msg'	=> $e['message']
-			));
-
-			$template;
-			if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
-				$template->assign('e', $e, true);
-				$template->display('error');
-			}else{
-				include APP_FRAMEWORK_ROOT.'/source/ErrorException.php';
-			}
-		}
-		exit;
-	}
-
-	public static function debug_backtrace() {
+	public static function debug_backtrace($exception = null) {
 		$skipfunc[] = 'framework_error->debug_backtrace';
 		$skipfunc[] = 'framework_error->db_error';
 		$skipfunc[] = 'framework_error->template_error';
 		$skipfunc[] = 'framework_error->system_error';
 		$skipfunc[] = 'db_mysql->halt';
 		$skipfunc[] = 'db_mysql->query';
+		$skipfunc[] = 'db_driver_mysql->halt';
+		$skipfunc[] = 'db_driver_mysql->query';
+		$skipfunc[] = 'db_driver_mysqli->halt';
+		$skipfunc[] = 'db_driver_mysqli->query';
 		$skipfunc[] = 'DB::_execute';
+		$skipfunc[] = 'DB::checkquery';
+		$skipfunc[] = 'database_safecheck::checkquery';
 
-		$show = $log = '';
-		$debug_backtrace = debug_backtrace();
-		krsort($debug_backtrace);
-		foreach ($debug_backtrace as $k => $error) {
-			$file = str_replace(APP_FRAMEWORK_ROOT, '', $error['file']);
-			$func = isset($error['class']) ? $error['class'] : '';
-			$func .= isset($error['type']) ? $error['type'] : '';
-			$func .= isset($error['function']) ? $error['function'] : '';
-			if(in_array($func, $skipfunc)) {
-				break;
+		$backtrace = $exception ? $exception->getTrace() : debug_backtrace();
+		krsort($backtrace);
+		if($exception) $backtrace[] = array('file'=>$exception->getFile(), 'line'=>$exception->getLine(), 'function'=> 'break');
+		$phpmsg = array();
+		foreach ($backtrace as $error) {
+			if(!empty($error['function'])) {
+				$fun = isset($error['class']) ? $error['class'] : '';
+				$fun .= isset($error['type']) ? $error['type'] : '';
+				$fun .= isset($error['function']) ? $error['function'] : '';
+				if(in_array($fun, $skipfunc)) {
+					break;
+				}
+				$fun .= '(';
+				if(!empty($error['args'])) {
+					$mark = '';
+					foreach($error['args'] as $arg) {
+						$fun .= $mark;
+						if(is_array($arg)) {
+							$fun .= 'Array';
+						} elseif(is_bool($arg)) {
+							$fun .= $arg ? 'true' : 'false';
+						} elseif(is_int($arg) || is_float($arg)) {
+							$fun .= $arg;
+						} else {
+							$fun .= '\''.dhtmlspecialchars(self::clear($arg)).'\'';
+							//$fun .= '\''.dhtmlspecialchars(substr(self::clear($arg), 0, 10)).(strlen($arg) > 10 ? ' ...' : '').'\'';
+						}
+						$mark = ', ';
+					}
+				}
+
+				$fun .= ')';
+				$error['function'] = $fun;
 			}
-			$error[line] = sprintf('%04d', $error['line']);
-
-			$show .= "<li>[Line: $error[line]]".$file."($func)</li>";
-			$log .= !empty($log) ? ' -> ' : '';$file.':'.$error['line'];
-			$log .= $file.':'.$error['line'];
+			$phpmsg[] = array(
+			    'file' => str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('.', '/'), $error['file']),
+			    'line' => $error['line'],
+			    'function' => $error['function'],
+			);
 		}
-		return array($show, $log);
+		$log = '';
+		foreach($phpmsg as $trace) {
+			$log .= empty($log) ? '' : ' --> ';
+			$log .= $trace['file'].':'.$trace['line'];
+		}
+		return array($phpmsg, $log);
 	}
 
-	public static function db_error($message, $sql) {
+	public static function db_error($exception) {
 		global $_G;
 
-		list($showtrace, $logtrace) = framework_error::debug_backtrace();
+		list($phpmsg, $logtrace) = framework_error::debug_backtrace($exception);
 
-		$title = lang('error', 'db_'.$message);
-		$title_msg = lang('error', 'db_error_message');
-		$title_sql = lang('error', 'db_query_sql');
-		$title_backtrace = lang('error', 'backtrace');
-		$title_help = lang('error', 'db_help_link');
+		$message = $exception->getMessage();
+		$code = $exception->getCode();
+		$sql = $exception->getSql();
+
+		$title = strexists($message, ' ') ? $message : lang('error', 'db_'.$message);
 
 		$db = &DB::object();
 		$dberrno = $db->errno();
 		$dberror = str_replace($db->tablepre,  '', $db->error());
+		if(defined('CHARSET') && CHARSET=='UTF-8' && in_array(mb_detect_encoding($dberror, array('GBK', 'UTF-8')), array('CP936', 'GBK'))) $dberror = mb_convert_encoding($dberror, 'UTF-8', 'GBK');
 		$sql = dhtmlspecialchars(str_replace($db->tablepre,  '', $sql));
 
-		$msg = '<li>[Type] '.$title.'</li>';
-		$msg .= $dberrno ? '<li>['.$dberrno.'] '.$dberror.'</li>' : '';
-		$msg .= $sql ? '<li>[Query] '.$sql.'</li>' : '';
+		$msg = '<b>'.$title.'</b><br />';
+		$msg_errorinfo = $dberrno ? '<b>错误信息</b>: '.$dberror.' ['.$dberrno.']<br />' : '';
 
-		framework_error::show_error('db', $msg, $showtrace, false);
-		unset($msg, $phperror);
+		if(defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) {
+			$msg .= $msg_errorinfo . ($sql ? '<b>SQL</b>: '.$sql : '');
+		}elseif(!striexists($dberror, 'SELECT') && !striexists($dberror, 'UPDATE') && !striexists($dberror, 'DELETE') && !striexists($dberror, 'REPLACE')) {
+			$msg .= $msg_errorinfo;
+		}
+
+		framework_error::show_error($msg, $phpmsg);
+		unset($msg, $msg_errorinfo, $phpmsg);
 
 		$errormsg = '<b>'.$title.'</b>';
-		$errormsg .= "[$dberrno]<br /><b>ERR:</b> $dberror<br />";
+		$errormsg .= $dberrno ? "[$dberrno]<br /><b>ERR:</b> $dberror<br />" : '<br />';
 		if($sql) {
-			$errormsg .= '<b>SQL:</b> '.$sql;
+			$errormsg .= '<b>SQL:</b> '.$sql.'<br />';
 		}
-		$errormsg .= "<br />";
 		$errormsg .= '<b>PHP:</b> '.$logtrace;
 
 		framework_error::write_error_log($errormsg);
@@ -161,245 +143,45 @@ class framework_error {
 	public static function exception_error($exception) {
 
 		if($exception instanceof DbException) {
-			$type = 'db';
-		} else {
-			$type = 'system';
-		}
-
-		if($type == 'db') {
-			$errormsg = '('.$exception->getCode().') ';
-			$errormsg .= self::sql_clear($exception->getMessage());
-			if($exception->getSql()) {
-				$errormsg .= '<div class="sql">';
-				$errormsg .= self::sql_clear($exception->getSql());
-				$errormsg .= '</div>';
-			}
+			return self::db_error($exception);
 		} else {
 			$errormsg = $exception->getMessage();
 		}
 
-		$trace = $exception->getTrace();
-		krsort($trace);
+		list($phpmsg, $logtrace) = framework_error::debug_backtrace($exception);
 
-		$trace[] = array('file'=>$exception->getFile(), 'line'=>$exception->getLine(), 'function'=> 'break');
-		$phpmsg = array();
-		foreach ($trace as $error) {
-			if(!empty($error['function'])) {
-				$fun = '';
-				if(!empty($error['class'])) {
-					$fun .= $error['class'].$error['type'];
-				}
-				$fun .= $error['function'].'(';
-				if(!empty($error['args'])) {
-					$mark = '';
-					foreach($error['args'] as $arg) {
-						$fun .= $mark;
-						if(is_array($arg)) {
-							$fun .= 'Array';
-						} elseif(is_bool($arg)) {
-							$fun .= $arg ? 'true' : 'false';
-						} elseif(is_int($arg)) {
-							$fun .= (defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) ? $arg : '%d';
-						} elseif(is_float($arg)) {
-							$fun .= (defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) ? $arg : '%f';
-						} else {
-							$fun .= (defined('APP_FRAMEWORK_DEBUG') && APP_FRAMEWORK_DEBUG) ? '\''.dhtmlspecialchars(substr(self::clear($arg), 0, 10)).(strlen($arg) > 10 ? ' ...' : '').'\'' : '%s';
-						}
-						$mark = ', ';
-					}
-				}
+		self::show_error($errormsg, $phpmsg);
 
-				$fun .= ')';
-				$error['function'] = $fun;
-			}
-			$phpmsg[] = array(
-			    'file' => str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']),
-			    'line' => $error['line'],
-			    'function' => $error['function'],
-			);
-		}
-
-		self::show_error($type, $errormsg, $phpmsg);
+		framework_error::write_error_log($errormsg . '<br /><b>PHP:</b> ' . $logtrace);
 		exit();
 
 	}
 
-	public static function show_error($type, $errormsg, $phpmsg = '', $typemsg = '') {
+	public static function show_error($errormsg, $phpmsg = '') {
 		global $_G;
 
 		ob_end_clean();
-		$gzip = getglobal('gzipcompress');
-		ob_start($gzip ? 'ob_gzhandler' : null);
+		ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
 
-		$host = $_SERVER['HTTP_HOST'];
-		$title = $type == 'db' ? 'Database' : 'System';
-		echo <<<EOT
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-	<title>$host - $title Error</title>
-	<meta http-equiv="Content-Type" content="text/html; charset={$_G['config']['output']['charset']}" />
-	<meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE" />
-	<style type="text/css">
-	<!--
-	body { background-color: white; color: black; font: 9pt/11pt verdana, arial, sans-serif;}
-	#container { width: 1024px; }
-	#message   { width: 1024px; color: black; }
+		send_http_status(500);
+		if(defined('IS_AJAX') && IS_AJAX) ajaxReturn(array(
+			'errno' => 500,
+			'msg'	=> $errormsg
+		));
 
-	.red  {color: red;}
-	a:link     { font: 9pt/11pt verdana, arial, sans-serif; color: red; }
-	a:visited  { font: 9pt/11pt verdana, arial, sans-serif; color: #4e4e4e; }
-	h1 { color: #FF0000; font: 18pt "Verdana"; margin-bottom: 0.5em;}
-	.bg1{ background-color: #FFFFCC;}
-	.bg2{ background-color: #EEEEEE;}
-	.table {background: #AAAAAA; font: 11pt Menlo,Consolas,"Lucida Console"}
-	.info {
-	    background: none repeat scroll 0 0 #F3F3F3;
-	    border: 0px solid #aaaaaa;
-	    border-radius: 10px 10px 10px 10px;
-	    color: #000000;
-	    font-size: 11pt;
-	    line-height: 160%;
-	    margin-bottom: 1em;
-	    padding: 1em;
-	}
+		if(!defined('APP_FRAMEWORK_DEBUG') || !APP_FRAMEWORK_DEBUG) $phpmsg = '';
+		$last = is_array($phpmsg) && !empty($phpmsg) ? end($phpmsg) : array();
 
-	.help {
-	    background: #F3F3F3;
-	    border-radius: 10px 10px 10px 10px;
-	    font: 12px verdana, arial, sans-serif;
-	    text-align: center;
-	    line-height: 160%;
-	    padding: 1em;
-	}
-
-	.sql {
-	    background: none repeat scroll 0 0 #FFFFCC;
-	    border: 1px solid #aaaaaa;
-	    color: #000000;
-	    font: arial, sans-serif;
-	    font-size: 9pt;
-	    line-height: 160%;
-	    margin-top: 1em;
-	    padding: 4px;
-	}
-	-->
-	</style>
-</head>
-<body>
-<div id="container">
-<h1>Discuz! $title Error</h1>
-<div class='info'>$errormsg</div>
-
-
-EOT;
-		if(!empty($phpmsg)) {
-			echo '<div class="info">';
-			echo '<p><strong>PHP Debug</strong></p>';
-			echo '<table cellpadding="5" cellspacing="1" width="100%" class="table">';
-			if(is_array($phpmsg)) {
-				echo '<tr class="bg2"><td>No.</td><td>File</td><td>Line</td><td>Code</td></tr>';
-				foreach($phpmsg as $k => $msg) {
-					$k++;
-					echo '<tr class="bg1">';
-					echo '<td>'.$k.'</td>';
-					echo '<td>'.$msg['file'].'</td>';
-					echo '<td>'.$msg['line'].'</td>';
-					echo '<td>'.$msg['function'].'</td>';
-					echo '</tr>';
-				}
-			} else {
-				echo '<tr><td><ul>'.$phpmsg.'</ul></td></tr>';
-			}
-			echo '</table></div>';
+		global $template;
+		if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
+			$template->assign('errormsg', $errormsg, true);
+			$template->assign('phpmsg', $phpmsg, true);
+			$template->assign('last', $last, true);
+			$template->display('error');
+		}else{
+			include APP_FRAMEWORK_ROOT.'/source/ErrorException.php';
 		}
 
-
-		$helplink = '';
-		if($type == 'db') {
-			$helplink = "http://faq.comsenz.com/?type=mysql&dberrno=".rawurlencode(DB::errno())."&dberror=".rawurlencode(str_replace(DB::object()->tablepre, '', DB::error()));
-			$helplink = "<a href=\"$helplink\" target=\"_blank\"><span class=\"red\">Need Help?</span></a>";
-		}
-
-		$endmsg = lang('error', 'error_end_message', array('host'=>$host));
-		echo <<<EOT
-<div class="help">$endmsg. $helplink</div>
-</div>
-</body>
-</html>
-EOT;
-		$exit && exit();
-
-	}
-
-	public static function mobile_show_error($type, $errormsg, $phpmsg) {
-		global $_G;
-
-		ob_end_clean();
-		ob_start();
-
-		$host = $_SERVER['HTTP_HOST'];
-		$phpmsg = trim($phpmsg);
-		$title = 'Mobile '.($type == 'db' ? 'Database' : 'System');
-		echo <<<EOT
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
-<html>
-<head>
-	<title>$host - $title Error</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE" />
-	<style type="text/css">
-	<!--
-	body { background-color: white; color: black; }
-	UL, LI { margin: 0; padding: 2px; list-style: none; }
-	#message   { color: black; background-color: #FFFFCC; }
-	#bodytitle { font: 11pt/13pt verdana, arial, sans-serif; height: 20px; vertical-align: top; }
-	.bodytext  { font: 8pt/11pt verdana, arial, sans-serif; }
-	.help  { font: 12px verdana, arial, sans-serif; color: red;}
-	.red  {color: red;}
-	a:link     { font: 8pt/11pt verdana, arial, sans-serif; color: red; }
-	a:visited  { font: 8pt/11pt verdana, arial, sans-serif; color: #4e4e4e; }
-	-->
-	</style>
-</head>
-<body>
-<table cellpadding="1" cellspacing="1" id="container">
-<tr>
-	<td id="bodytitle" width="100%">Discuz! $title Error </td>
-</tr>
-EOT;
-
-		echo <<<EOT
-<tr><td><hr size="1"/></td></tr>
-<tr><td class="bodytext">Error messages: </td></tr>
-<tr>
-	<td class="bodytext" id="message">
-		<ul> $errormsg</ul>
-	</td>
-</tr>
-EOT;
-		if(!empty($phpmsg)  && $type == 'db') {
-			echo <<<EOT
-<tr><td class="bodytext">&nbsp;</td></tr>
-<tr><td class="bodytext">Program messages: </td></tr>
-<tr>
-	<td class="bodytext">
-		<ul> $phpmsg </ul>
-	</td>
-</tr>
-EOT;
-		}
-		$endmsg = lang('error', 'mobile_error_end_message', array('host'=>$host));
-		echo <<<EOT
-<tr>
-	<td class="help"><br />$endmsg</td>
-</tr>
-</table>
-</body>
-</html>
-EOT;
-		$exit && exit();
 	}
 
 	public static function clear($message) {
@@ -417,7 +199,7 @@ EOT;
 
 		$message = framework_error::clear($message);
 		$time = time();
-		$file =  APP_FRAMEWORK_ROOT.'./data/log/'.date("Ym").'_errorlog.php';
+		$file =  APP_FRAMEWORK_ROOT.'/data/log/errorlog_'.date("Ym").'.php';
 		$hash = md5($message);
 
 		$uid = getglobal('uid');
@@ -425,7 +207,7 @@ EOT;
 
 		$user = '<b>User:</b> uid='.intval($uid).'; IP='.$ip.'; RIP:'.$_SERVER['REMOTE_ADDR'];
 		$uri = 'Request: '.dhtmlspecialchars(framework_error::clear($_SERVER['REQUEST_URI']));
-		$message = "<?PHP exit;?>\t{$time}\t$message\t$hash\t$user $uri\n";
+		$message = "<?php exit;?>\t{$time}\t$message\t$hash\t$user $uri\n";
 		if($fp = @fopen($file, 'rb')) {
 			$lastlen = 50000;
 			$maxtime = 60 * 10;
@@ -437,7 +219,7 @@ EOT;
 				$array = explode("\n", $data);
 				if(is_array($array)) foreach($array as $key => $val) {
 					$row = explode("\t", $val);
-					if($row[0] != '<?PHP exit;?>') continue;
+					if($row[0] != '<?php exit;?>') continue;
 					if($row[3] == $hash && ($row[1] > $time - $maxtime)) {
 						return;
 					}
