@@ -93,6 +93,7 @@ class framework_error {
 		}
 		$log = '';
 		foreach($phpmsg as $trace) {
+			if(empty($trace['file'])) continue;
 			$log .= empty($log) ? '' : ' --> ';
 			$log .= $trace['file'].':'.$trace['line'];
 		}
@@ -173,7 +174,7 @@ class framework_error {
 		$last = is_array($phpmsg) && !empty($phpmsg) ? end($phpmsg) : array();
 
 		global $template;
-		if(isset($template) && file_exists($template->templates_dir.'error'.$template->templates_postfix)){
+		if(!empty($template) && $template->templateExists('error')){
 			$template->assign('errormsg', $errormsg, true);
 			$template->assign('phpmsg', $phpmsg, true);
 			$template->assign('last', $last, true);
@@ -226,7 +227,8 @@ class framework_error {
 				}
 			}
 		}
-		error_log($message, 3, $file);
+		//error_log($message, 3, $file);
+		file_put_contents($file, $message, FILE_APPEND);
 	}
 
 }

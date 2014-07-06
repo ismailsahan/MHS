@@ -75,7 +75,9 @@ h2{
 <?php if(is_array($phpmsg)){
 	echo '<ol>';
 	foreach($phpmsg as $trace) {
-		echo "<li>{$trace['function']}<br />{$trace['file']}:{$trace['line']}</li>\n";
+		echo "<li>{$trace['function']}";
+		if(!empty($trace['file'])) echo "<br />{$trace['file']}:{$trace['line']}</li>";
+		echo "\n";
 	}
 	echo '</ol>';
 } else {

@@ -67,6 +67,10 @@ class template extends Smarty{
 		return parent::isCached($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), /*$cache_id===null ? self::$default_cache_id : */$cache_id, $compile_id===null ? self::$default_compile_id : $compile_id, $parent);
 	}
 
+	public function templateExists($template){
+		return parent::templateExists(strexists($template, self::$suffix) ? $template : $template.self::$suffix);
+	}
+
 }
 
 class StaticEngine {

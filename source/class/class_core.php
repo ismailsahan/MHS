@@ -807,7 +807,7 @@ class core {
 					$errmsg = $e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>';
 					if(class_exists('framework_error')) {
 						list($phpmsg, $logtrace) = framework_error::debug_backtrace();
-						framework_error::write_error_log($errmsg.'<br /><b>PHP:</b> '.$logtrace);
+						//framework_error::write_error_log($errmsg.'<br /><b>PHP:</b> '.$logtrace);
 					}
 					function_exists('halt') ? halt($errmsg) : exit('ERROR: '.$errmsg);
 					break;
