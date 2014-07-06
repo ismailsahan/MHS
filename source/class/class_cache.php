@@ -30,7 +30,7 @@ class Cache {
 
 	public static function init() {
 		global $_G;
-		phpFastCache::$config['path'] = 'path', APP_FRAMEWORK_ROOT.'/data/cache';
+		phpFastCache::$config['path'] = APP_FRAMEWORK_ROOT.'/data/cache';
 		self::$prefix = $_G['config']['cookie']['cookiepre'];
 		self::$object = new phpFastCache('auto');
 		self::$object->option('path', APP_FRAMEWORK_ROOT.'/data/cache');
