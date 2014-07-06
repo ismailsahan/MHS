@@ -375,7 +375,8 @@ class LoggingAction extends Action {
 			ajaxReturn($data, 'JSON');
 		}
 
-		$auditInfo = DB::fetch_first('SELECT `status`,`verifytime`,`operatorname`,`verifytext` FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $_G['uid']));
+		$auditInfo = DB::fetch_first('SELECT * FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $_G['uid']));
+		//$auditInfo = DB::fetch_first('SELECT `status`,`verifytime`,`operatorname`,`verifytext` FROM %t WHERE `uid`=%d LIMIT 1', array('activation', $_G['uid']));
 		$status = isset($auditInfo['status']) ? $auditInfo['status'] : -1;
 		$auditInfo['verifytime'] = isset($auditInfo['verifytime']) ? dgmdate($auditInfo['verifytime']) : '';
 		$auditInfo['verifytext'] = isset($auditInfo['verifytext']) ? stripcslashes($auditInfo['verifytext']) : '';
