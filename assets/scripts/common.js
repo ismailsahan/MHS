@@ -57,6 +57,10 @@ $(document).ready(function() {
     });
 });
 
+$.ajaxSetup({
+    contentType: "application/x-www-form-urlencoded; charset=utf-8"
+});
+
 $(document).ajaxError(function(event, jqxhr, settings, exception) {
     var msg = jqxhr.responseText.substr(0, 1) == "{" ? $.parseJSON(jqxhr.responseText).msg : "";
     var alertMethod = typeof modalAlert == "function" ? modalAlert : alert;

@@ -32,7 +32,7 @@ class Cache {
 		global $_G;
 		self::$prefix = $_G['config']['cookie']['cookiepre'];
 		self::$object = new phpFastCache('auto');
-		self::$object->option['path'] = APP_FRAMEWORK_ROOT.'/data/cache';
+		self::$object->option('path', APP_FRAMEWORK_ROOT.'/data/cache');
 		self::$storage = ucfirst(self::$object->option['storage']);
 		return self::$object;
 	}
