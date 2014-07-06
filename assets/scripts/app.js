@@ -303,7 +303,7 @@ var App = function() {
                 });
 
                 $(document).ready(function() {
-                    setTimeout(function() {
+                    if ($("#header_notification_bar .dropdown-menu-list li").size()) setTimeout(function() {
                         $.extend($.gritter.options, {
                             position: 'top-left'
                         });
