@@ -254,7 +254,9 @@ function edituser($username, $oldpw, $newpw=null, $email=null, $ignoreoldpw=fals
  */
 function deluser($uid, $uc=false){
 	$return = 0;
-	DB::query(str_repeat('DELETE FROM %t WHERE `uid` IN (%n);', 3), array('users', $uid, 'users_profile', $uid, 'users_connect', $uid));
+	DB::query('DELETE FROM %t WHERE `uid` IN (%n)', array('users', $uid));
+	DB::query('DELETE FROM %t WHERE `uid` IN (%n)', array('users_profile', $uid));
+	DB::query('DELETE FROM %t WHERE `uid` IN (%n)', array('users_connect', $uid));
 	if($uc) {
 		require_once libfile('client', '/uc_client');
 		$return = uc_user_delete($uid);
