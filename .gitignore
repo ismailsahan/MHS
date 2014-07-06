@@ -1,3 +1,4 @@
+data/**
 cache/**
 development/**
 source/template/switcher-demo/**
@@ -10,6 +11,9 @@ uc_client/data/cache/**
 !cache/tpl/index.htm
 !cache/cfg/index.htm
 !cache/sessions/index.htm
+!data/tmp/index.htm
+!data/log/index.htm
+!data/cache/index.htm
 *_bak
 *.bak
 *.bak.php
