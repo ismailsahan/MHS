@@ -36,22 +36,26 @@ if(class_exists('DB')){
 			$query = @mysql_query('EXPLAIN '.$string[0], $string[3]);
 			$i = 0;
 			$sqldebugrow .= '';
+			//$sqldebugrow .= '[table]';
 			while($row = DB::fetch($query)) {
 				if(!$i) {
-					//$sqldebugrow .= ''.implode('_OR_', array_keys($row)).'';
+					//$sqldebugrow .= '[tr][td]'.implode('[/td][td]', array_keys($row)).'[/td][/tr]';
 					$i++;
 				}
 				if(strexists($row['Extra'], 'Using filesort')) {
 					$sqlw['Using filesort']++;
-					$extra .= $row['Extra'];
+					$dt .= ' • [color=red]Using filesort[/color]';
+					//$extra .= $row['Extra'] = str_replace('Using filesort', '[color=red]Using filesort[/color]', $row['Extra']);
 				}
 				if(strexists($row['Extra'], 'Using temporary')) {
 					$sqlw['Using temporary']++;
-					$extra .= $row['Extra'];
+					$dt .= ' • [color=red]Using temporary[/color]';
+					//$extra .= $row['Extra'] = str_replace('Using temporary', '[color=red]Using temporary[/color]', $row['Extra']);
 				}
-				//$sqldebugrow .= ''.implode('_SP_', $row).'';
+				//$sqldebugrow .= '<tr><td>'.implode('[/td][td]', $row).'[/td][/tr]';
 			}
 			$sqldebugrow .= '';
+			//$sqldebugrow .= '[/table]';
 		}elseif(preg_match('/^UPDATE /', $string[0])){
 			$queryinfo['update']++;
 		}elseif(preg_match('/^INSERT /', $string[0])){
@@ -62,18 +66,18 @@ if(class_exists('DB')){
 			$queryinfo['delete']++;
 		}
 
-		/*$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
-		foreach($string[2] as $error) {
+		//$sqldebugrow .= '[hide][table=1][tr][th]File[/th][th]Line[/th][th]Function[/th][/tr]';
+		/*foreach($string[2] as $error) {
 			$error['file'] = str_replace(array(APP_FRAMEWORK_ROOT, '\\'), array('', '/'), $error['file']);
 			$error['class'] = isset($error['class']) ? $error['class'] : '';
 			$error['type'] = isset($error['type']) ? $error['type'] : '';
 			$error['function'] = isset($error['function']) ? $error['function'] : '';
-			$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
-			/*if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
+			//$sqldebugrow .= "[tr][td]{$error['file']}[/td][td]{$error['line']}[/td][td]{$error['class']}{$error['type']}{$error['function']}()[/td][/tr]";
+			if(strexists($error['file'], 'discuz/discuz_table') || strexists($error['file'], 'table/table')) {
 				$dt = ' • '.$error['file'];
-			}* /
-		}
-		$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';*/
+			}
+		}*/
+		//$sqldebugrow .= '[/table][/hide]'.($extra ? $extra.'[br]' : '').'[br]';
 		$sqldebug[] = $string[1].'s • DBLink '.$links[(string)$string[3]].$dt.'[br][color=blue]'.$sql.'[/color][br]'.$sqldebugrow;
 	}
 }

@@ -32,11 +32,11 @@ function filter($val, $level = 0){
 
 ?>
 <style type="text/css">
-@keyframes tptt{0%{height:0;}100%{height:auto;}}
-@-webkit-keyframes tptt{0%{height:0;}100%{height:auto;}}
-@-moz-keyframes tptt{0%{height:0;}100%{height:auto;}}
-@-ms-keyframes tptt{0%{height:0;}100%{height:auto;}}
-@-o-keyframes tptt{0%{height:0;}100%{height:auto;}}
+@keyframes tptt{0%{height:0;}99%{height:250px;}100%{height:auto;}}
+@-webkit-keyframes tptt{0%{height:0;}99%{height:250px;}100%{height:auto;}}
+@-moz-keyframes tptt{0%{height:0;}99%{height:250px;}100%{height:auto;}}
+@-ms-keyframes tptt{0%{height:0;}99%{height:250px;}100%{height:auto;}}
+@-o-keyframes tptt{0%{height:0;}99%{height:250px;}100%{height:auto;}}
 #think_page_trace_tab{
 	transition:all .25s ease;
 	animation-duration:0.5s;
