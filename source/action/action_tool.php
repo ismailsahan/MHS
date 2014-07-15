@@ -19,4 +19,25 @@ class ToolAction extends Action {
 		show_developing('tool');
 	}
 
+	public function clearcache() {
+		global $_G, $template;
+		if(IS_AJAX) {
+			clearcache('all');
+			ajaxReturn(array(
+				'errno' => 0,
+				'msg' => '全部缓存已清除完毕'
+			));
+		}
+		if(!$template->isCached('tool_clearcache')){
+			$template->assign('sidebarMenu', defaultNav());
+			$template->assign('adminNav', adminNav());
+			$template->assign('menuset', array('tool', 'clearcache'));
+		}
+		$template->display('tool_clearcache');
+	}
+
+	public function mailsetting() {
+		global $_G, $template;
+	}
+
 }

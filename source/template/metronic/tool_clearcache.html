@@ -1,0 +1,27 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/site_info}{/block}
+{block pagestyle}{/block}
+{block pageplugins}
+	<script type="text/javascript" src="{static 'assets/scripts/tool.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			App.init();
+			$(".note form").submit(function() {
+				$.post("{U 'tool/clearcache?inajax=1'}", {}, function(data) {
+					modalAlert(data.msg);
+				}, "JSON");
+				return false;
+			})
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div class="note note-info">
+				<h4 class="block">清除全部缓存</h4>
+				<form action="{U 'tool/clearcache?inajax=1'}" method="post" accept-charset="utf-8">
+					<input type="submit" value="清除缓存" />
+				</form>
+			</div>
+{/block}

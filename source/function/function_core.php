@@ -1402,8 +1402,8 @@ function clearcache($opt = 1) {
 	}
 
 	if($options['template']) {
-		global $template;
-		$template->clearAllCache();
+		//global $template;
+		//$template->clearAllCache();
 
 		clearstaticcache();
 	}
@@ -1412,9 +1412,9 @@ function clearcache($opt = 1) {
 /**
  * 清除由静态引擎产生的缓存
  */
-function clearstaticcache($path = array('/', '/tpl/', '/cfg/', '/sessions/')) {
+function clearstaticcache($path = array('/', '/tpl/', '/cfg/')) {
 	if(is_array($path)) {
-		foreach ($$path as $val) {
+		foreach ($path as $val) {
 			clearstaticcache($val);
 		}
 		return;
@@ -1422,10 +1422,11 @@ function clearstaticcache($path = array('/', '/tpl/', '/cfg/', '/sessions/')) {
 
 	$files = glob(APP_FRAMEWORK_ROOT.'/cache'.$path.'*');
 	foreach($files as $cache) {
-		if(is_file($cache) && !in_array(basename($cache), array('index.htm', 'index.html'))) {
+		if(is_file($cache)) {
 			unlink($cache);
 		}
 	}
+	touch(APP_FRAMEWORK_ROOT.'/cache'.$path.'index.htm');
 
 	return;
 }
