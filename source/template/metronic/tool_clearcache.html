@@ -8,7 +8,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			App.init();
-			$(".note form").submit(function() {
+			$(".panel form").submit(function() {
 				$.post("{U 'tool/clearcache?inajax=1'}", {}, function(data) {
 					modalAlert(data.msg);
 				}, "JSON");
@@ -18,10 +18,14 @@
 	</script>
 {/block}
 {block pgcontent}
-			<div class="note note-info">
-				<h4 class="block">清除全部缓存</h4>
-				<form action="{U 'tool/clearcache?inajax=1'}" method="post" accept-charset="utf-8">
-					<input type="submit" value="清除缓存" />
-				</form>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">清除全部缓存</h3>
+				</div>
+				<div class="panel-body">
+					 <form action="{U 'tool/clearcache?inajax=1'}" method="post" accept-charset="utf-8">
+					 	<input type="submit" value="清除缓存" />
+					 </form>
+				</div>
 			</div>
 {/block}
