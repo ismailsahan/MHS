@@ -103,7 +103,27 @@ class GlobalAction extends Action {
 		has_permit('member_access');
 
 		if(IS_AJAX){
-			;
+			$settings = array(
+				'regopen' => 'd',
+				'regclosedreason' => 's',
+				'tos' => 's',
+				'actopen' => 'd',
+				'actclosedreason' => 's',
+			);
+
+			foreach($_POST as $k => $v) {
+				if(isset($settings[$k])) {
+					$this->_update($k, $v, $settings[$k]);
+				}
+			}
+			if(isset($_POST['tos'])) {
+				clearcache('tos');
+			}
+
+			ajaxReturn(array(
+				'errno' => 0,
+				'msg' => '设置已更新'
+			), 'JSON');
 		}else{
 			if(!$template->isCached('global_access')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -239,12 +259,16 @@ class GlobalAction extends Action {
 
 	private function _update($name, $val, $type){
 		global $_G;
+		static $cache_cleared = false;
 		DB::query("UPDATE %t SET `svalue`=%{$type} WHERE `skey`=%s LIMIT 1", array(
 			'setting',
 			$val,
 			$name
 		));
-		clearcache('setting');
+		if(!$cache_cleared) {
+			clearcache('setting');
+			$cache_cleared = true;
+		}
 	}
 
 	private function _ajaxError($msg){

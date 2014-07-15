@@ -1,10 +1,5 @@
 var Members = function () {
 
-	function modalAlert(msg) {
-		$("#alert-modal .modal-body .col-md-12").html(msg);
-		$("#alert-modal").modal("show");
-	}
-
 	function showloading() {
 		$.blockUI({
 			message: '<img src="assets/img/ajax-loading.gif" />',
@@ -389,6 +384,21 @@ var Members = function () {
 			};
 
 			initDT(columns);
+
+			$('#showgraph-button').click(function() {
+				if(!$(this).data('inited')) {
+					return $.post("{U members/agrp}", {}, function(data) {
+						$("#agrp-tree").jstree({
+							'core' : {
+								'data' : data
+							}
+						});
+						$("#showgraph-button").data('inited', 1);
+						$("#agrp-tree-modal").modal("show");
+					}, "JSON");
+				}
+				$("#agrp-tree-modal").modal("show");
+			});
 
 		}
 

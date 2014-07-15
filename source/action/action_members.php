@@ -211,4 +211,25 @@ class MembersAction extends Action {
 		}
 	}
 
+	public function agrp(){
+		define('DISABLE_TRACE', true);
+		has_permit('admingroup');
+
+		require_once libfile('class/group');
+		$agrp = group::getgroups('admin');
+		$grps = array();
+		foreach($agrp as $grp) {
+			$grps[] = array(
+				'id' => $grp['gid'],
+				'parent' => $grp['parent'],
+				'text' => $grp['name'],
+				'state' => array(
+					'opened' => true,
+				)
+			);
+		}
+		$grps[0]['parent'] = '#';
+		ajaxReturn($grps, 'JSON');
+	}
+
 }

@@ -50,6 +50,13 @@ class framework_error {
 		$skipfunc[] = 'DB::_execute';
 		$skipfunc[] = 'DB::checkquery';
 		$skipfunc[] = 'database_safecheck::checkquery';
+		$skipfunc[] = 'Smarty_Internal_Template->writeCachedContent';
+		$skipfunc[] = 'Smarty_Template_Cached->write';
+		$skipfunc[] = 'Smarty_Internal_CacheResource_File->writeCachedContent';
+		$skipfunc[] = 'Smarty_Internal_Write_File::writeFile';
+		$skipfunc[] = 'Smarty_Internal_Template->compileTemplateSource';
+		$skipfunc[] = 'Smarty_Internal_TemplateCompilerBase->compileTemplate';
+		$skipfunc[] = 'Smarty_Internal_SmartyTemplateCompiler->doCompile';
 
 		$backtrace = $exception ? $exception->getTrace() : debug_backtrace();
 		krsort($backtrace);

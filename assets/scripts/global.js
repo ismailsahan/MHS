@@ -16,11 +16,6 @@ var Global = function () {
 		});
 	};
 
-	var modalAlert = function (msg){
-		$("#alert-modal .modal-body .col-md-12").html(msg);
-		$("#alert-modal").modal("show");
-	}
-
 	var initBaseInfo = function () {
 
 		$.fn.editable.defaults.mode = 'inline';
@@ -74,6 +69,13 @@ var Global = function () {
 		$.get("{U api/tos}", function(data) {
 			$("textarea[name='tos']").text(data);
 		});
+
+		$(".portlet-body form").submit(function() {
+			$.post("{U global/access?inajax=1}", $(this).serialize(), function(data) {
+				modalAlert(data.msg);
+			}, "JSON");
+			return false;
+		})
 	};
 
 	var initSeccheck = function () {

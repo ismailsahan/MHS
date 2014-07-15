@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
 <link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
 <link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/plugins/jstree/dist/themes/default/style.min.css"/>
 <style type="text/css" media="screen">
 #users tr, #users td {
 	vertical-align: middle;
@@ -15,6 +16,7 @@
 	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/plugins/jstree/dist/jstree.min.js"></script>
 	<script type="text/javascript" src="{static 'assets/scripts/members.js'}"></script>
 {/block}
 {block pagejs}
@@ -118,6 +120,18 @@
 					<button type="button" class="btn red">继续</button>
 				</div>
 			</div>
+			<div id="agrp-tree-modal" class="modal fade modal-scroll" tabindex="-1">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">管理组结构图</h4>
+				</div>
+				<div class="modal-body">
+					<div id="agrp-tree"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
 			<div class="portlet box grey">
 				<div class="portlet-title">
 					<div class="caption"><i class="fa fa-user"></i> 管理组</div>
@@ -135,7 +149,7 @@
 							<th>组头衔</th>
 							<th>上级</th>
 							<th>备注</th>
-							<th>管理</th>
+							<th style="width:12em">管理</th>
 						</tr></thead>
 						<tbody>
 							{foreach $agrp as $grp}
@@ -143,9 +157,9 @@
 								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$grp.gid}" /></td>
 								<td>{$grp.gid}</td>
 								<td>{$grp.name}</td>
-								<td>{$grp.parent|default:'-'}</td>
+								<td>{$grp.parentgrp|default:'-'}</td>
 								<td>{$grp.note|default:'-'}</td>
-								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">权限详情</a></td>
+								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">权限详情</a>{if !$grp@first} <a href="javascript:;" class="btn btn-xs default red-stripe">编辑权限</a> <a href="javascript:;" class="btn btn-xs default green-stripe">查看成员</a>{/if}</td>
 							</tr>
 							{/foreach}
 						</tbody>
