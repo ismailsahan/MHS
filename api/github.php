@@ -1,7 +1,8 @@
 <?php
 
 error_reporting(0);
-set_time_limit(300);
+set_time_limit(600);
+ignore_user_abort(true);
 require '../source/function/function_core.php';
 
 if(empty($_SERVER['HTTP_X_GITHUB_EVENT']) || empty($_SERVER['HTTP_X_GITHUB_DELIVERY']) || empty($_SERVER['HTTP_X_HUB_SIGNATURE']) || substr($_SERVER['HTTP_USER_AGENT'], 0, 15) != 'GitHub Hookshot' || !in_array($_SERVER['HTTP_X_GITHUB_EVENT'], array('ping', 'push'))) {
