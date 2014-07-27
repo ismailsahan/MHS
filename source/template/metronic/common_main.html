@@ -1,123 +1,132 @@
 {extends 'common.html'}
 {block pagestyle}
-<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
-<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
-<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
-<link href="assets/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" type="text/css"/>
+<link href="assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
+<link href="assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+<link href="assets/global/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" type="text/css"/>
 {$smarty.block.child}
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
-	<!--<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>-->
-	<script type="text/javascript" src="assets/plugins/bootbox/bootbox.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery.pulsate.min.js"></script>
-	<script type="text/javascript" src="assets/scripts/app.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimeout.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-idle-timeout/jquery.idletimer.js"></script>
-	<script type="text/javascript" src="assets/scripts/idle-timeout.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery.pulsate.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/gritter/js/jquery.gritter.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+	<!--<script type="text/javascript" src="assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>-->
+	<script type="text/javascript" src="assets/global/plugins/bootbox/bootbox.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery.pulsate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-idle-timeout/jquery.idletimeout.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-idle-timeout/jquery.idletimer.js"></script>
+	<script type="text/javascript" src="assets/admin/pages/scripts/idle-timeout.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery.pulsate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/gritter/js/jquery.gritter.js"></script>
+	<script type="text/javascript" src="assets/global/scripts/metronic.js"></script>
+	<script type="text/javascript" src="assets/admin/layout/scripts/layout.js"></script>
+	<!--<script type="text/javascript" src="assets/admin/layout/scripts/quick-sidebar.js"></script>-->
 	{$smarty.block.child}
 {/block}
 {block bodyclass}page-header-fixed{/block}
 {block body}
 	{function name=menuItem level=0 admin=0}
 		{foreach $menuArr as $menu}{if !is_array($menu)}{continue}{/if}
-		<li class="{if $level==0 && !$admin}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}{if $admin}{nocache}{if !chkPermit()} hidden{/if}{/nocache}{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="fa fa-{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge{* badge-roundless*} badge-{$menu.tag} hidden">{$menu.link}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1 admin=$admin}</ul>{/if}</li>
+		<li class="{if $level==0 && !$admin}{if $menu@first}start {elseif $menu@last}last {/if}{/if}{if $menu.title == $menuset[$level]}active{$_G['navbarset'][$menu.title]=$menu.link}{/if}{if $menu.tooltip} tooltips{/if}{if $admin}{nocache}{if !chkPermit()} hidden{/if}{/nocache}{/if}"{if $menu.tooltip} data-placement="right" data-original-title="{$menu.tooltip}"{/if}><a href="{if $menu.children || !$menu.link}javascript:;{else}{U $menu.link}{/if}">{if $menu.icon}<i class="{$menu.icon}"></i> {/if}{if $menu.tag && !$menu.children}<span class="badge{* badge-roundless*} badge-{$menu.tag} hidden">{$menu.link}</span>{/if}<span class="title">{lang nav/$menu.title}</span>{if $level==0 && $menu.title==$menuset[0]}<span class="selected"></span>{/if}{if $menu.children}<span class="arrow{if $menu.title == $menuset[$level]} open{/if}"></span>{/if}</a>{if $menu.children}<ul class="sub-menu">{call name=menuItem menuArr=$menu.children level=$level+1 admin=$admin}</ul>{/if}</li>
 		{/foreach}
 	{/function}
 	<!-- BEGIN HEADER -->
-	<div class="header navbar navbar-inverse navbar-fixed-top">
+	<div class="page-header navbar navbar-fixed-top">
 		<!-- BEGIN TOP NAVIGATION BAR -->
-		<div class="header-inner">
-			<!-- BEGIN LOGO -->  
-			<a class="navbar-brand" href="{U main/index}"><img src="{$_G.setting.logopath}" alt="{$_G.setting.sitename}" class="img-responsive" /></a>
+		<div class="page-header-inner">
+			<!-- BEGIN LOGO -->
+			<div class="page-logo">
+				<a href="{U main/index}"><img src="{$_G.setting.logopath}" alt="{$_G.setting.sitename}" class="img-responsive" /></a>
+				<div class="menu-toggler sidebar-toggler hide">
+					<!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
+				</div>
+			</div>
 			<!-- END LOGO -->
 			<!-- BEGIN RESPONSIVE MENU TOGGLER --> 
-			<a href="javascript:;" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><img src="assets/img/menu-toggler.png" alt="" /></a> 
+			<a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse"></a> 
 			<!-- END RESPONSIVE MENU TOGGLER -->
 			<!-- BEGIN TOP NAVIGATION MENU -->
-			<ul class="nav navbar-nav pull-right">
-				<!-- BEGIN NOTIFICATION DROPDOWN -->
-				<li class="dropdown" id="header_notification_bar">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-warning"></i><span class="badge">0</span></a>
-					<ul class="dropdown-menu extended notification">
-						<li><p>你有 <span>0</span> 个新提醒</p></li>
-						<li><ul class="dropdown-menu-list scroller" style="height: 250px;"></ul></li>
-						<!--<li class="external"><a href="#">显示全部提醒 <i class="m-icon-swapright"></i></a></li>-->
-					</ul>
-				</li>
-				<!-- END NOTIFICATION DROPDOWN -->
-				<!-- BEGIN INBOX DROPDOWN -->
-				{*<li class="dropdown" id="header_inbox_bar">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-envelope"></i><span class="badge">5</span></a>
-					<ul class="dropdown-menu extended inbox">
-						<li><p>You have 12 new messages</p></li>
-						<li><ul class="dropdown-menu-list scroller" style="height: 250px;">
-							<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar2.jpg" alt=""/></span><span class="subject"><span class="from">Lisa Wong</span><span class="time">Just Now</span></span><span class="message">Vivamus sed auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
-							<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar3.jpg" alt=""/></span><span class="subject"><span class="from">Richard Doe</span><span class="time">16 mins</span></span><span class="message">Vivamus sed congue nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
-							<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar1.jpg" alt=""/></span><span class="subject"><span class="from">Bob Nilson</span><span class="time">2 hrs</span></span><span class="message">Vivamus sed nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
-							<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar2.jpg" alt=""/></span><span class="subject"><span class="from">Lisa Wong</span><span class="time">40 mins</span></span><span class="message">Vivamus sed auctor 40% nibh congue nibh...</span></a></li>
-							<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar3.jpg" alt=""/></span><span class="subject"><span class="from">Richard Doe</span><span class="time">46 mins</span></span><span class="message">Vivamus sed congue nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
-						</ul></li>
-						<li class="external"><a href="inbox.html">See all messages <i class="m-icon-swapright"></i></a></li>
-					</ul>
-				</li>*}
-				<!-- END INBOX DROPDOWN -->
-				<!-- BEGIN TODO DROPDOWN -->
-				{*<li class="dropdown" id="header_task_bar">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-tasks"></i><span class="badge">5</span></a>
-					<ul class="dropdown-menu extended tasks">
-						<li><p>You have 12 pending tasks</p></li>
-						<li><ul class="dropdown-menu-list scroller" style="height: 250px;">
-							<li><a href="#"><span class="task"><span class="desc">New release v1.2</span><span class="percent">30%</span></span><span class="progress"><span style="width: 40%;" class="progress-bar progress-bar-success" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">40% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">Application deployment</span><span class="percent">65%</span></span><span class="progress progress-striped"><span style="width: 65%;" class="progress-bar progress-bar-danger" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">65% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">Mobile app release</span><span class="percent">98%</span></span><span class="progress"><span style="width: 98%;" class="progress-bar progress-bar-success" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">98% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">Database migration</span><span class="percent">10%</span></span><span class="progress progress-striped"><span style="width: 10%;" class="progress-bar progress-bar-warning" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">10% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">Web server upgrade</span><span class="percent">58%</span></span><span class="progress progress-striped"><span style="width: 58%;" class="progress-bar progress-bar-info" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">58% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">Mobile development</span><span class="percent">85%</span></span><span class="progress progress-striped"><span style="width: 85%;" class="progress-bar progress-bar-success" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">85% Complete</span></span></span></a></li>
-							<li><a href="#"><span class="task"><span class="desc">New UI release</span><span class="percent">18%</span></span><span class="progress progress-striped"><span style="width: 18%;" class="progress-bar progress-bar-important" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">18% Complete</span></span></span></a></li>
-						</ul></li>
-						<li class="external"><a href="#">See all tasks <i class="m-icon-swapright"></i></a></li>
-					</ul>
-				</li>*}
-				<!-- END TODO DROPDOWN -->
-				{if $_G.setting.multilang}
-				<!-- BEGIN LANGUAGE DROPDOWN -->
-				<li class="dropdown language">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-						<img alt="" src="assets/img/flags/us.png" />
-						<span class="username">US</span>
-						<i class="fa fa-angle-down"></i>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a href="#"><img alt="" src="assets/img/flags/es.png" /> Spanish</a></li>
-						<li><a href="#"><img alt="" src="assets/img/flags/de.png" /> German</a></li>
-						<li><a href="#"><img alt="" src="assets/img/flags/ru.png" /> Russian</a></li>
-						<li><a href="#"><img alt="" src="assets/img/flags/fr.png" /> French</a></li>
-					</ul>
-				</li>
-				<!-- END LANGUAGE DROPDOWN -->
-				{/if}
-				<!-- BEGIN USER LOGIN DROPDOWN -->
-				<li class="dropdown user">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" width="29" height="29" /> <span class="username">{nocache}<!--{$_G.username} ( -->{$_G.member.realname}<!-- )-->{/nocache}</span><i class="fa fa-angle-down"></i></a>
-					<ul class="dropdown-menu">
-						<li><a href="{U self/profile}"><i class="fa fa-user"></i> 我的档案</a></li>
-						<!--<li><a href="page_calendar.html"><i class="fa fa-calendar"></i> My Calendar</a></li>
-						<li><a href="inbox.html"><i class="fa fa-envelope"></i> My Inbox <span class="badge badge-danger">3</span></a></li>
-						<li><a href="#"><i class="fa fa-tasks"></i> My Tasks <span class="badge badge-success">7</span></a></li>-->
-						<li class="divider"></li>
-						<li><a href="javascript:;" id="trigger_fullscreen"><i class="fa fa-arrows"></i> {lang fullscr}</a></li>
-						<li><a href="{U logging/locked}"><i class="fa fa-lock"></i> {lang lockscr}</a></li>
-						<li><a href="{U logging/logout}"><i class="fa fa-key"></i> {lang logout}</a></li>
-					</ul>
-				</li>
-				<!-- END USER LOGIN DROPDOWN -->
-			</ul>
+			<div class="top-menu">
+				<ul class="nav navbar-nav pull-right">
+					<!-- BEGIN NOTIFICATION DROPDOWN -->
+					<li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="icon-bell"></i><span class="badge badge-default">0</span></a>
+						<ul class="dropdown-menu">
+							<li><p>你有 <span>0</span> 个新提醒</p></li>
+							<li><ul class="dropdown-menu-list scroller" style="height: 250px;"></ul></li>
+							<!--<li class="external"><a href="#">显示全部提醒 <i class="m-icon-swapright"></i></a></li>-->
+						</ul>
+					</li>
+					<!-- END NOTIFICATION DROPDOWN -->
+					<!-- BEGIN INBOX DROPDOWN -->
+					{*<li class="dropdown dropdown-extended dropdown-inbox" id="header_inbox_bar">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="icon-envelope-open"></i><span class="badge badge-default">5</span></a>
+						<ul class="dropdown-menu">
+							<li><p>You have 12 new messages</p></li>
+							<li><ul class="dropdown-menu-list scroller" style="height: 250px;">
+								<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar2.jpg" alt=""/></span><span class="subject"><span class="from">Lisa Wong</span><span class="time">Just Now</span></span><span class="message">Vivamus sed auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
+								<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar3.jpg" alt=""/></span><span class="subject"><span class="from">Richard Doe</span><span class="time">16 mins</span></span><span class="message">Vivamus sed congue nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
+								<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar1.jpg" alt=""/></span><span class="subject"><span class="from">Bob Nilson</span><span class="time">2 hrs</span></span><span class="message">Vivamus sed nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
+								<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar2.jpg" alt=""/></span><span class="subject"><span class="from">Lisa Wong</span><span class="time">40 mins</span></span><span class="message">Vivamus sed auctor 40% nibh congue nibh...</span></a></li>
+								<li><a href="inbox.html?a=view"><span class="photo"><img src="./assets/img/avatar3.jpg" alt=""/></span><span class="subject"><span class="from">Richard Doe</span><span class="time">46 mins</span></span><span class="message">Vivamus sed congue nibh auctor nibh congue nibh. auctor nibhauctor nibh...</span></a></li>
+							</ul></li>
+							<li class="external"><a href="inbox.html">See all messages <i class="m-icon-swapright"></i></a></li>
+						</ul>
+					</li>*}
+					<!-- END INBOX DROPDOWN -->
+					<!-- BEGIN TODO DROPDOWN -->
+					{*<li class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="icon-calendar"></i><span class="badge badge-default">5</span></a>
+						<ul class="dropdown-menu">
+							<li><p>You have 12 pending tasks</p></li>
+							<li><ul class="dropdown-menu-list scroller" style="height: 250px;">
+								<li><a href="#"><span class="task"><span class="desc">New release v1.2</span><span class="percent">30%</span></span><span class="progress"><span style="width: 40%;" class="progress-bar progress-bar-success" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">40% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">Application deployment</span><span class="percent">65%</span></span><span class="progress progress-striped"><span style="width: 65%;" class="progress-bar progress-bar-danger" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">65% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">Mobile app release</span><span class="percent">98%</span></span><span class="progress"><span style="width: 98%;" class="progress-bar progress-bar-success" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">98% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">Database migration</span><span class="percent">10%</span></span><span class="progress progress-striped"><span style="width: 10%;" class="progress-bar progress-bar-warning" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">10% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">Web server upgrade</span><span class="percent">58%</span></span><span class="progress progress-striped"><span style="width: 58%;" class="progress-bar progress-bar-info" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">58% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">Mobile development</span><span class="percent">85%</span></span><span class="progress progress-striped"><span style="width: 85%;" class="progress-bar progress-bar-success" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">85% Complete</span></span></span></a></li>
+								<li><a href="#"><span class="task"><span class="desc">New UI release</span><span class="percent">18%</span></span><span class="progress progress-striped"><span style="width: 18%;" class="progress-bar progress-bar-important" aria-valuenow="18" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">18% Complete</span></span></span></a></li>
+							</ul></li>
+							<li class="external"><a href="#">See all tasks <i class="m-icon-swapright"></i></a></li>
+						</ul>
+					</li>*}
+					<!-- END TODO DROPDOWN -->
+					{if $_G.setting.multilang}
+					<!-- BEGIN LANGUAGE DROPDOWN -->
+					<li class="dropdown dropdown-language">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+							<img alt="" src="assets/global/img/flags/us.png" />
+							<span class="langname">US</span>
+							<i class="fa fa-angle-down"></i>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="#"><img alt="" src="assets/global/img/flags/es.png" /> Spanish</a></li>
+							<li><a href="#"><img alt="" src="assets/global/img/flags/de.png" /> German</a></li>
+							<li><a href="#"><img alt="" src="assets/global/img/flags/ru.png" /> Russian</a></li>
+							<li><a href="#"><img alt="" src="assets/global/img/flags/fr.png" /> French</a></li>
+						</ul>
+					</li>
+					<!-- END LANGUAGE DROPDOWN -->
+					{/if}
+					<!-- BEGIN USER LOGIN DROPDOWN -->
+					<li class="dropdown dropdown-user">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" class="img-circle" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" /> <span class="username">{nocache}<!--{$_G.username} ( -->{$_G.member.realname}<!-- )-->{/nocache}</span><i class="fa fa-angle-down"></i></a>
+						<ul class="dropdown-menu">
+							<li><a href="{U self/profile}"><i class="icon-user"></i> 我的档案</a></li>
+							<li class="divider"></li>
+							<li><a href="{U logging/locked}"><i class="icon-lock"></i> {lang lockscr}</a></li>
+							<li><a href="{U logging/logout}"><i class="icon-key"></i> {lang logout}</a></li>
+						</ul>
+					</li>
+					<!-- END USER LOGIN DROPDOWN -->
+					{*<!-- BEGIN QUICK SIDEBAR TOGGLER -->
+					<li class="dropdown dropdown-quick-sidebar-toggler">
+						<a href="javascript:;" class="dropdown-toggle"><i class="icon-logout"></i></a>
+					</li>
+					<!-- END QUICK SIDEBAR TOGGLER -->*}
+				</ul>
+			</div>
 			<!-- END TOP NAVIGATION MENU -->
 		</div>
 		<!-- END TOP NAVIGATION BAR -->
@@ -127,19 +136,29 @@
 	<!-- BEGIN CONTAINER -->
 	<div class="page-container">
 		<!-- BEGIN SIDEBAR -->
+		<div class="page-sidebar-wrapper">
 		<div class="page-sidebar navbar-collapse collapse">
 			<!-- BEGIN SIDEBAR MENU -->
-			<ul class="page-sidebar-menu">
-				<li><div class="sidebar-toggler hidden-phone"></div></li>
-				<li>
+			<ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
+				<li class="sidebar-toggler-wrapper">
+					<!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+					<div class="sidebar-toggler">
+					</div>
+					<!-- END SIDEBAR TOGGLER BUTTON -->
+				</li>
+				<li class="sidebar-search-wrapper">
 					<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
+					<!-- DOC: Apply "sidebar-search-bordered" class the below search form to have bordered search box -->
+					<!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box -->
 					<form class="sidebar-search" action="{U main/search}" method="POST">
-						<div class="form-container">{*
-							<div class="input-box">
-								<a href="javascript:;" class="remove"></a>
-								<input type="text" placeholder="搜索..."/>
-								<input type="button" class="submit" value=" "/>
-							</div>*}
+						<a href="javascript:;" class="remove">
+						<i class="icon-close"></i>
+						</a>
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="搜索...">
+							<span class="input-group-btn">
+							<a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>
+							</span>
 						</div>
 					</form>
 					<!-- END RESPONSIVE QUICK SEARCH FORM -->
@@ -150,8 +169,10 @@
 			</ul>
 			<!-- END SIDEBAR MENU -->
 		</div>
+		</div>
 		<!-- END SIDEBAR -->
 		<!-- BEGIN PAGE -->
+		<div class="page-content-wrapper">
 		<div class="page-content">
 			<!-- BEGIN STYLE CUSTOMIZER -->
 			<div class="theme-panel hidden-xs hidden-sm">
@@ -161,39 +182,51 @@
 					<div class="theme-option theme-colors clearfix">
 						<span>{lang theme_color}</span>
 						<ul>
-							<li class="color-black current color-default" data-style="default"></li>
-							<li class="color-blue" data-style="blue"></li>
-							<li class="color-brown" data-style="brown"></li>
-							<li class="color-purple" data-style="purple"></li>
-							<li class="color-grey" data-style="grey"></li>
-							<li class="color-white color-light" data-style="light"></li>
+							<li class="color-default current tooltips" data-style="default" data-original-title="Default"></li>
+							<li class="color-darkblue tooltips" data-style="darkblue" data-original-title="Dark Blue"></li>
+							<li class="color-blue tooltips" data-style="blue" data-original-title="Blue"></li>
+							<li class="color-grey tooltips" data-style="grey" data-original-title="Grey"></li>
+							<li class="color-light tooltips" data-style="light" data-original-title="Light"></li>
+							<li class="color-light2 tooltips" data-style="light2" data-html="true" data-original-title="Light 2"></li>
 						</ul>
 					</div>
 					{if $smarty.const.APP_FRAMEWORK_DEBUG}
 					<div class="theme-option">
-						<span>Layout</span>
+						<span>
+						Layout </span>
 						<select class="layout-option form-control input-small">
 							<option value="fluid" selected="selected">Fluid</option>
 							<option value="boxed">Boxed</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>Header</span>
-						<select class="header-option form-control input-small">
+						<span>
+						Header </span>
+						<select class="page-header-option form-control input-small">
 							<option value="fixed" selected="selected">Fixed</option>
 							<option value="default">Default</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>Sidebar</span>
+						<span>
+						Sidebar </span>
 						<select class="sidebar-option form-control input-small">
 							<option value="fixed">Fixed</option>
 							<option value="default" selected="selected">Default</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>Footer</span>
-						<select class="footer-option form-control input-small">
+						<span>
+						Sidebar Position </span>
+						<select class="sidebar-pos-option form-control input-small">
+							<option value="left" selected="selected">Left</option>
+							<option value="right">Right</option>
+						</select>
+					</div>
+					<div class="theme-option">
+						<span>
+						Footer </span>
+						<select class="page-footer-option form-control input-small">
 							<option value="fixed">Fixed</option>
 							<option value="default" selected="selected">Default</option>
 						</select>
@@ -208,16 +241,6 @@
 					<!-- BEGIN PAGE TITLE & BREADCRUMB-->
 					<h3 class="page-title">{lang nav/{end($menuset)}} <small>{lang nav/{end($menuset)|cat:'_detail'}}</small></h3>
 					<ul class="page-breadcrumb breadcrumb">
-						<!--<li class="btn-group">
-							<button type="button" class="btn blue dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true"><span>Actions</span> <i class="fa fa-angle-down"></i></button>
-							<ul class="dropdown-menu pull-right" role="menu">
-								<li><a href="#">Action</a></li>
-								<li><a href="#">Another action</a></li>
-								<li><a href="#">Something else here</a></li>
-								<li class="divider"></li>
-								<li><a href="#">Separated link</a></li>
-							</ul>
-						</li>-->
 						<li><i class="fa fa-home"></i><a href="{U main/index}">{lang nav/home}</a>{if !(count($menuset)==1 && $menuset[0]=='home')} <i class="fa fa-angle-right"></i>{/if}</li>
 						{foreach $menuset as $menu}{if $menu=='home'}{continue}{/if}
 						<li><a href="{if $_G.navbarset.$menu}{U $_G.navbarset.$menu}{else}#{/if}">{lang nav/$menu}</a>{if !$menu@last} <i class="fa fa-angle-right"></i>{/if}</li>
@@ -231,17 +254,14 @@
 			{block pgcontent}{/block}
 			<!-- END PAGE CONTENT-->
 		</div>
-		<!-- END PAGE -->    
+		</div>
+		<!-- END PAGE -->
 	</div>
 	<!-- END CONTAINER -->
 	<!-- BEGIN FOOTER -->
-	<div class="footer">
-		<div class="footer-inner">{$_G.setting.copyright}<span class="hitokoto"></span><br />{template debuginfo}</div>
-		<div class="footer-tools">
-			<span class="go-top">
-			<i class="fa fa-angle-up"></i>
-			</span>
-		</div>
+	<div class="page-footer">
+		<div class="page-footer-inner">{$_G.setting.copyright}<span class="hitokoto"></span><br />{template debuginfo}</div>
+		<div class="page-footer-tools"><span class="go-top"><i class="fa fa-angle-up"></i></span></div>
 	</div>
 	<!-- END FOOTER -->
 {/block}

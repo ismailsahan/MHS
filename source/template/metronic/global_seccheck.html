@@ -2,15 +2,16 @@
 {block subtitle}{lang nav/seccheck}{/block}
 {block pagestyle}{/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/global.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/global/scripts/seccode.js'}"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/global.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			//IdleTimeout.init();
 			Global.initSeccheck();
 		});

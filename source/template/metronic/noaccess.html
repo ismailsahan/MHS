@@ -1,11 +1,12 @@
 {extends 'common_main.html'}
 {block subtitle}系统提示{/block}
-{block pagestyle}<link rel="stylesheet" type="text/css" href="assets/css/pages/error.css" />{/block}
+{block pagestyle}<link rel="stylesheet" type="text/css" href="assets/admin/pages/css/error.css" />{/block}
 {block pageplugins}{/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 		});
 	</script>
 {/block}

@@ -1,9 +1,10 @@
 {extends 'common_main.html'}
 {block subtitle}{lang nav/user}{/block}
 {block pagestyle}
-<link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datepicker/css/datepicker3.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" />
 <style type="text/css" media="screen">
 #users tr, #users td {
 	vertical-align: middle;
@@ -11,19 +12,20 @@
 </style>
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/members.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/members.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			//IdleTimeout.init();
 			Members.init();
 		});
@@ -153,7 +155,7 @@
 					<button type="button" class="btn blue">申请复查</button>
 				</div>
 			</div>
-			<div class="portlet box grey">
+			<div class="portlet box blue-hoki">
 				<div class="portlet-title">
 					<div class="caption"><i class="fa fa-user"></i> 用户管理</div>
 					<div class="actions">

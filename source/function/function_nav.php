@@ -8,19 +8,19 @@ function &defaultNav(){
 		array(
 			'title' => 'home',
 			'link' => 'main/index',
-			'icon' => 'home',
+			'icon' => 'fa fa-home',
 			'children' => array()
 		),
 		array(
 			'title' => 'manhour',
 			'link' => 'manhour/index',
-			'icon' => 'leaf',
+			'icon' => 'fa fa-leaf',
 			'children' => array()
 		),
 		array(
 			'title' => 'self',
 			'link' => 'self/profile',
-			'icon' => 'user',
+			'icon' => 'fa fa-user',
 			'children' => array()
 		),
 		/*array(
@@ -54,7 +54,7 @@ function &adminNav(){
 		array(
 			'title' => 'global',
 			'link' => '',
-			'icon' => 'cogs',
+			'icon' => 'fa fa-cogs',
 			'children' => array(
 				array(
 					'title' => 'site_info',
@@ -117,7 +117,7 @@ function &adminNav(){
 		array(
 			'title' => 'members',
 			'link' => '',
-			'icon' => 'group',
+			'icon' => 'fa fa-group',
 			'children' => array(
 				array(
 					'title' => 'user',
@@ -180,7 +180,7 @@ function &adminNav(){
 		array(
 			'title' => 'tool',
 			'link' => '',
-			'icon' => 'wrench',
+			'icon' => 'fa fa-wrench',
 			'children' => array(
 				array(
 					'title' => 'runlog',
@@ -217,7 +217,7 @@ function &adminNav(){
 		array(
 			'title' => 'mhour',
 			'link' => '',
-			'icon' => 'edit',
+			'icon' => 'fa fa-edit',
 			'children' => array(
 				array(
 					'title' => 'applylog',
@@ -244,7 +244,7 @@ function &adminNav(){
 		array(
 			'title' => 'mhdict',
 			'link' => '',
-			'icon' => 'file-text',
+			'icon' => 'fa fa-file-text',
 			'children' => array(
 				array(
 					'title' => 'activity',

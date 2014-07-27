@@ -2,12 +2,13 @@
 {block subtitle}{lang nav/site_info}{/block}
 {block pagestyle}{/block}
 {block pageplugins}
-	<script type="text/javascript" src="{static 'assets/scripts/tool.js'}"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/tool.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			$(".panel form").submit(function() {
 				$.post("{U 'tool/clearcache?inajax=1'}", {}, function(data) {
 					modalAlert(data.msg);

@@ -1,22 +1,24 @@
 {extends 'common_main.html'}
 {block subtitle}{lang nav/manhour}{/block}
 {block pagestyle}
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-editable/bootstrap-editable/css/bootstrap-editable.css"/>
-<link rel="stylesheet" type="text/css" href="assets/css/pages/profile.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-editable/bootstrap-editable/css/bootstrap-editable.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="assets/admin/pages/css/profile.css" />
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.min.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/selfprofile.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.js"></script>
+	<script type="text/javascript" src="{static 'assets/global/scripts/seccode.js'}"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/selfprofile.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			//IdleTimeout.init();
 			SelfProfile.init();
 		});

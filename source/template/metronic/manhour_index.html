@@ -1,42 +1,32 @@
 {extends 'common_main.html'}
 {block subtitle}{lang nav/manhour}{/block}
 {block pagestyle}
-<link rel="stylesheet" type="text/css" href="assets/plugins/data-tables/DT_bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datepicker/css/datepicker.css" />
-<link rel="stylesheet" type="text/css" href="assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datepicker/css/datepicker3.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" />
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/data-tables/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/data-tables/DT_bootstrap.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/manhour.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/manhour.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			//IdleTimeout.init();
 			Manhour.init();
 		});
 	</script>
 {/block}
 {block pgcontent}
-			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">提示信息</h4>
-				</div>
-				<div class="modal-body">
-					<div class="row"><div class="col-md-12"></div></div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
-				</div>
-			</div>
 			<div id="act-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
@@ -186,7 +176,7 @@
 					<button type="button" class="btn blue">申请复查</button>
 				</div>
 			</div>
-			<div class="portlet box grey">
+			<div class="portlet box blue-hoki">
 				<div class="portlet-title">
 					<div class="caption"><i class="fa fa-leaf"></i> 工时查询</div>
 					<div class="actions">

@@ -1,0 +1,12 @@
+@media (min-width: 768px) {
+	.clearfix { height:0px; }
+}
+
+.note-danger p { text-indent:-5em;margin-left:5em;white-space: pre-line; }
+.hideFrsight {
+	display: none;
+}
+
+.page-content {
+	padding: 20px;
+}

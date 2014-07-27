@@ -1,29 +1,31 @@
 {extends 'common.html'}
 {block subtitle}{lang logging/activate}{/block}
 {block pagestyle}
-<link href="assets/plugins/select2/select2_metro.css" rel="stylesheet" type="text/css" />
-<link href="assets/css/pages/activate.css" rel="stylesheet" type="text/css" />
-<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
-<link href="assets/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
+<link href="assets/admin/pages/css/activate.css" rel="stylesheet" type="text/css" />
+<link href="assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css"/>
+<link href="assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css"/>
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/jquery-validation/dist/additional-methods.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/seccode.js'}"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/select2/select2_locale_zh-CN.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-markdown/lib/markdown.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootbox/bootbox.min.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
-	<script type="text/javascript" src="assets/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
-	<script type="text/javascript" src="assets/scripts/app.js"></script>
-	<script type="text/javascript" src="{static 'assets/scripts/activate.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/global/scripts/seccode.js'}"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-markdown/lib/markdown.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootbox/bootbox.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+	<script type="text/javascript" src="assets/global/scripts/metronic.js"></script>
+	<script type="text/javascript" src="assets/admin/layout/scripts/layout.js"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/activate.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			App.init();
+			Metronic.init();
+			Layout.init();
 			Activate.init();
 		});
 	</script>
@@ -31,25 +33,31 @@
 {block bodyclass}page-full-width page-header-fixed{/block}
 {block body}
 	<!-- BEGIN HEADER -->
-	<div class="header navbar navbar-inverse navbar-fixed-top">
+	<div class="page-header navbar navbar-fixed-top">
 		<!-- BEGIN TOP NAVIGATION BAR -->
-		<div class="header-inner">
-			<!-- BEGIN LOGO -->  
-			<a class="navbar-brand" href="{U main/index}"><img src="{$_G.setting.logopath}" alt="{$_G.setting.sitename}" class="img-responsive" /></a>
+		<div class="page-header-inner">
+			<!-- BEGIN LOGO -->
+			<div class="page-logo">
+				<a href="{U main/index}"><img src="{$_G.setting.logopath}" alt="{$_G.setting.sitename}" class="img-responsive" /></a>
+				<div class="menu-toggler sidebar-toggler hide">
+					<!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
+				</div>
+			</div>
 			<!-- END LOGO -->
 			<!-- BEGIN TOP NAVIGATION MENU -->
-			<ul class="nav navbar-nav pull-right">
-				<!-- BEGIN USER LOGIN DROPDOWN -->
-				<li class="dropdown user">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" width="29" height="29" /> <span class="username">{nocache}{$_G.username}{/nocache}</span><i class="fa fa-angle-down"></i></a>
-					<ul class="dropdown-menu">
-						<li><a href="javascript:;" id="trigger_fullscreen"><i class="fa fa-move"></i> {lang fullscr}</a></li>
-						<li><a href="{U logging/locked}"><i class="fa fa-lock"></i> {lang lockscr}</a></li>
-						<li><a href="{U logging/logout}"><i class="fa fa-key"></i> {lang logout}</a></li>
-					</ul>
-				</li>
-				<!-- END USER LOGIN DROPDOWN -->
-			</ul>
+			<div class="top-menu">
+				<ul class="nav navbar-nav pull-right">
+					<!-- BEGIN USER LOGIN DROPDOWN -->
+					<li class="dropdown dropdown-user">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><img alt="" class="img-circle" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={nocache}{$_G.uid}{/nocache}&size=small" /> <span class="username">{nocache}{$_G.username}{/nocache}</span><i class="fa fa-angle-down"></i></a>
+						<ul class="dropdown-menu">
+							<li><a href="{U logging/locked}"><i class="icon-lock"></i> {lang lockscr}</a></li>
+							<li><a href="{U logging/logout}"><i class="icon-key"></i> {lang logout}</a></li>
+						</ul>
+					</li>
+					<!-- END USER LOGIN DROPDOWN -->
+				</ul>
+			</div>
 			<!-- END TOP NAVIGATION MENU -->
 		</div>
 		<!-- END TOP NAVIGATION BAR -->
@@ -58,9 +66,10 @@
 	<div class="clearfix"></div>
 	<!-- BEGIN CONTAINER -->
 	<div class="page-container">
-		<!-- BEGIN PAGE -->  
-		<div class="page-content">         
-			<!-- BEGIN PAGE HEADER-->   
+		<!-- BEGIN PAGE -->
+		<div class="page-content-wrapper">
+		<div class="page-content">
+			<!-- BEGIN PAGE HEADER-->
 			<h3 class="page-title">{lang logging/activate} <small>您需要补全以下信息才能使用本系统</small></h3>
 			<!-- END PAGE HEADER-->
 			<!-- BEGIN PAGE CONTENT-->
@@ -76,7 +85,7 @@
 				<p>审核结果出来时我们会主动通过邮件通知您审核状态</p>
 				<p><a href="javascript:;">若您想更改申请资料请单击这里重新申请激活</a></p>
 			</div>
-			<div class="portlet box blue{nocache}{if $status==0 || $status==1} hideFrsight{/if}{/nocache}" id="activate">
+			<div class="portlet box blue-hoki{nocache}{if $status==0 || $status==1} hideFrsight{/if}{/nocache}" id="activate">
 				<div class="portlet-title"><div class="caption"><i class="fa fa-reorder"></i> {lang logging/activate} - <span class="step-title">第1步(共5步)</span></div></div>
 				<div class="portlet-body form">
 					<form action="{U logging/activate}" method="post" class="form-horizontal" id="submit_form">
@@ -300,10 +309,17 @@
 						<button type="button" class="btn blue">提交</button>
 					</div>
 				</div>
-					</div>
+			</div>
 			<!-- END PAGE CONTENT-->    
 		</div>
-		<!-- END PAGE -->  
+		</div>
+		<!-- END PAGE -->
 	</div>
 	<!-- END CONTAINER -->
+	<!-- BEGIN FOOTER -->
+	<div class="page-footer">
+		<div class="page-footer-inner">{$_G.setting.copyright}<span class="hitokoto"></span><br />{template debuginfo}</div>
+		<div class="page-footer-tools"><span class="go-top"><i class="fa fa-angle-up"></i></span></div>
+	</div>
+	<!-- END FOOTER -->
 {/block}

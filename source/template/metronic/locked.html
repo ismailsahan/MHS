@@ -1,15 +1,17 @@
 {extends 'common.html'}
 {block subtitle}锁定{/block}
-{block pagestyle}<link href="assets/css/pages/lock.css" rel="stylesheet" type="text/css" />{/block}
+{block pagestyle}<link href="assets/admin/pages/css/lock.css" rel="stylesheet" type="text/css" />{/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/plugins/backstretch/jquery.backstretch.min.js"></script>
-	<script type="text/javascript" src="assets/scripts/app.js"></script>
-	<script type="text/javascript" src="assets/scripts/lock.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/backstretch/jquery.backstretch.min.js"></script>
+	<script type="text/javascript" src="assets/global/scripts/metronic.js"></script>
+	<script type="text/javascript" src="assets/admin/layout/scripts/layout.js"></script>
+	<script type="text/javascript" src="assets/admin/pages/scripts/lock.js"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
 		$(document).ready(function() {    
-			App.init();
+			Metronic.init();
+			Layout.init();
 			Lock.init();
 		});
 	</script>
