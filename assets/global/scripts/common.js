@@ -36,11 +36,17 @@ $(document).ready(function() {
 			for (var badge in badges_detail) {
 				if (data[badge] && data[badge] != "0") $("#header_notification_bar .dropdown-menu-list").append('<li><a href="#"><span class="label label-icon label-' + badges_detail[badge].type + '"><i class="fa fa-' + badges_detail[badge].icon + '"></i></span>' + badges_tips[badge].replace("%d", data[badge]) + '</a></li>');
 			}
-			$("#header_notification_bar span:lt(2)").html($("#header_notification_bar .dropdown-menu-list li").size());
+			var notinum = $("#header_notification_bar .dropdown-menu-list li").size();
+			$("#header_notification_bar span:lt(2)").html(notinum);
+			if(!notinum) {
+				$("#header_notification_bar span:lt(2)").removeClass("badge-default");
+				$("#header_notification_bar").hide();
+			}
 			$('.page-sidebar li:has(span.arrow)').each(function() {
 				var num = 0;
 				$(this).find("span.badge").each(function() {
-					num += parseInt($(this).html());
+					//num += parseInt($(this).html());
+					num++;
 				});
 				if (num) $(this).find("a:has(span.arrow)").append('<span class="badge badge-warning">' + num + '</span>');
 			});
