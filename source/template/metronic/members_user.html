@@ -214,18 +214,18 @@
 								<td>{$user.uid}</td>
 								<td>{$user.username}</td>
 								<td>{$user.realname}</td>
-								<td data-gender="{$user.gender}">-</td>
+								<td>{if $user.gender==1}男{elseif $user.gender==2}女{else}未知{/if}</td>
 								<td>{$user.qq}</td>
 								<td>{$user.email}</td>
 								<td>{$user.manhour}</td>
 								<td>{$user.studentid}</td>
-								<td data-grade="{$user.grade}">-</td>
+								<td>{$user.grade}</td>
 								<td data-academy="{$user.academy}">-</td>
-								<td data-specialty="{$user.specialty}">-</td>
-								<td data-class="{$user.class}">-</td>
-								<td data-league="{$user.league}">-</td>
-								<td data-department="{$user.department}">-</td>
-								<td>{$user.mobile}</td>
+								<td>{$user.specialty|default:'-'}</td>
+								<td>{$user.class|default:'-'}</td>
+								<td>{$user.league|default:'-'}</td>
+								<td>{$user.department|default:'-'}</td>
+								<td>{$user.mobile|default:'-'}</td>
 								<td data-time="{$user.lastlogin}">-</td>
 								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">编辑</a> <a href="javascript:;" class="btn btn-xs default red-stripe">删除</a></td>
 							</tr>

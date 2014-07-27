@@ -1781,6 +1781,9 @@ function show_error($message, $status_code = 500, $heading = 'An Error Was Encou
 function show_404($page = '', $log_error = TRUE) {
 	global $template;
 
+	ob_end_clean();
+	ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
+
 	if(IS_AJAX) {
 		ajaxReturn(array(
 			'errno' => 404,

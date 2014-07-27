@@ -112,12 +112,12 @@ class SelfAction extends Action {
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
 						$this->_ajaxError('年级不能为空');
-					}elseif(!count(DB::fetch_first('SELECT * FROM %t WHERE `id`=%d', array('profile_grades', intval($value))))){
+					}elseif(!in_array($value, explode(',', $_G['setting']['grades']))){
 						$this->_ajaxError('年级有误');
 					}
 					$this->_update('grade', $value, 'i');
-					$this->_update('specialty', 0, 'i');
-					$this->_update('class', 0, 'i');
+					//$this->_update('specialty', '', 's');
+					//$this->_update('class', '', 's');
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'academy':
@@ -129,25 +129,25 @@ class SelfAction extends Action {
 						$this->_ajaxError('学院有误');
 					}
 					$this->_update('academy', $value, 'i');
-					$this->_update('specialty', 0, 'i');
-					$this->_update('class', 0, 'i');
-					$this->_update('league', '', 's');
-					$this->_update('department', '', 's');
+					//$this->_update('specialty', '', 's');
+					//$this->_update('class', '', 's');
+					//$this->_update('league', '', 's');
+					//$this->_update('department', '', 's');
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'specialty':
 					if(!empty($value) && !is_string($value)){
 						$this->_ajaxError('参数错误');
 					}
-					$this->_update('specialty', $value, 'i');
-					$this->_update('class', 0, 'i');
+					$this->_update('specialty', $value, 's');
+					//$this->_update('class', '', 's');
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'class':
 					if(!empty($value) && !is_string($value)){
 						$this->_ajaxError('参数错误');
 					}
-					$this->_update('class', $value, 'i');
+					$this->_update('class', $value, 's');
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'league':

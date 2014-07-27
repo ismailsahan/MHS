@@ -12,12 +12,12 @@ class Profile {
 	 * 导出年级（入学年份）信息
 	 */
 	public static function exportGrades(){
+		global $_G;
 		$result = array();
-		$query = DB::query('SELECT * FROM %t', array('profile_grades'));
-		while($row = DB::fetch($query)) {
-			$result[$row['id']] = $row['grade'];
+		$grades = explode(',', $_G['setting']['grades']);
+		foreach($grades as $g) {
+			$result[$g] = $g;
 		}
-		DB::free_result($query);
 		return $result;
 	}
 

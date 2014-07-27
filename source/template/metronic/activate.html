@@ -156,22 +156,22 @@
 										</div>
 										<div class="form-group">
 											<label class="control-label col-md-3">{lang specialty}</label>
-											<div class="col-md-4"><select name="specialty" value="{$auditInfo.specialty}" id="specialty" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的专业，若你确实没有专业，留空即可<br />若列表中无您的专业或存在错误，也请留空，并在第四步的留言一栏描述详细情况，我们审核时会酌情处理<!--若列表中没有你的专业或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈--></span></div>
+											<div class="col-md-4"><input type="text" class="form-control" name="specialty" value="{$auditInfo.specialty}" autocomplete="off" placeholder="{lang specialty}" required /><span class="help-block"></span></div>
 										</div>
 										<div class="form-group">
 											<label class="control-label col-md-3">{lang class}</label>
-											<div class="col-md-4"><select name="class" value="{$auditInfo.class}" id="class" class="select2 form-control"><option value=""></option></select><span class="help-block">请选择你的班级，若你确实没有班级，留空即可<br />若列表中无您的班级或存在错误，也请留空，并在第四步的留言一栏描述详细情况，我们审核时会酌情处理<!--若列表中没有你的班级或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈--></span></div>
+											<div class="col-md-4"><input type="text" class="form-control" name="class" value="{$auditInfo.class}" autocomplete="off" placeholder="{lang class}" required /><span class="help-block"></span></div>
 										</div>
 									</div>
 									<div class="tab-pane" id="tab3">
 										<h3 class="block">请填写你所加入的社团资料</h3>
 										<div class="form-group">
 											<label class="control-label col-md-3">{lang league}</label>
-											<div class="col-md-4"><select name="league[]" value="{$auditInfo.league}" id="league" class="select2 form-control" multiple><option value=""></option></select><span class="help-block">请选择你所有加入的社团或组织，若未加入任何社团或组织则请留空<br />若列表中无您所加的社团或组织，或者是存在错误，也请留空，并在第四步的留言一栏描述详细情况，我们审核时会酌情处理<!--若列表中没有你所加入的社团或组织或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈问题--></span></div>
+											<div class="col-md-4"><input type="hidden" name="league[]" value="{$auditInfo.league}" id="league" class="select2 form-control" /><span class="help-block"></span></div>
 										</div>
 										<div class="form-group">
 											<label class="control-label col-md-3">{lang department}</label>
-											<div class="col-md-4"><select name="department[]" value="{$auditInfo.department}" id="department" class="select2 form-control" multiple><option value=""></option></select><span class="help-block">请选择你所加入社团或组织的所有下属部门，若无则请留空<br />若列表中无您所加的部门或存在错误，也请留空，并在第四步的留言一栏描述详细情况，我们审核时会酌情处理<!--若列表中没有你所加入的下属部门或存在错误，请<a href="javascript:;" class="report-link">单击这里</a>反馈问题--></span></div>
+											<div class="col-md-4"><input type="hidden" name="department[]" value="{$auditInfo.department}" id="department" class="select2 form-control" /></span></div>
 										</div>
 									</div>
 									<div class="tab-pane" id="tab4">

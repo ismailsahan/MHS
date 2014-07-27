@@ -27,17 +27,19 @@ class MainAction extends Action {
 		}
 
 		//$total_manhour = DB::result_first('SELECT sum(`manhour`) FROM %t WHERE `uid`=%d AND `status`=1', array('manhours', $_G['uid']));
-		database_safecheck::setconfigstatus(false);
-		DB::query('SET @rank=0');
-		$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']));
-		$topmh = DB::fetch_all('SELECT `username`, `manhour` FROM %t ORDER BY `manhour` DESC LIMIT 10', array('users'));
-		database_safecheck::restoreconfigstatus();
+		//database_safecheck::setconfigstatus(false);
+		//DB::query('SET @rank=0');
+		//$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']));
+		$topmh = DB::fetch_all('SELECT `username`, `manhour`, `rank` FROM %t ORDER BY `manhour` DESC LIMIT 10', array('users'));
+		//database_safecheck::restoreconfigstatus();
 		//trace($manhour);
 
 		//$onlinenum = DB::result_first('SELECT count(*) FROM %t WHERE `lastactivity`>=%d AND `uid`>0', array('session', TIMESTAMP-1440));
 		//$template->assign('total_manhour', $total_manhour, true);
-		$template->assign('manhour', $manhour['manhour'], true);
-		$template->assign('rank', $manhour['rank'], true);
+		//$template->assign('manhour', $manhour['manhour'], true);
+		//$template->assign('rank', $manhour['rank'], true);
+		$template->assign('manhour', $_G['member']['manhour'], true);
+		$template->assign('rank', $_G['member']['rank'], true);
 		//$template->assign('onlinenum', $onlinenum, true);
 		$template->assign('topmh', $topmh, true);
 		

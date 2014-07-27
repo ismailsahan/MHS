@@ -9,7 +9,6 @@
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 class LoggingAction extends Action {
-	public $default_method = 'login';
 	public $allowed_method = array('login', 'register', 'forgotpwd', 'resetpwd', 'activate', 'expired', 'locked');
 
 	const USER_UNACTIVATED = 0;
@@ -260,15 +259,19 @@ class LoggingAction extends Action {
 					$errmsg = 'studentid_illeagal';
 				}elseif(empty($_POST['grade'])){																							// 空年级
 					$errmsg = 'grade_required';
-				}elseif(!DB::result_first('SELECT count(*) FROM %t WHERE `id`=%d', array('profile_grades', intval($_POST['grade'])))){		// 年级不合法
+				}elseif(!in_array($_POST['grade'], explode(',', $_G['setting']['grades']))){		// 年级不合法
 					$errmsg = 'grade_illeagal';
 				}elseif(empty($_POST['academy'])){																							// 空学院
 					$errmsg = 'academy_required';
-				}elseif(!DB::result_first('SELECT count(*) FROM %t WHERE `id`=%d', array('profile_academies', intval($_POST['academy'])))){	// 学院不合法
+				}elseif(!DB::result_first('SELECT count(*) FROM %t WHERE `id`=%d', array('profile_academies', $_POST['academy']))){	// 学院不合法
 					$errmsg = 'academy_illeagal';
 				}else{
 					$_POST['remarks'] = htmlspecialchars($_POST['remarks']);
-					DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `status`, `submittime`, `verifytime`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`, `remark`, `operator`,`operatorname`, `verifytext`) VALUES (%d, %s, %s, %d, %d, %d, %s, %d, %s, %s, %d, %d, %d, %d, %s, %s, %s, %s, %d, %s, %s)', array(
+					$_POST['specialty'] = htmlspecialchars($_POST['specialty']);
+					$_POST['class'] = htmlspecialchars($_POST['class']);
+					$_POST['league'] = dhtmlspecialchars($_POST['league']);
+					$_POST['department'] = dhtmlspecialchars($_POST['department']);
+					DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `status`, `submittime`, `verifytime`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`, `remark`, `operator`,`operatorname`, `verifytext`) VALUES (%d, %s, %s, %d, %d, %d, %s, %d, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s)', array(
 						'activation',						// 表名
 						$_G['uid'],							// 用户ID
 						$_G['member']['email'],				// 邮箱
@@ -317,47 +320,16 @@ class LoggingAction extends Action {
 						$data['msg'] = '已通过审核';
 					}
 
-					$time = dgmdate(TIMESTAMP);
+					$_POST['time'] = dgmdate(TIMESTAMP);
 					$_POST['gender'] = $_POST['gender']=='1' ? '男' : '女';
-					$_POST['grade'] = DB::result_first('SELECT `grade` FROM %t WHERE `id`=%d', array('profile_grades', intval($_POST['grade'])));
-					$_POST['academy'] = DB::result_first('SELECT `name` FROM %t WHERE `id`=%d', array('profile_academies', intval($_POST['academy'])));
-					$_POST['specialty'] = $_POST['specialty'] ? DB::result_first('SELECT `name` FROM %t WHERE `id`=%d', array('profile_specialties', intval($_POST['specialty']))) : '-';
-					$_POST['class'] = $_POST['class'] ? DB::result_first('SELECT `name` FROM %t WHERE `id`=%d', array('profile_classes', intval($_POST['class']))) : '-';
-					$_POST['league'] = $this->_getlist('profile_leagues', $_POST['league']);
-					$_POST['department'] = $this->_getlist('profile_departments', $_POST['department']);
+					$_POST['academy'] = DB::result_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('profile_academies', intval($_POST['academy'])));
+					$_POST['specialty'] = $_POST['specialty'] ? $_POST['specialty'] : '-';
+					$_POST['class'] = $_POST['class'] ? $_POST['class'] : '-';
+					$_POST['league'] = empty($_POST['league']) ? '-' : implode(', ', $_POST['league']);
+					$_POST['department'] = empty($_POST['department']) ? '-' : implode(', ', $_POST['department']);
 					$_POST['remarks'] = $_POST['remarks'] ? nl2br($_POST['remarks']) : '-';
 
-					$title = '激活申请';
-					$text = '我们已经收到您提交的申请，请耐心等候审核结果，多谢合作！以下是您申请的信息：<br/>';
-					$text .= '<table border="1" style="width:100%;text-align:left">';
-					$text .=	'<tr><th style="width:5em">项</th><th>申请信息</th></tr>';
-					$text .=	"<tr><td>用户ID</td><td>{$_G['uid']}</td></tr>";
-					$text .=	"<tr><td>用户名</td><td>{$_G['username']}</td></tr>";
-					$text .=	"<tr><td>申请时间</td><td>{$time}</td></tr>";
-					$text .=	"<tr><td>真实名字</td><td>{$_POST['realname']}</td></tr>";
-					$text .=	"<tr><td>性别</td><td>{$_POST['gender']}</td></tr>";
-					$text .=	"<tr><td>QQ号码</td><td>{$_POST['qq']}</td></tr>";
-					$text .=	"<tr><td>学号</td><td>{$_POST['studentid']}</td></tr>";
-					$text .=	"<tr><td>年级</td><td>{$_POST['grade']}</td></tr>";
-					$text .=	"<tr><td>学院</td><td>{$_POST['academy']}</td></tr>";
-					$text .=	"<tr><td>专业</td><td>{$_POST['specialty']}</td></tr>";
-					$text .=	"<tr><td>班级</td><td>{$_POST['class']}</td></tr>";
-					$text .=	"<tr><td>社团</td><td>{$_POST['league']}</td></tr>";
-					$text .=	"<tr><td>部门</td><td>{$_POST['department']}</td></tr>";
-					$text .=	"<tr><td>留言</td><td>{$_POST['remarks']}</td></tr>";
-					$text .= '</table>';
-					//$data['msg'] .= '<br/>'.$text;$data['errno']=1;ajaxReturn($data, 'JSON');exit;
-
-					require_once libfile('class/Mail');
-					Mail::init();
-					Mail::addAddress($_G['member']['email']);
-					Mail::setMsg($text, $title);
-					$errno = Mail::send();
-
-					if($errno) {
-						$data['msg'] .= '<br/>但'.$errno;
-						//$data['errno']=5;
-					}
+					$_SESSION['acteml'] = $_POST;
 				}
 			}else{
 				switch($errmsg){
@@ -420,15 +392,46 @@ class LoggingAction extends Action {
 		$template->display('locked');
 	}
 
-	private function _getlist($tbl, $ls){
-		if(empty($ls)) return '-';
-		$query = DB::query('SELECT `name` FROM %t WHERE `id` IN (%n)', array($tbl, $ls));
-		$total = DB::num_rows($query);
-		$list = array();
-		for($row=0; $row<$total; $row++) $list[] = DB::result($query, $row);
-		DB::free_result($query);
-		$result = implode('，', $list);
-		return $result ? $result : '-';
+	/**
+	 * 发送激活邮件
+	 */
+	public function sendeml() {
+		global $_G;
+		define('DISABLE_TRACE', true);
+		if(empty($_SESSION['acteml'])) exit;
+
+		$title = '激活申请';
+		$text = '我们已经收到您提交的申请，请耐心等候审核结果，多谢合作！以下是您申请的信息：<br/>';
+		$text .= '<table border="1" style="width:100%;text-align:left">';
+		$text .=	'<tr><th style="width:5em">项</th><th>申请信息</th></tr>';
+		$text .=	"<tr><td>用户ID</td><td>{$_G['uid']}</td></tr>";
+		$text .=	"<tr><td>用户名</td><td>{$_G['username']}</td></tr>";
+		$text .=	"<tr><td>申请时间</td><td>{$_SESSION['acteml']['time']}</td></tr>";
+		$text .=	"<tr><td>真实名字</td><td>{$_SESSION['acteml']['realname']}</td></tr>";
+		$text .=	"<tr><td>性别</td><td>{$_SESSION['acteml']['gender']}</td></tr>";
+		$text .=	"<tr><td>QQ号码</td><td>{$_SESSION['acteml']['qq']}</td></tr>";
+		$text .=	"<tr><td>学号</td><td>{$_SESSION['acteml']['studentid']}</td></tr>";
+		$text .=	"<tr><td>年级</td><td>{$_SESSION['acteml']['grade']}</td></tr>";
+		$text .=	"<tr><td>学院</td><td>{$_SESSION['acteml']['academy']}</td></tr>";
+		$text .=	"<tr><td>专业</td><td>{$_SESSION['acteml']['specialty']}</td></tr>";
+		$text .=	"<tr><td>班级</td><td>{$_SESSION['acteml']['class']}</td></tr>";
+		$text .=	"<tr><td>社团</td><td>{$_SESSION['acteml']['league']}</td></tr>";
+		$text .=	"<tr><td>部门</td><td>{$_SESSION['acteml']['department']}</td></tr>";
+		$text .=	"<tr><td>留言</td><td>{$_SESSION['acteml']['remarks']}</td></tr>";
+		$text .= '</table>';
+		//$data['msg'] .= '<br/>'.$text;$data['errno']=1;ajaxReturn($data, 'JSON');exit;
+
+		require_once libfile('class/Mail');
+		Mail::init();
+		Mail::addAddress($_G['member']['email']);
+		Mail::setMsg($text, $title);
+		$errno = Mail::send();
+
+		if($errno) {
+			;
+		}else{
+			unset($_SESSION['acteml']);
+		}
 	}
 
 }

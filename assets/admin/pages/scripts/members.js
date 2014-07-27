@@ -83,58 +83,9 @@ var Members = function () {
 
 	function initData(columns) {
 
-		$("#users tr:gt(0)" + nthchild("gender", columns)).each(function() {
-			var gender="未知";
-			switch($(this).data("gender")){
-				case 1: gender="男";break;
-				case 2: gender="女";break;
-			}
-			$(this).text(gender);
-		});
-
-		$("#users tr:gt(0)" + nthchild("grade", columns)).each(function() {
-			$.ajax({url:"{U api/getnamebyid?type=grade}",data:{id:$(this).data("grade")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
-				$(this).text(data.name ? data.name : "-");
-			}});
-		});
-
 		$("#users tr:gt(0)" + nthchild("academy", columns)).each(function() {
 			$.ajax({url:"{U api/getnamebyid?type=academy}",data:{id:$(this).data("academy")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
 				$(this).text(data.name ? data.name : "-");
-			}});
-		});
-
-		$("#users tr:gt(0)" + nthchild("specialty", columns)).each(function() {
-			$.ajax({url:"{U api/getnamebyid?type=specialty}",data:{id:$(this).data("specialty")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
-				$(this).text(data.name ? data.name : "-");
-			}});
-		});
-
-		$("#users tr:gt(0)" + nthchild("class", columns)).each(function() {
-			$.ajax({url:"{U api/getnamebyid?type=class}",data:{id:$(this).data("class")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
-				$(this).text(data.name ? data.name : "-");
-			}});
-		});
-
-		$("#users tr:gt(0)" + nthchild("league", columns)).each(function() {
-			$.ajax({url:"{U api/getnamebyid?type=league}",data:{id:$(this).data("league")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
-				var arr = [];
-				$.each(data.name, function(k, v) {
-					arr.push(v.name);
-				});
-				arr = arr.join(", ");
-				$(this).text(arr ? arr : "-");
-			}});
-		});
-
-		$("#users tr:gt(0)" + nthchild("department", columns)).each(function() {
-			$.ajax({url:"{U api/getnamebyid?type=department}",data:{id:$(this).data("department")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
-				var arr = [];
-				$.each(data.name, function(k, v) {
-					arr.push(v.name);
-				});
-				arr = arr.join(", ");
-				$(this).text(arr ? arr : "-");
 			}});
 		});
 

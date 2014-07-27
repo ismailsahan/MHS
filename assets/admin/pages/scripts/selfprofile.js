@@ -2,7 +2,7 @@ var SelfProfile = function () {
 
 	var showloading = function () {
 		$.blockUI({
-			message: '<img src="assets/img/ajax-loading.gif" />',
+			message: '<img src="assets/global/img/ajax-loading.gif" />',
 			css: {
 				border: 'none',
 				backgroundColor: 'none'
@@ -23,54 +23,6 @@ var SelfProfile = function () {
 
 	var initProfiles = function () {
 
-		function updateSpecialty(initial){
-			$('#specialty').editable('disable');
-			$.get("{U api/profile}", {type:"specialty",grade:$('#grade').data("value"),academy:$('#academy').data("value")}, function(data){
-				$('#specialty').editable('option', 'source', data);
-				$('#specialty').editable('setValue', initial ? $('#specialty').data("value") : null);
-				$('#specialty').editable('enable');
-			}, 'json');
-		}
-
-		function updateClass(initial){
-			$('#class').editable('disable');
-			$.get("{U api/profile}", {type:"class",grade:$('#grade').data("value"),specialty:$('#specialty').data("value")}, function(data){
-				$('#class').editable('option', 'source', data);
-				$('#class').editable('setValue', initial ? $('#class').data("value") : null);
-				$('#class').editable('enable');
-			}, 'json');
-		}
-
-		function initLeague(element, callback){
-			var ls = callback ? element.val().split(",") : $('#league').data("value").toString().split(",");
-			$.get("{U api/profile}", {type:"league",academy:$('#academy').data("value")}, function(data){
-				var res = [];
-				$.each(data, function (_k, _v) {
-					if(!_k) return;
-					$.each(_v, function (k, v) {
-						if($.inArray(k, ls) > -1) res.push(callback ? {id: k, text: v} : v);
-					});
-				});
-				if(!callback) res = res.join(", ");
-				return callback ? callback(res) : (res ? $('#league').removeClass("editable-empty").text(res) : $('#league').addClass("editable-empty").text($.fn.editable.defaults.emptytext));
-			}, 'json');
-		}
-
-		function initDepartment(element, callback){
-			var ls = callback ? element.val().split(",") : $('#department').data("value").toString().split(",");
-			$.get("{U api/profile}", {type:"department",league:$('#league').data("value")}, function(data){
-				var res = [];
-				$.each(data, function (_k, _v) {
-					if(!_k) return;
-					$.each(_v, function (k, v) {
-						if($.inArray(k, ls) > -1) res.push(callback ? {id: k, text: v} : v);
-					});
-				});
-				if(!callback) res = res.join(", ");
-				return callback ? callback(res) : (res ? $('#department').removeClass("editable-empty").text(res) : $('#department').addClass("editable-empty").text($.fn.editable.defaults.emptytext));
-			}, 'json');
-		}
-
 		$.fn.editable.defaults.mode = 'inline';
 		$.fn.editable.defaults.inputclass = 'form-control';
 		$.fn.editable.defaults.url = '{U self/profile?inajax=1}';
@@ -86,15 +38,15 @@ var SelfProfile = function () {
 				case "select":
 					editable.input.$input.select2({
 						minimumResultsForSearch:-1,
-						allowClear: $.inArray(editable.$element.prop("id"), ["specialty", "class"])>-1 ? true : false
+						allowClear: false
 					});
 					break;
 				case "checklist":
-					App.initUniform();
+					Metronic.initUniform();
 			}
 		});
 
-		$('#email,#realname,#mobile,#qq,#studentid').editable();
+		$('#email,#realname,#mobile,#qq,#studentid,#grade,#academy,#specialty,#class').editable();
 
 		$('#gender').editable({
 			inputclass: 'form-control',
@@ -112,135 +64,23 @@ var SelfProfile = function () {
 			}
 		});
 
-		$('#grade').editable({
-			success: function(response, newValue) {
-				$(this).data("value", newValue);
-				updateSpecialty();
-			}
-		});
-		$('#academy').editable({
-			success: function(response, newValue) {
-				$(this).data("value", newValue);
-				updateSpecialty();
-				$('#league').editable('setValue', null);
-			}
-		});
-		$('#specialty').on('init', function(e, editable) {
-			updateSpecialty(1);
-		});
-		$('#specialty').editable({
-			success: function(response, newValue) {
-				$(this).data("value", newValue);
-				updateClass();
-			}
-		});
-		$('#class').on('init', function(e, editable) {
-			updateClass(1);
-		});
-		$('#class').editable({
-			success: function(response, newValue) {
-				$(this).data("value", newValue);
-				//updateClass();
+		$('#league,#department').editable({
+			inputclass: 'form-control input-medium',
+			source: [{
+					value: 1,
+					text: '{lang male}'
+				}, {
+					value: 2,
+					text: '{lang female}'
+				}
+			],
+			select2: {
+				minimumResultsForSearch:-1,
+				tags: [],
+				tokenSeparators: [",", " "]
 			}
 		});
 
-		/*$('#league').on('shown', function(e, editable) {
-			console.log(editable.input.$input.val());
-			//updateLeague(1);
-		});*/
-		$('#league').on('init', function(e, editable) {
-			initLeague();
-		});
-		$("#league").editable({
-			success: function(response, newValue) {
-				$(this).data("value", newValue.join(","));
-				$('#department').editable('setValue', null);
-			},
-			select2: {
-				allowClear: true,
-				multiple: true,
-				minimumResultsForSearch:-1,
-				id: function (item) {
-					//console.log(item);
-					return item.id;
-				},
-				ajax: {
-					url: "{U api/profile}",
-					dataType: 'json',
-					cache: true,
-					data: function (term, page) {
-						return {
-							type: "league",
-							academy: $('#academy').data("value")
-						};
-					},
-					results: function (data, page) {
-						var res = [];
-						$.each(data, function (k, v) {
-							if(!k || $.isEmptyObject(v)) return;
-							var tmp = [];
-							$.each(v, function (_k, _v) {
-								tmp.push({
-									id: _k,
-									text: _v
-								});
-							});
-							res.push({
-								text: k,
-								children: tmp
-							});
-						});
-						return {more:false, results: res};
-					}
-				},
-				initSelection : function (element, callback) {
-					return initLeague(element, callback);
-				}
-			}
-		});
-
-		$('#department').on('init', function(e, editable) {
-			initDepartment();
-		});
-		$("#department").editable({
-			select2: {
-				allowClear: true,
-				multiple: true,
-				minimumResultsForSearch:-1,
-				ajax: {
-					url: "{U api/profile}",
-					dataType: 'json',
-					cache: true,
-					data: function (term, page) {
-						return {
-							type: "department",
-							league: $('#league').data("value")
-						};
-					},
-					results: function (data, page) {
-						var res = [];
-						$.each(data, function (k, v) {
-							if(!k || $.isEmptyObject(v)) return;
-							var tmp = [];
-							$.each(v, function (_k, _v) {
-								tmp.push({
-									id: _k,
-									text: _v
-								});
-							});
-							res.push({
-								text: k,
-								children: tmp
-							});
-						});
-						return {more:false, results: res};
-					}
-				},
-				initSelection : function (element, callback) {
-					return initDepartment(element, callback);
-				}
-			}
-		});
 	};
 
 	var initpwd = function () {

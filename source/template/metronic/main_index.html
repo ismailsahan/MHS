@@ -52,7 +52,7 @@
 							<i class="fa fa-globe"></i>
 						</div>
 						<div class="details">
-							<div class="number">{$rank}</div>
+							<div class="number">{if $rank>0}{$rank}{else}无排名{/if}</div>
 							<div class="desc">工时排名</div>
 						</div>
 						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
@@ -103,9 +103,9 @@
 									</tr>
 								</thead>
 								<tbody>
-									{foreach $topmh as $rank=>$mh}
+									{foreach $topmh as $mh}
 									<tr>
-										<td>{$rank+1}</td>
+										<td>{$mh.rank}</td>
 										<td>{$mh.username}</td>
 										<td>{$mh.manhour}</td>
 									</tr>

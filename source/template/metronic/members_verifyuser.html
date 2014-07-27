@@ -192,14 +192,14 @@
 								<td data-gender="{$user.gender}">-</td>
 								<td>{$user.qq|default:'-'}</td>
 								<td>{$user.email}</td>
-								<td data-status="{$user.status}"></td>
+								<td data-status="{$user.status}">-</td>
 								<td>{$user.studentid}</td>
-								<td data-grade="{$user.grade}">-</td>
+								<td>{$user.grade}</td>
 								<td data-academy="{$user.academy}">-</td>
-								<td data-specialty="{$user.specialty}">-</td>
-								<td data-class="{$user.class}">-</td>
-								<td data-league="{$user.league}">-</td>
-								<td data-department="{$user.department}">-</td>
+								<td>{$user.specialty|default:'-'}</td>
+								<td>{$user.class|default:'-'}</td>
+								<td>{$user.league|default:'-'}</td>
+								<td>{$user.department|default:'-'}</td>
 								<td data-time="{$user.submittime}">-</td>
 								<td>{nl2br($user.remark)|default:'-'}</td>
 								<td data-operator="{$user.operator}">{$user.operatorname|default:'-'}</td>

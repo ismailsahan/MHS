@@ -47,7 +47,9 @@ abstract class Action {
             $_method = $this->default_method;
             return $this->$_method();
         }
-		throw new Exception('Class "'.get_class($this).'" does not have a method named "'.$name.'".');
+        framework_error::system_error('Class "'.get_class($this).'" does not have a method named "'.$name.'".', false, true, false);
+        show_404();
+		//throw new Exception('Class "'.get_class($this).'" does not have a method named "'.$name.'".');
 	}
 
 	public function canGetProperty($name) {

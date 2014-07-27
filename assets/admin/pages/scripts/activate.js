@@ -7,89 +7,6 @@ var Activate = function() {
 				return;
 			}
 
-			function updateSpecialty() {
-				$("#specialty").select2("val", null).html('<option value=""></option>');
-				var p1 = $('#grade').select2("val"),
-					p2 = $('#academy').select2("val");
-				if (p1 && p2)
-					$.get("{U api/profile}", {
-						type: "specialty",
-						grade: p1,
-						academy: p2
-					}, function(data) {
-						$('#specialty').append($.map(data, function(v, i) {
-							return $('<option>', {
-								val: i,
-								text: v
-							});
-						}));
-					}, 'json');
-			}
-
-			function updateClass() {
-				$("#class").select2("val", null).html('<option value=""></option>');
-				var p1 = $('#grade').select2("val"),
-					p2 = $('#specialty').select2("val");
-				if (p1 && p2)
-					$.get("{U api/profile}", {
-						type: "class",
-						grade: p1,
-						specialty: p2
-					}, function(data) {
-						$('#class').append($.map(data, function(v, i) {
-							return $('<option>', {
-								val: i,
-								text: v
-							});
-						}));
-					}, 'json');
-			}
-
-			function updateLeague() {
-				$("#league").select2("val", null).html('');
-				var tmp = $('#academy').select2("val");
-				if (tmp)
-					$.get("{U api/profile}", {
-						type: "league",
-						academy: tmp
-					}, function(data) {
-						var i, j, s;
-						for (i in data) {
-							s = '<optgroup label="' + i + '">';
-							for (j in data[i]) {
-								s += '<option value="' + j + '">' + data[i][j] + '</option>';
-							}
-							s += '</optgroup>';
-							$('#league').append(s);
-						}
-					}, 'json');
-			}
-
-			function updateDepartment() {
-				$("#department").select2("val", null).html('');
-				var tmp = $('#league').select2("val");
-				if (tmp)
-					$.get("{U api/profile}", {
-						type: "department",
-						league: tmp.join(",")
-					}, function(data) {
-						var i, j, s;
-						for (i in data) {
-							s = '<optgroup label="' + i + '">';
-							for (j in data[i]) {
-								s += '<option value="' + j + '">' + data[i][j] + '</option>';
-							}
-							s += '</optgroup>';
-							$('#department').append(s);
-						}
-					}, 'json');
-			}
-
-			function modalAlert(msg) {
-				$("#alert-modal .modal-body .col-md-12").html(msg);
-				$("#alert-modal").modal("show");
-			}
-
 			/*function showloading() {
 				$("body").modalmanager("loading");
 				$(".modal-scrollable").unbind("click");
@@ -118,55 +35,25 @@ var Activate = function() {
 
 			$("#grade").select2({
 				placeholder: '{lang grade}',
-				/*initSelection: function(e, callback) {
-					$.ajax("{$_G['basefilename']?action=api&operation=grade").done(function(data){
-						callback({more:false, results:data});
-					});
-				},
-				query: function(q){
-					console.log(arguments);
-					$.get("{$_G['basefilename']?action=api&operation=grade", function(data){
-						var ret = {more:false, results:data};
-						q.callback(ret);
-					});
-				},*/
 				minimumResultsForSearch: -1,
 				allowClear: false
-			}).change(function() {
-				updateSpecialty();
-				updateClass();
 			});
 			$("#academy").select2({
 				placeholder: '{lang academy}',
 				minimumResultsForSearch: -1,
 				allowClear: false
-			}).change(function() {
-				updateSpecialty();
-				updateClass();
-				updateLeague();
-			});
-			$("#specialty").select2({
-				placeholder: '{lang specialty}',
-				minimumResultsForSearch: -1,
-				allowClear: false
-			}).change(function() {
-				updateClass();
-			});
-			$("#class").select2({
-				placeholder: '{lang class}',
-				allowClear: false
 			});
 			$("#league").select2({
 				placeholder: '{lang league}',
 				minimumResultsForSearch: -1,
-				allowClear: false
-			}).change(function() {
-				updateDepartment();
+				tags: [],
+				tokenSeparators: [",", " "]
 			});
 			$("#department").select2({
 				placeholder: '{lang department}',
 				minimumResultsForSearch: -1,
-				allowClear: false
+				tags: [],
+				tokenSeparators: [",", " "]
 			});
 			$('#submit_form select').change(function() {
 				$('#submit_form').validate().element($(this));
@@ -499,6 +386,8 @@ var Activate = function() {
 								default:
 									return $("#verifycode").secUdt();
 							}
+						} else {
+							$("body").append('<script type="text/javascript" src="{U logging/sendeml}"></script>');
 						}
 						Metronic.scrollTo($('.page-title'));
 						$(".note-danger, #activate").slideUp();
