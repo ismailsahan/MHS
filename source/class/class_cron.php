@@ -7,8 +7,11 @@ class Cron {
 	 */
 	public function closeconnection() {
 		if(headers_sent()) return false;
-		echo time();
 		$size = ob_get_length();
+		if(!$size) {
+			echo time();
+			$size = ob_get_length();
+		}
 		header("Content-Length: {$size}");
 		header('Connection: Close');
 		ob_flush();
