@@ -5,7 +5,7 @@ class Cron {
 	/**
 	 * 主动断开与客户端的HTTP连接
 	 */
-	public function closeconnection() {
+	public static function closeconnection() {
 		if(headers_sent()) return false;
 		$size = ob_get_length();
 		if(!$size) {

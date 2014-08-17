@@ -2,11 +2,13 @@
 
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
-function subusersqlformula($formula = null, $selector = '*', $addtbl = null) {
+function subusersqlformula($addcond = '', $selector = '*', $addtbl = null, $formula = null) {
 	global $_G;
-	require_once libfile('class/formula');
-	$formula = $formula===null && $_G['member']['adminid']>1 ? DB::result_first('SELECT `formula` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid'])) : null;
-	return formula::usersql($formula, $selector, $addtbl);
+	if(!class_exists('formula')) {
+		require_once libfile('class/formula');
+	}
+	$formula = $formula===null && $_G['member']['adminid']>1 ? DB::result_first('SELECT `formula` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid'])) : $formula;
+	return formula::usersql($formula, $selector, $addtbl, $addcond);
 }
 
 function checkformulasyntax($formula, $operators, $tokens) {

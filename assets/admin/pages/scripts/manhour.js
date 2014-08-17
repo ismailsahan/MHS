@@ -101,6 +101,52 @@ var Manhour = function() {
 		}
 	}
 
+	function nthchild(id, columns) {
+		return " td:nth-child(" + (columns[id] + 1) + ")";
+	}
+
+	function initDT(columns) {
+		$('#manhours').dataTable({
+			"order": [[columns["applytime"], 'asc']],
+			"lengthMenu": [
+				[10, 25, 50],// 每页显示数目，-1表示显示全部
+				[10, 25, 50] // 对应的文字
+			],
+			"pageLength": 10,
+			"columnDefs": [{
+				'orderable': false,
+				'targets': [columns["checkbox"], columns["extra"], columns["avatar"]]
+			}, {
+				"searchable": false,
+				"targets": [columns["checkbox"], columns["extra"], columns["avatar"]]
+			}]
+		});
+
+		$('#column_toggler :checkbox').change(function(){
+			var oTable = $('#manhours').dataTable();
+			var iCol = columns[$(this).data("column")];
+			var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+			oTable.fnSetColumnVis(iCol, (bVis ? false : true));
+		});
+
+		$('#manhours .group-checkable').change(function () {
+			var set = $(this).attr("data-set");
+			var checked = $(this).is(":checked");
+			$(set).each(function () {
+				if (checked) {
+					$(this).attr("checked", true);
+				} else {
+					$(this).attr("checked", false);
+				}
+			});
+			$.uniform.update(set);
+		});
+
+		$('#manhours_wrapper .dataTables_filter input').addClass("form-control input-small");
+		$('#manhours_wrapper .dataTables_length select').addClass("form-control input-xsmall");
+		$('#manhours_wrapper .dataTables_length select').select2({minimumResultsForSearch:-1});
+	}
+
 	//$(document).ajaxStart($.blockUI);
 	$(document).ajaxStop($.unblockUI);
 
@@ -363,6 +409,33 @@ var Manhour = function() {
 				minimumResultsForSearch: -1
 			}); // initialize select2 dropdown
 
+		},
+
+		applylog: function() {
+			var columns = {
+				"checkbox"  : 0,
+				"avatar"    : 1,
+				"username"  : 2,
+				"realname"  : 3,
+				"gender"    : 4,
+				"actname"   : 5,
+				"time"      : 6,
+				"manhour"   : 7,
+				"applytime" : 8,
+				"status"    : 9,
+				"remark"    : 10
+			};
+
+			$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
+				$(this).text(getTime($(this).data("time")));
+			});
+
+			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
+				var t = $(this).data("status");
+				$(this).html(statusLabel(t));
+			});
+
+			initDT(columns);
 		}
 
 	};

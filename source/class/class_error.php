@@ -41,6 +41,10 @@ class framework_error {
 		$skipfunc[] = 'framework_error->db_error';
 		$skipfunc[] = 'framework_error->template_error';
 		$skipfunc[] = 'framework_error->system_error';
+		$skipfunc[] = 'framework_error::debug_backtrace';
+		$skipfunc[] = 'framework_error::db_error';
+		$skipfunc[] = 'framework_error::template_error';
+		$skipfunc[] = 'framework_error::system_error';
 		$skipfunc[] = 'db_mysql->halt';
 		$skipfunc[] = 'db_mysql->query';
 		$skipfunc[] = 'db_driver_mysql->halt';
