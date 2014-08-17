@@ -25,6 +25,13 @@ class Dispatcher {
 			unset($_GET[$config['var_pathinfo']]);
 		}
 
+		if(!empty($config['siteurl']) && !striexists($_G['siteurl'], $config['siteurl'])) {
+			$pos = stripos($_G['currenturl'], 'index.php');
+			$newurl = $config['siteurl'].($pos===false ? '' : substr($_G['currenturl'], $pos));
+			header("Location: {$newurl}");
+			exit;
+		}
+
 		if(isset($_SERVER['PATH_INFO']) && !strexists($_SERVER['PATH_INFO'], $config['url_html_suffix']) && strpos($_SERVER['PATH_INFO'], '.')) {
 			define('DISABLE_TRACE', true);
 			$pos = stripos($_SERVER['PATH_INFO'], '/assets/');

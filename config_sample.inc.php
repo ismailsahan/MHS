@@ -98,7 +98,7 @@ $_config['cookie']['cookiepath'] 				= '/MHS/'; 			// COOKIE作用路径
 
 
 // ----------------------------- 站点安全设置 ----------------------------- //
-$_config['security']['authkey']					= '968B6CDC1A';		// 站点加密密钥
+$_config['security']['authkey']					= '';				// 站点加密密钥
 $_config['security']['urlxssdefend']			= true;				// 自身 URL XSS 防御
 $_config['security']['attackevasive']			= 0;				// CC 攻击防御级别，可防止大量的正常和非正常请求造成的拒绝服务攻击
 																	// 0=关闭, 1=cookie 刷新限制, 2=限制代理访问, 4=二次请求, 8=回答问题（仅首次访问时需要回答问题）
@@ -143,6 +143,7 @@ $_config['router']['var_operation']			= 'operation';	// 默认操作获取变量
 $_config['router']['var_template']			= 't';			// 默认模板主题切换变量
 $_config['router']['var_pathinfo']			= 's';			// 兼容模式获取变量
 $_config['router']['var_url_params']		= '_URL_';		// PATHINFOURL参数变量
+$_config['router']['siteurl']				= '';			// 站点网址，若填写则会自动检查网址，不匹配时自动跳转到此处填写的网址，结尾带 / ，例如 http://www.example.com/mhs/
 
 
 // ----------------------------- 站点项目设置 ----------------------------- //
