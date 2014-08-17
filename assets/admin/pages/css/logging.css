@@ -156,6 +156,10 @@ Logging page
 	color: #3A87AD;
 }
 
+.logging .content .login-form .form-actions {
+  height: 46px;
+}
+
 /* footer copyright */
 .logging .copyright {
   text-align: center;
