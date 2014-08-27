@@ -83,6 +83,7 @@ var Members = function () {
 
 	function initData(columns) {
 
+		return false;
 		$("#users tr:gt(0)" + nthchild("academy", columns)).each(function() {
 			$.ajax({url:"{U api/getnamebyid?type=academy}",data:{id:$(this).data("academy")},type:"GET",async:false,cache:true,context:this,dataType:"json",success:function(data) {
 				$(this).text(data.name ? data.name : "-");
@@ -184,7 +185,9 @@ var Members = function () {
 
 			$("#users tr:gt(0)" + nthchild("extra", columns)).each(function() {
 				$(this).find(".blue-stripe").click(function() {
-					;
+					return modalAlert("出于对用户的考虑，不允许管理员直接修改其他用户的资料<br/>你可以联系用户，通知其自行修改");
+					$("#user-modal");
+					$("#user-modal").modal("show");
 				});
 				$(this).find(".red-stripe").click(function() {
 					$("#deluser-confirm :checkbox").prop("checked", false);
@@ -196,6 +199,12 @@ var Members = function () {
 			$("#deluser-confirm .modal-footer .red").click(function() {
 				showloading();
 				$.post("{U members/user?inajax=1}", {type:"deluser", uid:$("#deluser-confirm em").data("uid"), deluc:$("#deluser-confirm :checkbox").prop("checked")?1:0}, function(data) {
+					modalAlert(data.msg);
+				}, 'JSON');
+			});
+			$("#user-modal .modal-footer .red").click(function() {
+				showloading();
+				$.post("{U members/user?inajax=1}", {type:"edituser", uid:$("#user-modal").data("uid")}, function(data) {
 					modalAlert(data.msg);
 				}, 'JSON');
 			});
@@ -263,7 +272,7 @@ var Members = function () {
 				$("#verifyuser").modal("show");
 			});
 			$("#edituser-button").click(function() {
-				modalAlert("此功能暂未开放");
+				modalAlert("出于对用户的考虑，不允许管理员直接编辑用户的数据<br/>你可以联系用户重新申请");
 				//$("#edituser").modal("show");
 			});
 			$("#delog-button").click(function() {
@@ -312,12 +321,11 @@ var Members = function () {
 				$.post("{U members/verifyuser?inajax=1}", {type:"del",uids:uid.join(",")}, function (data) {
 					modalAlert(data.msg);
 					if(!data.errno) {
-						var p = $('#users').dataTable().fnGetNodes();
-						var e = $('td:first-child :checkbox:checked', p.reverse());
-						p = $(p);
+						var e = $('td:first-child :checkbox:checked', $('#users').dataTable().fnGetNodes());
 						e.closest("tr").each(function() {
-							$('#users').dataTable().fnDeleteRow(p.index(this));
+							$('#users').DataTable().row(this).remove();
 						});
+						$('#users').DataTable().draw();
 						$('#users th:first :checkbox').prop("checked", false).uniform.update();
 						$("#delog").modal("hide");
 					}

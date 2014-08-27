@@ -1,8 +1,6 @@
 var Manhour = function() {
 
-	function loading() {
-		//$("body").modalmanager("loading");
-		//$(".modal-scrollable").unbind("click");
+	function showloading() {
 		$.blockUI({
 			message: '<img src="assets/global/img/ajax-loading.gif" />',
 			css: {
@@ -61,7 +59,7 @@ var Manhour = function() {
 	}
 
 	function detail(type, id) {
-		loading();
+		showloading();
 		if (type == "manhour") {
 			$.post("{U api/manhour}", {
 				"id": id
@@ -175,7 +173,7 @@ var Manhour = function() {
 			$("#applymh-button").click(function() {
 				if (!$(this).data("inited")) {
 					$('.date-picker').datepicker({
-						rtl: App.isRTL(),
+						rtl: Metronic.isRTL(),
 						language: "zh-CN",
 						keyboardNavigation: true,
 						forceParse: true,
@@ -191,13 +189,12 @@ var Manhour = function() {
 							return $('<option>', {
 								val: v.id,
 								text: v.name
-							})
-								.data("place", v.place)
-								.data("starttime", v.starttime)
-								.data("endtime", v.endtime)
-								.data("sponsor", v.sponsor)
-								.data("undertaker", v.undertaker)
-								.data("intro", v.intro);
+							}).data("place", v.place)
+							.data("starttime", v.starttime)
+							.data("endtime", v.endtime)
+							.data("sponsor", v.sponsor)
+							.data("undertaker", v.undertaker)
+							.data("intro", v.intro);
 						}));
 					}, 'json');
 
@@ -273,7 +270,7 @@ var Manhour = function() {
 
 						submitHandler: function(form) {
 							var url = $(form).attr("action");
-							loading();
+							showloading();
 							$.post(url + (url.indexOf("?") > -1 ? "&inajax=1" : "/inajax/1"), $(form).serialize(), function(data) {
 								modalAlert(data.msg);
 								if (data.errno == 0) {
@@ -340,7 +337,7 @@ var Manhour = function() {
 						},
 
 						submitHandler: function(form) {
-							loading();
+							showloading();
 							var url = $(form).attr("action"),
 								dts = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).serializeArray();
 							dts = dts.concat($(form).serializeArray());
@@ -436,6 +433,177 @@ var Manhour = function() {
 			});
 
 			initDT(columns);
+
+			$("#showall").change(function() {
+				window.location.replace("{U manhour/applylog}&showall=" + ($(this).prop("checked") ? "1" : "0"));
+			});
+
+			$("#passmh-button, #rejectmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个可选的申报记录");
+				}
+				var id = [];
+				e.each(function () {
+					id.push($(this).val());
+				});
+				$("#verifymh input[name='type']").val($(this).prop("id").substr(0, 4)=="pass" ? "pass" : "reject");
+				$("#verifymh input[name='ids']").val(id.join(","));
+				$("#verifymh").modal("show");
+			});
+			$("#editmh-button").click(function() {
+				modalAlert("出于对用户的考虑和负责，不允许管理员直接编辑用户的数据<br/>你可以拒绝或删除此记录，然后联系用户重新申请");
+			});
+			$("#delmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个可选的申报记录");
+				}
+				$("#delmh").modal("show");
+			});
+
+			$("#verifymh .modal-footer button.blue").click(function () {
+				var statusid = 0;
+				if($("#verifymh input[name='type']").val() == "pass") {
+					statusid = 1;
+				} else {
+					statusid = 4;
+					if($("#verifymh textarea").val() == "")
+						return modalAlert("请填写拒绝理由");
+				}
+
+				showloading();
+				$.post("{U manhour/applylog?inajax=1}", $("#verifymh form").serialize(), function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						if(statusid) e.closest("tr").each(function() {
+							$('#manhours').dataTable().fnUpdate(statusLabel(statusid, status), this, columns["status"]);
+						});
+						e.prop("checked", false).prop("disabled", true).uniform.update();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#verifymh").modal("hide");
+					}
+				}, "json");
+			});
+			$("#delmh .modal-footer button.red").click(function () {
+				showloading();
+				var id = [];
+				$('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).each(function () {
+					id.push($(this).val());
+				});
+				$.post("{U manhour/applylog?inajax=1}", {type:"del",ids:id.join(",")}, function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						e.closest("tr").each(function() {
+							$('#manhours').DataTable().row(this).remove();
+						});
+						$('#manhours').DataTable().draw();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#delmh").modal("hide");
+					}
+				}, "json");
+			});
+		},
+
+		checklog: function() {
+			var columns = {
+				"checkbox"  : 0,
+				"avatar"    : 1,
+				"username"  : 2,
+				"realname"  : 3,
+				"gender"    : 4,
+				"actname"   : 5,
+				"time"      : 6,
+				"manhour"   : 7,
+				"applytime" : 8,
+				"status"    : 9,
+				"remark"    : 10
+			};
+
+			$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
+				$(this).text(getTime($(this).data("time")));
+			});
+
+			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
+				var t = $(this).data("status");
+				$(this).html(statusLabel(t));
+			});
+
+			initDT(columns);
+
+			$("#showall").change(function() {
+				window.location.replace("{U manhour/checklog}&showall=" + ($(this).prop("checked") ? "1" : "0"));
+			});
+
+			$("#passmh-button, #rejectmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个可选的申报记录");
+				}
+				var id = [];
+				e.each(function () {
+					id.push($(this).val());
+				});
+				$("#verifymh input[name='type']").val($(this).prop("id").substr(0, 4)=="pass" ? "pass" : "reject");
+				$("#verifymh input[name='ids']").val(id.join(","));
+				$("#verifymh").modal("show");
+			});
+			$("#editmh-button").click(function() {
+				modalAlert("出于对用户的考虑和负责，不允许管理员直接编辑用户的数据<br/>你可以拒绝或删除此记录，然后联系用户重新申请");
+			});
+			$("#delmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个可选的申报记录");
+				}
+				$("#delmh").modal("show");
+			});
+
+			$("#verifymh .modal-footer button.blue").click(function () {
+				var statusid = 0;
+				if($("#verifymh input[name='type']").val() == "pass") {
+					statusid = 1;
+				} else {
+					statusid = 5;
+					if($("#verifymh textarea").val() == "")
+						return modalAlert("请填写拒绝理由");
+				}
+
+				showloading();
+				$.post("{U manhour/checklog?inajax=1}", $("#verifymh form").serialize(), function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						if(statusid) e.closest("tr").each(function() {
+							$('#manhours').dataTable().fnUpdate(statusLabel(statusid, status), this, columns["status"]);
+						});
+						e.prop("checked", false).prop("disabled", true).uniform.update();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#verifymh").modal("hide");
+					}
+				}, "json");
+			});
+			$("#delmh .modal-footer button.red").click(function () {
+				showloading();
+				var id = [];
+				$('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).each(function () {
+					id.push($(this).val());
+				});
+				$.post("{U manhour/checklog?inajax=1}", {type:"del",ids:id.join(",")}, function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						e.closest("tr").each(function() {
+							$('#manhours').DataTable().row(this).remove();
+						});
+						$('#manhours').DataTable().draw();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#delmh").modal("hide");
+					}
+				}, "json");
+			});
 		}
 
 	};
