@@ -61,6 +61,7 @@ class MembersAction extends Action {
 		}else{
 			$sql = subusersqlformula();
 			$users = DB::fetch_all($sql);
+			$academies = DB::fetch_all('SELECT * FROM %t', array('profile_academies'), 'id');
 
 			if(!$template->isCached('members_user')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -68,6 +69,7 @@ class MembersAction extends Action {
 				$template->assign('menuset', array('members', 'user'));
 			}
 			$template->assign('users', $users, true);
+			$template->assign('academies', $academies, true);
 			$template->display('members_user');
 		}
 	}
@@ -151,7 +153,8 @@ class MembersAction extends Action {
 					if($errno) $return['msg'] .= '，但在向用户发送邮件时出现了以下问题：<br />'.$errno;
 				}
 			}elseif($_POST['type'] === 'edit') {
-				$return['msg'] = '此功能暂未开放';
+				$return['msg'] = '出于对用户的考虑，不允许管理员直接编辑用户的数据<br/>你可以联系用户重新申请';
+				//$return['msg'] = '此功能暂未开放';
 			}elseif($_POST['type'] === 'del') {
 				if(empty($_POST['uids'])) {
 					$return['msg'] = '请至少选择一个有效申请项';
@@ -175,6 +178,7 @@ class MembersAction extends Action {
 			$sql = 'SELECT * FROM %t WHERE ';
 			$sql .= empty($_GET['showall']) ? '`status`=0' : '1';
 			$users = DB::fetch_all($sql, array('activation'));
+			$academies = DB::fetch_all('SELECT * FROM %t', array('profile_academies'), 'id');
 
 			if(!$template->isCached('members_verifyuser')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -183,6 +187,7 @@ class MembersAction extends Action {
 			}
 			$template->assign('showall', !empty($_GET['showall']), true);
 			$template->assign('users', $users, true);
+			$template->assign('academies', $academies, true);
 			$template->display('members_verifyuser');
 		}
 	}

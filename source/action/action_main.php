@@ -30,7 +30,7 @@ class MainAction extends Action {
 		//database_safecheck::setconfigstatus(false);
 		//DB::query('SET @rank=0');
 		//$manhour = DB::fetch_first('SELECT * FROM (SELECT `uid`,`manhour`,@rank:=@rank+1 AS rank FROM %t ORDER BY `manhour` DESC) AS t WHERE `uid`=%d', array('users', $_G['uid']));
-		$topmh = DB::fetch_all('SELECT `username`, `manhour`, `rank` FROM %t ORDER BY `manhour` DESC LIMIT 10', array('users'));
+		$topmh = DB::fetch_all('SELECT `username`, `manhour`, `rank` FROM %t WHERE `rank`>0 ORDER BY `manhour` DESC LIMIT 10', array('users'));
 		//database_safecheck::restoreconfigstatus();
 		//trace($manhour);
 

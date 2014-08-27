@@ -195,7 +195,7 @@
 								<td data-status="{$user.status}">-</td>
 								<td>{$user.studentid}</td>
 								<td>{$user.grade}</td>
-								<td data-academy="{$user.academy}">-</td>
+								<td data-academy="{$user.academy}">{if empty($academies)}-{else}{$academies[$user.academy].name}{/if}</td>
 								<td>{$user.specialty|default:'-'}</td>
 								<td>{$user.class|default:'-'}</td>
 								<td>{$user.league|default:'-'}</td>

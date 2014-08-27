@@ -210,7 +210,9 @@ class ApiAction extends Action {
 		if($id > 0){
 			$result = DB::fetch_first('SELECT * FROM %t WHERE `id`=%d LIMIT 1', array('activity', $id));
 		}else{
-			$result = DB::fetch_all('SELECT * FROM %t WHERE `available`=1 ORDER BY `id` DESC', array('activity'));
+			//require_once libfile('function/members');
+			//$result = DB::result_all(subusersqlformula(null, '`id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro`', 'activity').' AND %t.`status` IN (0,3,5)', array('manhours'));
+			$result = DB::fetch_all('SELECT `id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro` FROM %t WHERE `available`=1 ORDER BY `id` DESC', array('activity'));
 		}
 
 		ajaxReturn($result, 'AUTO');
@@ -292,7 +294,7 @@ class ApiAction extends Action {
 		}elseif(empty($_POST['remark'])){
 			$result['msg'] = '复查理由不能为空';
 		}else{
-			DB::query('UPDATE %t SET `status`=3, `applytime`=%d, `remark`=%s WHERE `status` IN (0,1,4,5) AND `id` IN (%n)', array('manhours', TIMESTAMP, $_POST['remark'], $_POST['id']));
+			DB::query('UPDATE %t SET `status`=3, `applytime`=%d, `remark`=%s WHERE `status` IN (0,1,4,5,6) AND `id` IN (%n)', array('manhours', TIMESTAMP, $_POST['remark'], $_POST['id']));
 			$result['errno'] = 0;
 			$result['msg'] = '已申请复查'.DB::affected_rows().'个工时条目，请耐心等候审查';
 		}
@@ -315,8 +317,8 @@ class ApiAction extends Action {
 					case 'profile/pm'			: $result[$badge] = 0; break;
 					case 'global/info'			: $result[$badge] = 0; break;
 					case 'members/verifyuser'	: $result[$badge] = DB::result_first('SELECT count(`uid`) FROM %t WHERE `status`=0', array('activation')); break;
-					case 'manhour/applylog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (2,4)', array('manhours')); break;
-					case 'manhour/checklog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (0,3,5)', array('manhours')); break;
+					case 'manhour/applylog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (2)', array('manhours')); break; //2,4
+					case 'manhour/checklog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (3)', array('manhours')); break; //0,3,5
 				}
 			}
 		}

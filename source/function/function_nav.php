@@ -182,19 +182,19 @@ function &adminNav(){
 			'link' => '',
 			'icon' => 'fa fa-wrench',
 			'children' => array(
-				array(
+				/*array(
 					'title' => 'runlog',
 					'link' => 'tool/runlog',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				array(
 					'title' => 'clearcache',
 					'link' => 'tool/clearcache',
 					'icon' => '',
 					'children' => array()
 				),
-				array(
+				/*array(
 					'title' => 'mailsetting',
 					'link' => 'tool/mailsetting',
 					'icon' => '',
@@ -211,7 +211,7 @@ function &adminNav(){
 					'link' => 'tool/recovery',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 			)
 		),
 		array(
@@ -252,7 +252,7 @@ function &adminNav(){
 					'icon' => '',
 					'children' => array()
 				),
-				array(
+				/*array(
 					'title' => 'basic',
 					'link' => 'mhdict/basic',
 					'icon' => '',
@@ -263,7 +263,7 @@ function &adminNav(){
 					'link' => 'mhdict/league',
 					'icon' => '',
 					'children' => array()
-				),
+				),*/
 				array(
 					'title' => 'ann',
 					'link' => 'mhdict/ann',

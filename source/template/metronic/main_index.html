@@ -103,6 +103,9 @@
 									</tr>
 								</thead>
 								<tbody>
+									{if empty($topmh)}
+									<tr><td colspan="3">暂无数据</td></tr>
+									{else}
 									{foreach $topmh as $mh}
 									<tr>
 										<td>{$mh.rank}</td>
@@ -110,82 +113,13 @@
 										<td>{$mh.manhour}</td>
 									</tr>
 									{/foreach}
+									{/if}
 								</tbody>
 							</table>
 						</div>
 					</div>
-					<!-- End: life time stats -->
 				</div>
 				<div class="col-md-6">
-					<!-- Begin: life time stats -->
-					<div class="portlet box blue tabbable">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-bar-chart-o"></i>Revenue
-							</div>
-							<div class="tools">
-								<a href="#portlet-config" data-toggle="modal" class="config">
-								</a>
-								<a href="javascript:;" class="reload">
-								</a>
-							</div>
-						</div>
-						<div class="portlet-body">
-							<div class="portlet-tabs">
-								<ul class="nav nav-tabs" style="margin-right: 50px">
-									<li>
-										<a href="#portlet_tab2" data-toggle="tab" id="statistics_amounts_tab">
-											 Amounts
-										</a>
-									</li>
-									<li class="active">
-										<a href="#portlet_tab1" data-toggle="tab">
-											 Orders
-										</a>
-									</li>
-								</ul>
-								<div class="tab-content">
-									<div class="tab-pane active" id="portlet_tab1">
-										<div id="statistics_1" class="chart">
-										</div>
-									</div>
-									<div class="tab-pane" id="portlet_tab2">
-										<div id="statistics_2" class="chart">
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="well no-margin no-border">
-								<div class="row">
-									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
-										<span class="label label-success">
-											 Revenue:
-										</span>
-										<h3>$1,234,112.20</h3>
-									</div>
-									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
-										<span class="label label-info">
-											 Tax:
-										</span>
-										<h3>$134,90.10</h3>
-									</div>
-									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
-										<span class="label label-danger">
-											 Shipment:
-										</span>
-										<h3>$1,134,90.10</h3>
-									</div>
-									<div class="col-md-3 col-sm-3 col-xs-6 text-stat">
-										<span class="label label-warning">
-											 Orders:
-										</span>
-										<h3>235090</h3>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- End: life time stats -->
 				</div>
 			</div>
 {/block}

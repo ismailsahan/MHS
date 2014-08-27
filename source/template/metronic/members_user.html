@@ -47,42 +47,67 @@
 			<div id="user-modal" class="modal fade modal-scroll" tabindex="-1" data-width="760">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">活动详情</h4>
+					<h4 class="modal-title">编辑用户</h4>
 				</div>
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-md-6">
-							<p class="col-md-3">活动名称:</p>
-							<p class="col-md-9" data-act="name">-</p>
+					<form action="{U 'members/user?inajax=1'}" class="form-horizontal">
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">用户名</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="username" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">活动地点:</p>
-							<p class="col-md-9" data-act="place">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">真实姓名</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="realname" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">开始时间:</p>
-							<p class="col-md-9" data-act="starttime">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">性别</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="gender" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">结束时间:</p>
-							<p class="col-md-9" data-act="endtime">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">QQ号</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="qq" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">主办者:</p>
-							<p class="col-md-9" data-act="sponsor">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">Email</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="email" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">承办者:</p>
-							<p class="col-md-9" data-act="undertaker">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">学号</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="studentid" /></div>
 						</div>
-						<div class="col-md-6">
-							<p class="col-md-3">活动介绍:</p>
-							<p class="col-md-9" data-act="intro">-</p>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">年级</label>
+							<div class="col-xs-9 col-sm-10"><select name="grade" class="select2 form-control"><option value=""></option></select></div>
 						</div>
-					</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">学院</label>
+							<div class="col-xs-9 col-sm-10"><select name="academy" class="select2 form-control"><option value=""></option></select></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">专业</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="specialty" /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">班级</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="class" /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">社团</label>
+							<div class="col-xs-9 col-sm-10"><input type="hidden" name="league[]" class="select2 form-control" /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">部门</label>
+							<div class="col-xs-9 col-sm-10"><input type="hidden" name="department[]" class="select2 form-control" /></div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-2">手机</label>
+							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="mobile" /></div>
+						</div>
+					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+					<button type="button" data-dismiss="modal" class="btn red">确定</button>
+					<button type="button" data-dismiss="modal" class="btn default">取消</button>
 				</div>
 			</div>
 			<div id="deluser-confirm" class="modal fade modal-scroll" tabindex="-1" data-width="760">
@@ -100,59 +125,6 @@
 				<div class="modal-footer">
 					<button type="button" data-dismiss="modal" class="btn red">删除</button>
 					<button type="button" data-dismiss="modal" class="btn default">取消</button>
-				</div>
-			</div>
-			<div id="applymh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">申报工时</h4>
-				</div>
-				<div class="modal-body">
-					<form action="{U api/applymh}" class="form-horizontal">
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">活动<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10"><select class="select2 form-control" id="aid" name="aid" required><option value=""></option></select></div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">工时<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="manhour" value="" required /></div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">时间<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10">
-								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+0d">
-									<input type="text" name="time" class="form-control" required />
-									<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">留言<span class="required">&nbsp;</span></label>
-							<div class="col-xs-9 col-sm-10"><textarea class="form-control" name="remark" rows="4"></textarea></div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
-					<button type="button" class="btn blue">申报</button>
-				</div>
-			</div>
-			<div id="checkmh" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">复查工时</h4>
-				</div>
-				<div class="modal-body">
-					<form action="{U api/checkmh}" class="form-horizontal">
-						<div class="form-group">
-							<label class="control-label col-xs-12"><p class="text-left">理由<span class="required">*</span></p></label>
-							<div class="col-xs-12"><textarea class="form-control" name="remark" rows="6"></textarea></div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
-					<button type="button" class="btn blue">申请复查</button>
 				</div>
 			</div>
 			<div class="portlet box blue-hoki">
@@ -220,7 +192,7 @@
 								<td>{$user.manhour}</td>
 								<td>{$user.studentid}</td>
 								<td>{$user.grade}</td>
-								<td data-academy="{$user.academy}">-</td>
+								<td data-academy="{$user.academy}">{if empty($academies)}-{else}{$academies[$user.academy].name}{/if}</td>
 								<td>{$user.specialty|default:'-'}</td>
 								<td>{$user.class|default:'-'}</td>
 								<td>{$user.league|default:'-'}</td>

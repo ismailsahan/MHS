@@ -266,11 +266,16 @@ class LoggingAction extends Action {
 				}elseif(!DB::result_first('SELECT count(*) FROM %t WHERE `id`=%d', array('profile_academies', $_POST['academy']))){	// 学院不合法
 					$errmsg = 'academy_illeagal';
 				}else{
+					if($_G['uid'] > 1 && !DB::result_first('SELECT count(*) FROM %t WHERE `status`=0', array('activation'))) {
+						// Notice Admins
+					}
+
 					$_POST['remarks'] = htmlspecialchars($_POST['remarks']);
 					$_POST['specialty'] = htmlspecialchars($_POST['specialty']);
 					$_POST['class'] = htmlspecialchars($_POST['class']);
 					$_POST['league'] = dhtmlspecialchars($_POST['league']);
 					$_POST['department'] = dhtmlspecialchars($_POST['department']);
+
 					DB::query('REPLACE INTO %t (`uid`, `email`, `username`, `status`, `submittime`, `verifytime`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`, `remark`, `operator`,`operatorname`, `verifytext`) VALUES (%d, %s, %s, %d, %d, %d, %s, %d, %s, %s, %d, %d, %s, %s, %s, %s, %s, %s, %d, %s, %s)', array(
 						'activation',						// 表名
 						$_G['uid'],							// 用户ID
@@ -330,6 +335,7 @@ class LoggingAction extends Action {
 					$_POST['remarks'] = $_POST['remarks'] ? nl2br($_POST['remarks']) : '-';
 
 					$_SESSION['acteml'] = $_POST;
+
 				}
 			}else{
 				switch($errmsg){
