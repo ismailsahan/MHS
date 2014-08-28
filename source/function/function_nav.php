@@ -314,7 +314,7 @@ function chkPermit($idx = null) {
 	if($_G['member']['adminid'] == 0) return false;														// 非管理组，不具备任何管理权限
 	if(!isset($_G['member']['adminpermit']) && $_G['member']['adminid']>1) {							// 从数据库中获取权限信息
 		$_G['member']['adminpermit'] = DB::result_first('SELECT `permit` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $_G['member']['adminid']));
-		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : unserialize($_G['member']['adminpermit']);
+		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : explode(',', $_G['member']['adminpermit']);
 	}
 
 	return isset($_G['member']['adminpermit'][$idx]) ? $_G['member']['adminpermit'][$idx] : false;

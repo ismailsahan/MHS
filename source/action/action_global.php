@@ -229,7 +229,7 @@ class GlobalAction extends Action {
 			$this->_update('timeformat', $timeformat, 's');
 			$this->_update('dateformat', $dateformat, 's');
 			$this->_update('dateconvert',$dateconvert,'d');
-			$this->_update('timeoffset', $timeoffset, 'f');
+			$this->_update('timeoffset', $timeoffset, 's');
 
 			ajaxReturn(array(
 				'errno' => 0,

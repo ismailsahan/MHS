@@ -158,9 +158,9 @@ var Manhour = function() {
 				$(this).html(statusLabel(t));
 			});
 
-			$('#manhours tr:gt(0) td:nth-child(4)').each(function() {
+			/*$('#manhours tr:gt(0) td:nth-child(4)').each(function() {
 				$(this).html(getDate($(this).data("time")));
-			});
+			});*/
 
 			$('#manhours td:nth-child(6) a.btn').click(function() {
 				detail("manhour", $(this).closest('tr').find("td:first :checkbox").val());
@@ -423,13 +423,17 @@ var Manhour = function() {
 				"remark"    : 10
 			};
 
-			$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
+			/*$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
 				$(this).text(getTime($(this).data("time")));
-			});
+			});*/
 
 			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
 				var t = $(this).data("status");
 				$(this).html(statusLabel(t));
+			});
+
+			$('#manhours tr:gt(0)' + nthchild("actname", columns) + " a").click(function() {
+				detail("activity", $(this).data("aid"));
 			});
 
 			initDT(columns);
@@ -522,13 +526,17 @@ var Manhour = function() {
 				"remark"    : 10
 			};
 
-			$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
+			/*$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns)).each(function() {
 				$(this).text(getTime($(this).data("time")));
-			});
+			});*/
 
 			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
 				var t = $(this).data("status");
 				$(this).html(statusLabel(t));
+			});
+
+			$('#manhours tr:gt(0)' + nthchild("actname", columns) + " a").click(function() {
+				detail("activity", $(this).data("aid"));
 			});
 
 			initDT(columns);

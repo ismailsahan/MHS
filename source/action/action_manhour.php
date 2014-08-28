@@ -144,7 +144,7 @@ class ManhourAction extends Action {
 			ajaxReturn($return, 'JSON');
 		}else{
 			$status = empty($_GET['showall']) ? '2' : '2,4';
-			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
+			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
 
 			if(!$template->isCached('manhour_applylog')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -255,7 +255,7 @@ class ManhourAction extends Action {
 					foreach($ids as &$id) {
 						$id = intval($id);
 					}
-					DB::query('DELETE FROM %t WHERE `id` IN (%n) AND `status` IN (0,3,5)', array('manhours', $ids));
+					DB::query('DELETE FROM %t WHERE `id` IN (%n) AND `status` IN (0,3,5,6)', array('manhours', $ids));
 					$return['errno'] = 0;
 					$return['msg'] = '已删除 '.DB::affected_rows().' 个工时申报条目';
 
@@ -275,7 +275,7 @@ class ManhourAction extends Action {
 			ajaxReturn($return, 'JSON');
 		}else{
 			$status = empty($_GET['showall']) ? '3' : '0,3,5,6';
-			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
+			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
 
 			if(!$template->isCached('manhour_checklog')){
 				$template->assign('sidebarMenu', defaultNav());

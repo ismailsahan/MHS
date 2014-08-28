@@ -162,6 +162,12 @@ function dmicrotime() {
 
 /**
  * 格式化时间
+ * 
+ * @param int    $timestamp  时间戳
+ * @param string $format     输出格式，d:日期 t时间 dt:日期和时间 u:人性化表示
+ * @param mixed  $timeoffset 时区
+ * @param string $uformat    人性化时间表达式
+ * @return string
  */
 function dgmdate($timestamp, $format = 'dt', $timeoffset = '9999', $uformat = '') {
 	global $_G;

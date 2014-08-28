@@ -240,7 +240,9 @@ var Global = function () {
 
 	var initDatatime = function () {
 
-		$("#timeoffset").select2({
+		$("#timeoffset").on("change", function() {
+			$(this).next().val($(this).val());
+		}).select2({
 			minimumResultsForSearch:-1,
 			allowClear: false,
 			data:[
@@ -279,6 +281,13 @@ var Global = function () {
 				{id:12,  text:"(GMT +12:00) 奥克兰, 惠灵顿, 斐济,.."}
 			]
 		});
+
+		$(".portlet-body form").submit(function() {
+			$.post("{U global/time?inajax=1}", $(this).serialize(), function(data) {
+				modalAlert(data.msg);
+			}, "JSON");
+			return false;
+		})
 	};
 
 	return {

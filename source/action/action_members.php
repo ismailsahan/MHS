@@ -90,7 +90,7 @@ class MembersAction extends Action {
 					$return['msg'] = '请至少选择一个有效申请项';
 				}else{
 					require_once libfile('function/logging');
-					$_POST['verifytext'] = htmlspecialchars($_POST['verifytext']);
+					$_POST['verifytext'] = htmlspecialchars(remove_xss($_POST['verifytext']));
 					$uids = explode(',', $_POST['uids']);
 					foreach($uids as $k=>$uid) {
 						$uids[$k] = intval($uid);
@@ -123,7 +123,7 @@ class MembersAction extends Action {
 				}elseif(empty($_POST['verifytext'])) {
 					$return['msg'] = '拒绝时审核附言不能留空';
 				}else{
-					$_POST['verifytext'] = htmlspecialchars($_POST['verifytext']);
+					$_POST['verifytext'] = htmlspecialchars(remove_xss($_POST['verifytext']));
 					$uids = explode(',', $_POST['uids']);
 					foreach($uids as $k=>$uid) {
 						$uids[$k] = intval($uid);

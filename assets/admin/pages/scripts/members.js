@@ -179,9 +179,9 @@ var Members = function () {
 
 			initData(columns);
 
-			$("#users tr:gt(0)" + nthchild("lastlogin", columns)).each(function() {
+			/*$("#users tr:gt(0)" + nthchild("lastlogin", columns)).each(function() {
 				$(this).text(getTime($(this).data("time")));
-			});
+			});*/
 
 			$("#users tr:gt(0)" + nthchild("extra", columns)).each(function() {
 				$(this).find(".blue-stripe").click(function() {
@@ -245,9 +245,9 @@ var Members = function () {
 				$(this).html(statusLabel($(this).data("status"), status));
 			});
 
-			$("#users tr:gt(0)" + nthchild("applytime", columns) + ", #users tr:gt(0)" + nthchild("verifytime", columns)).each(function() {
+			/*$("#users tr:gt(0)" + nthchild("applytime", columns) + ", #users tr:gt(0)" + nthchild("verifytime", columns)).each(function() {
 				$(this).text(getTime($(this).data("time")));
-			});
+			});*/
 
 			initDT(columns);
 

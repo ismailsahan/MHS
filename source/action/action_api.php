@@ -172,9 +172,43 @@ class ApiAction extends Action {
 	 */
 	public function stat(){
 		$uid = intval($_REQUEST['uid']);
-		$result = DB::fetch_first('SELECT `username`,`manhour` FROM %t WHERE `uid`=%d LIMIT 1');
+		$result = DB::fetch_first('SELECT `username`,`manhour`,`rank` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $uid));
 
 		ajaxReturn($result, 'AUTO');
+	}
+
+	public function monthdata() {
+		global $_G;
+
+		if(!$_G['uid']) {
+			ajaxReturn(array(array('非法请求',0)), 'JSON');
+		}
+
+		$date = getdate();
+
+		$month = array('一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月');
+		for($i=0; $i<$date['mon']; $i++) {
+			array_push($month, array_shift($month));
+		}
+
+		$ajax = array();
+		$mon = $date['mon'] + 1;
+		$year = $date['year'] - 1;
+		// mktime(hour, minute, second, month, day, year)
+		$endtime = mktime(0, 0, 0, $mon, 1, $year);
+		foreach($month as $k=>$v) {
+			$mon++;
+			if($mon > 12) {
+				$mon = 1;
+				$year++;
+			}
+			$starttime = $endtime;
+			$endtime = mktime(0, 0, 0, $mon, 1, $year);
+			$sum = DB::result_first('SELECT sum(`manhour`) FROM %t WHERE `uid`=%d AND `status`=1 AND `time`>=%d AND `time`<%d', array('manhours', $_G['uid'], $starttime, $endtime));
+			$ajax[] = array($v, intval($sum));
+		}
+
+		ajaxReturn($ajax, 'JSON');
 	}
 
 	/**
@@ -203,6 +237,8 @@ class ApiAction extends Action {
 	 * 查询活动信息
 	 */
 	public function activity(){
+		global $_G;
+
 		$this->_nocacheheaders(false);
 
 		$id = intval($_REQUEST['id']);
@@ -212,7 +248,7 @@ class ApiAction extends Action {
 		}else{
 			//require_once libfile('function/members');
 			//$result = DB::result_all(subusersqlformula(null, '`id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro`', 'activity').' AND %t.`status` IN (0,3,5)', array('manhours'));
-			$result = DB::fetch_all('SELECT `id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro` FROM %t WHERE `available`=1 ORDER BY `id` DESC', array('activity'));
+			$result = DB::fetch_all('SELECT `id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro` FROM %t WHERE `available`=1 AND `academy` IN (0,%d) ORDER BY `id` DESC', array('activity', $_G['member']['academy']));
 		}
 
 		ajaxReturn($result, 'AUTO');
@@ -231,7 +267,7 @@ class ApiAction extends Action {
 		$activity = $_POST['aid'];
 		$manhour = $_POST['manhour'];
 		$date = $_POST['time'];
-		$remark = $_POST['remark'];
+		$remark = htmlspecialchars(remove_xss($_POST['remark']));
 
 		if($_G['uid']){
 			$result['errno'] = 1;
@@ -283,20 +319,30 @@ class ApiAction extends Action {
 	 * 复查工时
 	 */
 	public function checkmh(){
+		global $_G;
+
 		$result = array(
 			'errno' => 1,
 			'msg' => '无效请求'
 		);
-		if(empty($_POST['id'])){
+
+		if(!$_G['uid']){
+			$result['msg'] = '未登录或会话超时';
+		}elseif(empty($_POST['id'])){
 			$result['msg'] = '复查的工时不能为空';
 		}elseif(!is_array($_POST['id'])){
 			$result['msg'] = '参数无效';
 		}elseif(empty($_POST['remark'])){
 			$result['msg'] = '复查理由不能为空';
 		}else{
+			$_POST['remark'] = htmlspecialchars(remove_xss($_POST['remark']));
 			DB::query('UPDATE %t SET `status`=3, `applytime`=%d, `remark`=%s WHERE `status` IN (0,1,4,5,6) AND `id` IN (%n)', array('manhours', TIMESTAMP, $_POST['remark'], $_POST['id']));
 			$result['errno'] = 0;
 			$result['msg'] = '已申请复查'.DB::affected_rows().'个工时条目，请耐心等候审查';
+
+			require_once libfile('function/manhour');
+			update_user_manhour($_G['uid']);
+			update_rank();
 		}
 		ajaxReturn($result, 'AUTO');
 	}

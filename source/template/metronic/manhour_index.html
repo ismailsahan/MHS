@@ -187,12 +187,12 @@
 				<div class="portlet-body">
 					<table class="table table-striped table-bordered table-hover" id="manhours">
 						<thead><tr>
-							<th style="width:41px"><input type="checkbox" class="group-checkable" data-set="#manhours .checkboxes" /></th>
+							<th style="width:25px !important"><input type="checkbox" class="group-checkable" data-set="#manhours .checkboxes:enabled" /></th>
 							<th>工时</th>
 							<th>活动</th>
 							<th>时间</th>
 							<th>状态</th>
-							<th style="width:61px"></th>
+							<th style="width:38px !important"></th>
 						</tr></thead>
 						<tbody>
 							{foreach $manhours as $manhour}
@@ -200,7 +200,7 @@
 								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$manhour.id}" /></td>
 								<td>{$manhour.manhour}</td>
 								<td><a href="javascript:;" data-aid="{$manhour.aid}">{$manhour.actname}</a></td>
-								<td data-time="{$manhour.time}"></td>
+								<td data-time="{$manhour.time}">{dgmdate($manhour.time, 'd')}</td>
 								<td data-status="{$manhour.status}"></td>
 								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">详情</a></td>
 							</tr>
@@ -209,5 +209,4 @@
 					</table>
 				</div>
 			</div>
-			<!-- END PAGE CONTENT-->
 {/block}

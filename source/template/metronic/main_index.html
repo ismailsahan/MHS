@@ -3,6 +3,10 @@
 {block pagestyle}{/block}
 {block pageplugins}
 	<script type="text/javascript" src="assets/global/plugins/tokenscroller.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/flot/jquery.flot.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/flot/jquery.flot.resize.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/flot/jquery.flot.categories.min.js"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/index.js'}"></script>
 {/block}
 {block pagejs}
 	<script type="text/javascript">
@@ -13,6 +17,7 @@
 			});
 			Metronic.init();
 			Layout.init();
+			Index.init();
 			//IdleTimeout.init();
 		});
 	</script>
@@ -25,17 +30,16 @@
 					<dd>
 						<div id="annbody"><ul id="annbodylis">
 							{foreach $announcement as $ann}
-							<li><a href="{if $ann.type==2}{$ann.message}{else}javascript:showann({$ann.id}){/if}"{if $ann.type==2} target="_blank"{/if}>{$ann.subject}{if $ann.starttime>0}<em>({dgmdate($ann.starttime, 'd')})</em>{/if}</a></li>
+							<li><a href="{if $ann.type}{$ann.message}{else}javascript:showann({$ann.id}){/if}"{if $ann.type} target="_blank"{/if}>{$ann.subject}{if $ann.starttime>0}<em>({dgmdate($ann.starttime, 'd')})</em>{/if}</a></li>
 							{/foreach}
 						</ul></div>
 					</dd>
 				</dl>
 			</div>
 			{/if}
-			<!-- BEGIN DASHBOARD STATS -->
 			<div class="row">
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-					<div class="dashboard-stat blue">
+					<div class="dashboard-stat blue-madison">
 						<div class="visual">
 							<i class="fa fa-bar-chart-o"></i>
 						</div>
@@ -43,11 +47,11 @@
 							<div class="number">{$manhour|default:0}</div>
 							<div class="desc">工时总数</div>
 						</div>
-						<a class="more" href="#">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
+						<a class="more" href="{U manhour/index}">查看详情 <i class="m-icon-swapright m-icon-white"></i></a>
 					</div>
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-					<div class="dashboard-stat purple">
+					<div class="dashboard-stat green-haze">
 						<div class="visual">
 							<i class="fa fa-globe"></i>
 						</div>
@@ -59,7 +63,7 @@
 					</div>
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-					<div class="dashboard-stat yellow">
+					<div class="dashboard-stat purple-plum">
 						<div class="visual">
 							<i class="fa fa-sign-in"></i>
 						</div>
@@ -83,14 +87,14 @@
 					</div>
 				</div>*}-->
 			</div>
-			<!-- END DASHBOARD STATS -->
 			<div class="row">
 				<div class="col-md-6">
-					<!-- Begin: life time stats -->
-					<div class="portlet box yellow">
+					<div class="portlet light bordered bg-inverse">
 						<div class="portlet-title">
 							<div class="caption">
-								<i class="fa fa-thumb-tack"></i> 工时排行 (TOP10)
+								<i class="icon-globe font-blue-steel"></i>
+								<span class="caption-subject font-blue-steel">工时排行</span>
+								<span class="caption-helper">(TOP 10)</span>
 							</div>
 						</div>
 						<div class="portlet-body table-responsive">
@@ -120,6 +124,23 @@
 					</div>
 				</div>
 				<div class="col-md-6">
+					<div class="portlet light bordered bg-inverse">
+						<div class="portlet-title">
+							<div class="caption">
+								<i class="icon-share font-purple-intense"></i>
+								<span class="caption-subject font-purple-intense">工时统计</span>
+								<span class="caption-helper">过去一年的工时情况</span>
+							</div>
+						</div>
+						<div class="portlet-body">
+							<div id="manhour_stat_loading" class="text-center">
+								<img src="assets/admin/layout/img/loading.gif" alt="loading" />
+							</div>
+							<div id="manhour_stat_content" class="display-none">
+								<div id="manhour_stat" style="height: 228px;"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 {/block}
