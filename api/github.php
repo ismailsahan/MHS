@@ -33,11 +33,7 @@ try {
 }
 
 define('LOG_FILE', '../data/log/github_'.time().'_'.$input['after'].'.log');
-ob_start();
-echo 'Input = ';
-print_r($input);
-$data = ob_get_clean();
-file_put_contents(LOG_FILE, $data);
+file_put_contents(LOG_FILE, 'INPUT = '.str_replace("\n", "\r\n", file_get_contents('php://input'))."\r\n\r\n");
 
 if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	$files = array(
@@ -75,7 +71,7 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 		echo ($status ? 'Success' : 'Failed!');
 		echo "]\n";
 
-		file_put_contents(LOG_FILE, "Delete: {$file} [".($status ? 'Success' : 'Failed!')."]\n", FILE_APPEND);
+		file_put_contents(LOG_FILE, "Delete: {$file} [".($status ? 'Success' : 'Failed!')."]\r\n", FILE_APPEND);
 	}
 
 	echo "\n\n======================================== File List ========================================\n";
@@ -105,11 +101,11 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 		}
 		echo "[Success]\n";
 
-		file_put_contents(LOG_FILE, "Update: {$file} [".($status ? 'Success' : 'Failed!')."]\n", FILE_APPEND);
+		file_put_contents(LOG_FILE, "Update: {$file} [".($status ? 'Success' : 'Failed!')."]\r\n", FILE_APPEND);
 	}
 }
 
-file_put_contents(LOG_FILE, "\n\nFinished.", FILE_APPEND);
+file_put_contents(LOG_FILE, "\r\nFinished.", FILE_APPEND);
 
 /*
 echo "\n\n======================================== HTTP Body ========================================\n";

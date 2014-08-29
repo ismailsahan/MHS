@@ -156,7 +156,7 @@ class core {
 		$_G['siteport'] = empty($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] == '80' || $_SERVER['SERVER_PORT'] == '443' ? '' : ':'.$_SERVER['SERVER_PORT'];
 
 		//$_G['currenturl'] = substr($_G['siteurl'], 0, -1) . urldecode($_SERVER['REQUEST_URI']);//BUG
-		//$_G['currenturl'] = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		$_G['currenturl'] = 'http'.($_G['isHTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; // Referer 会用到
 		//$_G['currenturl_encode'] = base64_encode($_G['currenturl']);
 
 		$this->var = &$_G;
