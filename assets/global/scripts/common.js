@@ -291,7 +291,7 @@ function showann(id) {
 		});
 	}
 	if ($("#ann-modal").size() == 0) {
-		var html;
+		var html = '';
 		html += '<div id="ann-modal" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">';
 		html += '<div class="modal-header">';
 		html += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>';
@@ -302,7 +302,7 @@ function showann(id) {
 		html += '<button type="button" data-dismiss="modal" class="btn blue">确定</button>';
 		html += '</div>';
 		html += '</div>';
-		$("body").append(html);
+		$(".page-content").append(html);
 	}
 	$.get("index.php?action=api&operation=getann", {
 		"id": id

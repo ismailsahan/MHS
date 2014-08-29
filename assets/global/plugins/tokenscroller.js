@@ -45,6 +45,7 @@
             this.items = this.$elm.find(this.opts.itemSelector);
             this.itemnum = this.items.length;
             this.itemcontainer = this.items.parent();
+            if (this.items.length * this.opts.step <= this.opts.visiblerownum) return;
             if (this.opts.fillitems) this.fillitems();
             this.$elm.find(this.opts.itemSelector).slice(0, this.opts.visiblerownum * this.opts.itemunit).clone(true).appendTo(this.itemcontainer);
 
@@ -59,8 +60,6 @@
             delete this.rowcount;
             delete this.itemcontainer;
             this.lastrow = this.rows.length - 1;
-
-            if (this.rows.length * this.opts.step <= this.opts.visiblerownum) return;
 
             var idx = scrollers.length;
             this.idx = idx;
