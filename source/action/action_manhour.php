@@ -144,7 +144,7 @@ class ManhourAction extends Action {
 			ajaxReturn($return, 'JSON');
 		}else{
 			$status = empty($_GET['showall']) ? '2' : '2,4';
-			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
+			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours').' ORDER BY `applytime` DESC');
 
 			if(!$template->isCached('manhour_applylog')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -275,7 +275,7 @@ class ManhourAction extends Action {
 			ajaxReturn($return, 'JSON');
 		}else{
 			$status = empty($_GET['showall']) ? '3' : '0,3,5,6';
-			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours'));
+			$manhours = DB::fetch_all(subusersqlformula(DB::table('manhours').".status IN ({$status})", 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,realname,gender,'.DB::table('manhours').'.manhour,aid,actname,time,applytime,remark', 'manhours').' ORDER BY `applytime` DESC');
 
 			if(!$template->isCached('manhour_checklog')){
 				$template->assign('sidebarMenu', defaultNav());

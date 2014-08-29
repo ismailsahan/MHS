@@ -1,9 +1,7 @@
 {extends 'common_main.html'}
 {block subtitle}{lang nav/ann}{/block}
 {block pagestyle}
-<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css"/>
-<link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" />
 <style type="text/css" media="screen">
 #anns tr, #anns td {
 	vertical-align: middle;
@@ -14,10 +12,10 @@
 </style>
 {/block}
 {block pageplugins}
-	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
-	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
-	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/mhdict.js'}"></script>
 {/block}
 {block pagejs}
@@ -42,24 +40,68 @@
 				</div>
 			</div>
 			<div id="anndetail" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">公告详情</h4>
-				</div>
-				<div class="modal-body">
-					<form action="{U 'mhdict/ann?inajax=1'}" class="form-horizontal" method="post">
-						<input type="hidden" name="type" value="" />
+				<form action="{U 'mhdict/ann?inajax=1'}" class="form-horizontal" role="form" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+						<h4 class="modal-title">公告详情</h4>
+					</div>
+					<div class="modal-body form">
 						<input type="hidden" name="id" value="" />
-						<div class="form-group">
-							<label class="control-label col-xs-12"><p class="text-left">审核消息</p></label>
-							<div class="col-xs-12"><textarea class="form-control" name="verifytext" rows="6"></textarea></div>
+						<div class="form-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label">公告标题 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<input type="text" name="subject" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">起始时间 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="starttime" class="form-control form-control-inline" />
+									<span class="help-block">若留空则表明此公告即时生效，且显示公告时不会显示公告时间</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">终止时间 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="endtime" class="form-control form-control-inline" />
+									<span class="help-block">若留空则表明此公告永不终止</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">公告类型 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="radio-list">
+										<label class="radio-inline"><input type="radio" name="type" value="0" checked />文字公告</label>
+										<label class="radio-inline"><input type="radio" name="type" value="1" />网址链接</label>
+									</div>
+								</div>
+							</div>
+							{if $access_to_global_ann}
+							<div class="form-group">
+								<label class="col-md-3 control-label">可视范围 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="radio-list">
+										<label class="radio-inline"><input type="radio" name="academy" value="0" checked />全站</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="1" />{$academies[$_G.member.academy].name}</label>
+									</div>
+								</div>
+							</div>
+							{/if}
+							<div class="form-group last">
+								<label class="col-md-3 control-label">公告内容 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<textarea name="message" rows="4" class="form-control" style="resize:vertical"></textarea>
+									<span class="help-block"><b>文字公告</b>: 直接输入公告内容<br /><b>网址链接</b>: 请输入公告的链接地址如: http://xxx.xxx.xxx</span>
+								</div>
+							</div>
 						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
-					<button type="button" class="btn blue">提交</button>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+						<button type="submit" class="btn blue">提交</button>
+					</div>
+				</form>
 			</div>
 			<div class="portlet box blue-hoki">
 				<div class="portlet-title">
@@ -95,8 +137,8 @@
 										<td>{if $ann.type}网址链接{else}文字公告{/if}</td>
 										<td>{if $ann.starttime}{dgmdate($ann.starttime)}{else}-{/if}</td>
 										<td>{if $ann.endtime}{dgmdate($ann.endtime)}{else}-{/if}</td>
-										<td data-academy="{$ann.academy}">{if $ann.academy}{$academies[$ann.academy].name}{else}全局{/if}</td>
-										<td><a href="javascript:;" class="btn btn-xs default blue-stripe">编辑</a></td>
+										<td>{if $ann.academy}{$academies[$ann.academy].name}{else}全局{/if}</td>
+										<td><a href="javascript:;" class="btn btn-xs default blue-stripe" data-id="{$ann.id}">编辑</a></td>
 									</tr>
 									{/foreach}
 								</tbody>

@@ -30,11 +30,11 @@ $(document).ready(function() {
 		$.get("index.php?action=api&operation=badge", badges, function(data) {
 			$('.page-sidebar li span.badge').each(function() {
 				var idx = $(this).html();
-				if (data[idx] && data[idx] != "0") $(this).html(data[idx]).removeClass("hidden");
+				if (data[idx] && (data[idx].constructor==Object ? data[idx].num : data[idx]) != "0") $(this).html(data[idx].constructor==Object ? data[idx].num : data[idx]).removeClass("hidden");
 				else $(this).remove();
 			});
 			for (var badge in badges_detail) {
-				if (data[badge] && data[badge] != "0") $("#header_notification_bar .dropdown-menu-list").append('<li><a href="#"><span class="label label-icon label-' + badges_detail[badge].type + '"><i class="fa fa-' + badges_detail[badge].icon + '"></i></span>' + badges_tips[badge].replace("%d", data[badge]) + '</a></li>');
+				if (data[badge] && (data[badge].constructor==Object ? data[badge].num : data[badge]) != "0") $("#header_notification_bar .dropdown-menu-list").append('<li><a href="#"><span class="label label-icon label-' + badges_detail[badge].type + '"><i class="fa fa-' + badges_detail[badge].icon + '"></i></span>' + badges_tips[badge].replace("%d", data[badge].constructor==Object ? data[badge].num : data[badge]) + (data[badge].constructor==Object&&data[badge].time ? '<span class="time">' + data[badge].time + '</span>' : '') + '</a></li>');
 			}
 			var notinum = $("#header_notification_bar .dropdown-menu-list li").size();
 			$("#header_notification_bar span:lt(2)").html(notinum);
@@ -173,7 +173,7 @@ $.ajaxSetup({
 });
 
 $(document).ajaxError(function(event, jqxhr, settings, exception) {
-	var msg = jqxhr.responseText.substr(0, 1) == "{" ? $.parseJSON(jqxhr.responseText).msg : "";
+	var msg = jqxhr.responseText.substr(0, 1) == "{" ? $.parseJSON(jqxhr.responseText).msg : (jqxhr.responseText.indexOf('<!DOCTYPE') > -1 ? "" : (jqxhr.responseText.indexOf("\n") > -1 ? "<pre>" + jqxhr.responseText + "</pre>" : jqxhr.responseText));
 	var alertMethod = typeof modalAlert == "function" ? modalAlert : alert;
 	alertMethod(msg ? msg : "向服务器请求数据时发生了错误，请稍候再试");
 });
@@ -328,7 +328,7 @@ function showann(id) {
 		}
 		if (data.message) {
 			msg += "<dt>内容</dt>";
-			msg += "<dd>" + data.message + "</dd>";
+			msg += "<dd>" + data.type ? '<a href="' + data.message + '" target="_blank">' + data.message + '</a>' : nl2br(data.message) + "</dd>";
 		}
 		if (data.subject) {
 			msg += "</dl>";

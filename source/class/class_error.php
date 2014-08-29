@@ -176,7 +176,7 @@ class framework_error {
 		ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
 
 		send_http_status(500);
-		if(defined('IS_AJAX') && IS_AJAX) ajaxReturn(array(
+		if(defined('IS_AJAX') && IS_AJAX || defined('ACTION_NAME') && ACTION_NAME == 'api') ajaxReturn(array(
 			'errno' => 500,
 			'msg'	=> $errormsg
 		));

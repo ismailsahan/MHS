@@ -496,15 +496,6 @@ class core {
 	 *
 	 * @return string ip IP地址
 	 */
-	/*private function _get_client_ip() {
-		
-	}*/
-
-	/**
-	 * 获取客户端IP
-	 *
-	 * @return string ip IP地址
-	 */
 	private function _get_client_ip() {
 		$ip = $_SERVER['REMOTE_ADDR'];
 		if (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {

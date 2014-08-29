@@ -86,6 +86,6 @@ $lang = array(
 	'token_expired'				=> '表单已过期！请重新操作',
 	'undefined_err'				=> '发生了未知错误，请联系管理员',
 	'session_expired'			=> '会话超时，请尝试重新登录',
-	'siteclosed'				=> '站点关闭，请稍候访问<br />{_G/setting/closereason}',
+	'siteclosed'				=> '{_G/setting/closereason}',
 	'siteclosed_logindenied'	=> '您没有站点关闭时的超级管理权限，无法登录',
 );

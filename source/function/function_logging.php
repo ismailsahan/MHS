@@ -78,7 +78,17 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 			$url = U('logging/activate');
 		}
 
+		$_G['uid'] = $uid;
+		$_G['username'] = $username;
+		$_G['member'] = $_SESSION['user'];
+
 		if($redirect){
+			require_once libfile('function/nav');
+			if($_G['setting']['closed'] && !chkPermit('superlogin')) {
+				$url = U('logging/login?siteclosed=1');
+				unset($_SESSION['user']);
+			}
+
 			if(IS_AJAX){
 				ajaxReturn(array(
 					'errno' => 0,

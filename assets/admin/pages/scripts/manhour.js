@@ -103,9 +103,9 @@ var Manhour = function() {
 		return " td:nth-child(" + (columns[id] + 1) + ")";
 	}
 
-	function initDT(columns) {
+	function initDT(columns, noorder) {
 		$('#manhours').dataTable({
-			"order": [[columns["applytime"], 'asc']],
+			"order": noorder ? [] : [[columns["applytime"], 'asc']],
 			"lengthMenu": [
 				[10, 25, 50],// 每页显示数目，-1表示显示全部
 				[10, 25, 50] // 对应的文字
@@ -436,7 +436,7 @@ var Manhour = function() {
 				detail("activity", $(this).data("aid"));
 			});
 
-			initDT(columns);
+			initDT(columns, 1);
 
 			$("#showall").change(function() {
 				window.location.replace("{U manhour/applylog}&showall=" + ($(this).prop("checked") ? "1" : "0"));
@@ -539,7 +539,7 @@ var Manhour = function() {
 				detail("activity", $(this).data("aid"));
 			});
 
-			initDT(columns);
+			initDT(columns, 1);
 
 			$("#showall").change(function() {
 				window.location.replace("{U manhour/checklog}&showall=" + ($(this).prop("checked") ? "1" : "0"));

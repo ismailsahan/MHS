@@ -127,25 +127,19 @@ class ApiAction extends Action {
 
 	public function getann(){
 		$id = $_REQUEST['id'];
-		$ann = DB::fetch_first('SELECT `author`,`subject`,`type`,`starttime`,`endtime`,`message` FROM %t WHERE `id`=%d LIMIT 1', array('announcement', $id));
+		$ann = DB::fetch_first('SELECT `author`,`subject`,`type`,`starttime`,`endtime`,`message`,`academy` FROM %t WHERE `id`=%d LIMIT 1', array('announcement', $id));
 		if(!empty($ann)) {
 			if($ann['starttime'] != 0) {
-				$ann['starttime'] = dgmdate($ann['starttime'], 'd');
+				$ann['starttime'] = dgmdate($ann['starttime']);
 			} else {
 				unset($ann['starttime']);
 			}
 
 			if($ann['endtime'] != 0) {
-				$ann['endtime'] = dgmdate($ann['endtime'], 'd');
+				$ann['endtime'] = dgmdate($ann['endtime']);
 			} else {
 				unset($ann['endtime']);
 			}
-
-			if($ann['type'] == 1) {
-				$ann['message'] = nl2br($ann['message']);
-			}
-
-			unset($ann['type']);
 		}
 		ajaxReturn($ann, 'JSON');
 	}
@@ -360,11 +354,24 @@ class ApiAction extends Action {
 		if($_G['uid'] && !empty($_REQUEST['badge']) && is_array($_REQUEST['badge'])){
 			foreach($_REQUEST['badge'] as $badge){
 				switch($badge){
-					case 'profile/pm'			: $result[$badge] = 0; break;
-					case 'global/info'			: $result[$badge] = 0; break;
-					case 'members/verifyuser'	: $result[$badge] = DB::result_first('SELECT count(`uid`) FROM %t WHERE `status`=0', array('activation')); break;
-					case 'manhour/applylog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (2)', array('manhours')); break; //2,4
-					case 'manhour/checklog'		: $result[$badge] = DB::result_first(subusersqlformula(null, 'count(`id`)', 'manhours').' AND %t.`status` IN (3)', array('manhours')); break; //0,3,5
+					case 'profile/pm':
+						$result[$badge] = 0;
+						break;
+					case 'global/info':
+						$result[$badge] = 0;
+						break;
+					case 'members/verifyuser':
+						$result[$badge] = DB::fetch_first('SELECT count(`uid`) AS num, max(`submittime`) AS time FROM %t WHERE `status`=0', array('activation'));
+						if(!empty($result[$badge]['time'])) $result[$badge]['time'] = dgmdate($result[$badge]['time'], 'u');
+						break;
+					case 'manhour/applylog':
+						$result[$badge] = DB::fetch_first(subusersqlformula(null, 'count(`id`) AS num, max(`applytime`) AS time', 'manhours').' AND %t.`status` IN (2)', array('manhours'));
+						if(!empty($result[$badge]['time'])) $result[$badge]['time'] = dgmdate($result[$badge]['time'], 'u');
+						break; //2,4
+					case 'manhour/checklog':
+						$result[$badge] = DB::fetch_first(subusersqlformula(null, 'count(`id`) AS num, max(`applytime`) AS time', 'manhours').' AND %t.`status` IN (3)', array('manhours'));
+						if(!empty($result[$badge]['time'])) $result[$badge]['time'] = dgmdate($result[$badge]['time'], 'u');
+						break; //0,3,5
 				}
 			}
 		}

@@ -1,11 +1,11 @@
 var Index = function () {
 
-	function showChartTooltip(x, y, xValue, yValue) {
-		$('<div id="tooltip" class="chart-tooltip">' + yValue + '<\/div>').css({
+	function showChartTooltip(x, y, xValue, yValue, data) {
+		$('<div id="tooltip" class="chart-tooltip">' + data[xValue][0] + ": " + yValue + '<\/div>').css({
 			position: 'absolute',
 			display: 'none',
 			top: y - 40,
-			left: x - 40,
+			left: x - 25,
 			border: '0px solid #ccc',
 			padding: '2px 6px',
 			'background-color': '#fff'
@@ -88,7 +88,7 @@ var Index = function () {
 					$("#tooltip").remove();
 					var x = item.datapoint[0].toFixed(2),
 						y = item.datapoint[1].toFixed(2);
-					showChartTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1]);
+					showChartTooltip(item.pageX, item.pageY, item.datapoint[0], item.datapoint[1], mhdata);
 				}
 			}
 		});
