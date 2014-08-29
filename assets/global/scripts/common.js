@@ -328,7 +328,7 @@ function showann(id) {
 		}
 		if (data.message) {
 			msg += "<dt>内容</dt>";
-			msg += "<dd>" + data.type ? '<a href="' + data.message + '" target="_blank">' + data.message + '</a>' : nl2br(data.message) + "</dd>";
+			msg += "<dd>" + (data.type==1 ? '<a href="' + data.message + '" target="_blank">' + data.message + '</a>' : nl2br(data.message)) + "</dd>";
 		}
 		if (data.subject) {
 			msg += "</dl>";

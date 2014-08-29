@@ -21,10 +21,9 @@ class MainAction extends Action {
 			$template->assign('sidebarMenu', defaultNav());
 			$template->assign('adminNav', adminNav());
 			$template->assign('menuset', array('home'));
-
-			$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE `academy` IN (0,%d) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', $_G['member']['academy'], TIMESTAMP, TIMESTAMP));
-			$template->assign('announcement', $announcement);
 		}
+
+		$announcement = DB::fetch_all('SELECT `id`,`type`,`subject`,`starttime`,`message` FROM %t WHERE `academy` IN (0,%d) AND (`starttime`=0 OR `starttime`<=%d) AND (`endtime`=0 OR `endtime`>=%d) ORDER BY `displayorder` ASC', array('announcement', $_G['member']['academy'], TIMESTAMP, TIMESTAMP));
 
 		//$total_manhour = DB::result_first('SELECT sum(`manhour`) FROM %t WHERE `uid`=%d AND `status`=1', array('manhours', $_G['uid']));
 		//database_safecheck::setconfigstatus(false);
@@ -38,6 +37,7 @@ class MainAction extends Action {
 		//$template->assign('total_manhour', $total_manhour, true);
 		//$template->assign('manhour', $manhour['manhour'], true);
 		//$template->assign('rank', $manhour['rank'], true);
+		$template->assign('announcement', $announcement, true);
 		$template->assign('manhour', $_G['member']['manhour'], true);
 		$template->assign('rank', $_G['member']['rank'], true);
 		//$template->assign('onlinenum', $onlinenum, true);

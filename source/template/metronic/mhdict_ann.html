@@ -127,8 +127,13 @@
 									<th scope="col">操作选项</th>
 								</tr></thead>
 								<tbody>
+									{if empty($anns)}
+									<tr>
+										<td colspan="10">暂无你可管理的公告</td>
+									</tr>
+									{/if}
 									{foreach $anns as $ann}
-									<tr class="odd gradeX">
+									<tr>
 										<td><input type="checkbox" class="checkboxes" name="id[]" value="{$ann.id}" /></td>
 										<td><input type="number" class="form-control" name="displayorder[{$ann.id}]" value="{$ann.displayorder}" /></td>
 										<td>{$ann.author}</td>

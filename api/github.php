@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(0);
-set_time_limit(600);
+set_time_limit(900);
 ignore_user_abort(true);
 require '../source/function/function_core.php';
 
@@ -31,6 +31,13 @@ try {
 	echo 'Caught Exception: ',  $e->getMessage();
 	exit;
 }
+
+define('LOG_FILE', '../data/log/github_'.time().'_'.$input['after'].'.log');
+ob_start();
+echo 'Input = ';
+print_r($input);
+$data = ob_get_clean();
+file_put_contents(LOG_FILE, $data);
 
 if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	$files = array(
@@ -63,9 +70,12 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	//$files['update'] = array_diff($files['update'], $files['delete']);
 
 	foreach($files['delete'] as $file) {
+		$status = unlink('../'.$file);
 		echo "Delete: {$file}  [";
-		echo (unlink('../'.$file) ? 'Success' : 'Failed!');
+		echo ($status ? 'Success' : 'Failed!');
 		echo "]\n";
+
+		file_put_contents(LOG_FILE, "Delete: {$file} [".($status ? 'Success' : 'Failed!')."]\n", FILE_APPEND);
 	}
 
 	echo "\n\n======================================== File List ========================================\n";
@@ -75,13 +85,14 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 	}
 
 	if(count($files['update']) > 10) {
-		closeconnection();
+		//closeconnection();
 	}
 
 	echo "\n\n======================================== Update Log =======================================\n";
 	foreach($files['update'] as $file) {
 		if(in_array($file, array('.gitattributes', '.gitignore', 'config.inc.php', 'README.md'))) continue;
 		echo "Update: {$file}  ";
+		$status = true;
 		try {
 			$data = file_get_contents('https://raw.githubusercontent.com/WHUT-SIA/MHS/master/'.$file);
 			$dir = dirname('../'.$file);
@@ -89,11 +100,16 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 			if(file_put_contents('../'.$file, $data) === false) throw new Exception("Save file $file failed!");
 		} catch (Exception $e) {
 			echo "[Failed!]\n";
+			$status = false;
 			continue;
 		}
 		echo "[Success]\n";
+
+		file_put_contents(LOG_FILE, "Update: {$file} [".($status ? 'Success' : 'Failed!')."]\n", FILE_APPEND);
 	}
 }
+
+file_put_contents(LOG_FILE, "\n\nFinished.", FILE_APPEND);
 
 /*
 echo "\n\n======================================== HTTP Body ========================================\n";
