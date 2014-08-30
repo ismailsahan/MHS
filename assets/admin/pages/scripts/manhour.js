@@ -84,7 +84,7 @@ var Manhour = function() {
 			$.post("{U api/activity}", {
 				"id": id
 			}, function(data) {
-				if (!data.id) return window.location.reload();
+				if (!data.id) return modalAlert("活动数据获取失败 该活动不存在或已删除");
 				$("#act-modal p.col-md-9").each(function() {
 					var act = $(this).data("act");
 					if (act == "starttime" || act == "endtime") {
@@ -600,6 +600,114 @@ var Manhour = function() {
 					id.push($(this).val());
 				});
 				$.post("{U manhour/checklog?inajax=1}", {type:"del",ids:id.join(",")}, function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						e.closest("tr").each(function() {
+							$('#manhours').DataTable().row(this).remove();
+						});
+						$('#manhours').DataTable().draw();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#delmh").modal("hide");
+					}
+				}, "json");
+			});
+		},
+
+		manage: function() {
+			var columns = {
+				"checkbox"  : 0,
+				"avatar"    : 1,
+				"username"  : 2,
+				"realname"  : 3,
+				"gender"    : 4,
+				"actname"   : 5,
+				"time"      : 6,
+				"manhour"   : 7,
+				"applytime" : 8,
+				"status"    : 9,
+				"remark"    : 10,
+				"operator"  : 11,
+				"verifytime": 12,
+				"verifytext": 13
+			};
+
+			/*$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns) + ", #manhours tr:gt(0)" + nthchild("verifytime", columns)).each(function() {
+				$(this).text(getTime($(this).data("time")));
+			});*/
+
+			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
+				var t = $(this).data("status");
+				$(this).html(statusLabel(t));
+			});
+
+			$('#manhours tr:gt(0)' + nthchild("actname", columns) + " a").click(function() {
+				detail("activity", $(this).data("aid"));
+			});
+
+			initDT(columns, 1);
+
+			$("#passmh-button, #rejectmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个工时记录");
+				}
+				var id = [], type = $(this).prop("id").substr(0, 4)=="pass" ? "pass" : "reject";
+				e.each(function () {
+					id.push($(this).val());
+				});
+				$("#verifymh input[name='type']").val(type);
+				$("#verifymh input[name='ids']").val(id.join(","));
+				if(type == "pass") {
+					$("#verifymh .radio-list").closest(".form-group").hide();
+				} else {
+					$("#verifymh .radio-list").closest(".form-group").show();
+				}
+				$("#verifymh").modal("show");
+			});
+			$("#delmh-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个工时记录");
+				}
+				$("#delmh").modal("show");
+			});
+
+			$("#verifymh form").submit(function () {
+				var statusid = 0;
+				if($("#verifymh input[name='type']").val() == "pass") {
+					statusid = 1;
+				} else {
+					statusid = $("#verifymh .radio-list :radio:checked").val()=="0" ? 4 : 5;
+					if($("#verifymh textarea").val() == "") {
+						modalAlert("请填写拒绝理由");
+						return false;
+					}
+				}
+
+				showloading();
+				$.post("{U manhour/manage?inajax=1}", $("#verifymh form").serialize(), function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
+						if(statusid) e.closest("tr").each(function() {
+							$('#manhours').dataTable().fnUpdate(statusLabel(statusid, status), this, columns["status"]);
+						});
+						e.prop("checked", false).prop("disabled", true).uniform.update();
+						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
+						$("#verifymh").modal("hide");
+					}
+				}, "json");
+
+				return false;
+			});
+			$("#delmh .modal-footer button.red").click(function () {
+				showloading();
+				var id = [];
+				$('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).each(function () {
+					id.push($(this).val());
+				});
+				$.post("{U manhour/manage?inajax=1}", {type:"del",ids:id.join(",")}, function (data) {
 					modalAlert(data.msg);
 					if(!data.errno) {
 						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());

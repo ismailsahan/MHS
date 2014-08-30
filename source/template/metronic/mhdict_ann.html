@@ -45,7 +45,7 @@
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
 						<h4 class="modal-title">公告详情</h4>
 					</div>
-					<div class="modal-body form">
+					<div class="modal-body">
 						<input type="hidden" name="id" value="" />
 						<div class="form-body">
 							<div class="form-group">
@@ -77,17 +77,15 @@
 									</div>
 								</div>
 							</div>
-							{if $access_to_global_ann}
 							<div class="form-group">
 								<label class="col-md-3 control-label">可视范围 <span class="required">*</span></label>
 								<div class="col-md-9">
 									<div class="radio-list">
-										<label class="radio-inline"><input type="radio" name="academy" value="0" checked />全站</label>
-										<label class="radio-inline"><input type="radio" name="academy" value="1" />{$academies[$_G.member.academy].name}</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="1" checked />{$academies[$_G.member.academy].name}</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="0"{if $access_to_global_ann} disabled{/if} />全站</label>
 									</div>
 								</div>
 							</div>
-							{/if}
 							<div class="form-group last">
 								<label class="col-md-3 control-label">公告内容 <span class="required">*</span></label>
 								<div class="col-md-9">

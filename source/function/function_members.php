@@ -1,7 +1,5 @@
 <?php
 
-!defined('IN_APP_FRAMEWORK') && exit('Access Denied');
-
 function subusersqlformula($addcond = '', $selector = '*', $addtbl = null, $formula = null) {
 	global $_G;
 	if(!class_exists('formula')) {
@@ -35,4 +33,12 @@ function checkformulacredits($formula) {
 		array('+', '-', '*', '/', ' '),
 		array('extcredits[1-8]', 'digestposts', 'posts', 'threads', 'oltime', 'friends', 'doings', 'polls', 'blogs', 'albums', 'sharings')
 	);
+}
+
+function getusernamebyuid($uid) {
+	static $users = array();
+	if(!isset($users[$uid])) {
+		$users[$uid] = DB::result_first('SELECT `username` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $uid));
+	}
+	return $users[$uid];
 }

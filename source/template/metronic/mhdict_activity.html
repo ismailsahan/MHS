@@ -1,0 +1,198 @@
+{extends 'common_main.html'}
+{block subtitle}{lang nav/activity}{/block}
+{block pagestyle}
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css"/>
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" />
+<style type="text/css" media="screen">
+#activities tr, #activities td {
+	vertical-align: middle;
+}
+</style>
+{/block}
+{block pageplugins}
+<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+	<script type="text/javascript" src="{static 'assets/admin/pages/scripts/mhdict.js'}"></script>
+{/block}
+{block pagejs}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			Metronic.init();
+			Layout.init();
+			//IdleTimeout.init();
+			Mhdict.initactivity();
+		});
+	</script>
+{/block}
+{block pgcontent}
+			<div id="alert-modal" class="modal fade" tabindex="-1" data-backdrop="static">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">提示信息</h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
+				</div>
+			</div>
+			<div id="act-modal" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<form action="{U 'mhdict/activity?inajax=1'}" class="form-horizontal" role="form" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+						<h4 class="modal-title">活动详情</h4>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="id" value="" />
+						<div class="form-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label">活动名称 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<input type="text" name="name" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">活动地点 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="place" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">开始时间 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="starttime" class="form-control form-control-inline" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">结束时间 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="endtime" class="form-control form-control-inline" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">主办者 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="sponsor" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">承办者 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<input type="text" name="undertaker" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">工时申请 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="radio-list">
+										<label class="radio-inline"><input type="radio" name="available" value="1" checked />允许</label>
+										<label class="radio-inline"><input type="radio" name="available" value="0" />禁止</label>
+									</div>
+									<span class="help-block">即是否允许用户申请此活动的工时</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">社团 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="radio-list">
+										<label class="radio-inline"><input type="radio" name="academy" value="1" checked />{$academies[$_G.member.academy].name}分社</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="0"{if !$access_to_global_act} disabled{/if} />总社</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group last">
+								<label class="col-md-3 control-label">活动介绍 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<textarea name="intro" rows="4" class="form-control" style="resize:vertical"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+						<button type="submit" class="btn blue">提交</button>
+					</div>
+				</form>
+			</div>
+			<div id="delact" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					<h4 class="modal-title">删除活动</h4>
+				</div>
+				<div class="modal-body">
+					<div class="note note-danger">
+						<h4 class="block">警告</h4>
+						<p>删除后与之对应的工时也将被删除，确定要继续吗？</p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+					<button type="button" class="btn red">继续</button>
+				</div>
+			</div>
+			<div class="portlet box blue-hoki">
+				<div class="portlet-title">
+					<div class="caption"><i class="fa fa-user"></i> 活动管理</div>
+					<div class="actions">
+						<div class="btn-group">
+							<a class="btn default" href="#" data-toggle="dropdown">显示列 <i class="fa fa-angle-down"></i></a>
+							<div id="column_toggler" class="dropdown-menu hold-on-click dropdown-checkboxes pull-right">
+								<label><input type="checkbox" data-column="name" checked>活动名称</label>
+								<label><input type="checkbox" data-column="place" checked>活动地点</label>
+								<label><input type="checkbox" data-column="starttime" checked>开始时间</label>
+								<label><input type="checkbox" data-column="endtime" checked>结束时间</label>
+								<label><input type="checkbox" data-column="sponsor" checked>主办者</label>
+								<label><input type="checkbox" data-column="undertaker" checked>承办者</label>
+								<label><input type="checkbox" data-column="intro" checked>活动介绍</label>
+								<label><input type="checkbox" data-column="available" checked>工时申请</label>
+								<label><input type="checkbox" data-column="academy" checked>社团</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="portlet-body">
+					<div class="table-toolbar">
+						<button id="addact-button" class="btn green"><i class="fa fa-plus"></i> 新增活动</button>
+						<button id="delact-button" class="btn red"><i class="fa fa-times"></i> 删除活动</button>
+					</div>
+					<table class="table table-striped table-bordered table-hover" id="activities">
+						<thead><tr>
+							<th style="width:25px !important"><input type="checkbox" class="group-checkable" data-set="#activities .checkboxes:enabled" /></th>
+							<th>活动名称</th>
+							<th>活动地点</th>
+							<th>开始时间</th>
+							<th>结束时间</th>
+							<th>主办者</th>
+							<th>承办者</th>
+							<th>活动介绍</th>
+							<th>工时申请</th>
+							<th>社团</th>
+							<th></th>
+						</tr></thead>
+						<tbody>
+							{foreach $activities as $act}
+							<tr class="odd gradeX">
+								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$act.id}" /></td>
+								<td>{$act.name}</td>
+								<td>{$act.place|default:'-'}</td>
+								<td>{if $act.starttime}{dgmdate($act.starttime)}{else}-{/if}</td>
+								<td>{if $act.endtime}{dgmdate($act.endtime)}{else}-{/if}</td>
+								<td>{$act.sponsor|default:'-'}</td>
+								<td>{$act.undertaker|default:'-'}</td>
+								<td>{nl2br($act.intro)|default:'-'}</td>
+								<td>{if $act.available}<span class="label label-sm label-success">允许</span>{else}<span class="label label-sm label-danger">禁止</span>{/if}</td>
+								<td>{if $ann.academy}{$academies[$act.academy].name}分社{else}总社{/if}</td>
+								<td><a href="javascript:;" class="btn btn-xs default blue-stripe" data-id="{$act.id}">编辑</a></td>
+							</tr>
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+{/block}
