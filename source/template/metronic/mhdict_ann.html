@@ -82,7 +82,7 @@
 								<div class="col-md-9">
 									<div class="radio-list">
 										<label class="radio-inline"><input type="radio" name="academy" value="1" checked />{$academies[$_G.member.academy].name}</label>
-										<label class="radio-inline"><input type="radio" name="academy" value="0"{if $access_to_global_ann} disabled{/if} />全站</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="0"{if !$access_to_global_ann} disabled{/if} />全站</label>
 									</div>
 								</div>
 							</div>
