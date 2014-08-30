@@ -68,10 +68,10 @@
 							<i class="fa fa-sign-in"></i>
 						</div>
 						<div class="details">
-							<div class="number lastlogin">{nocache}{dgmdate($_G.member.lastlogin, 'd')}{/nocache}</div>
+							<div class="number lastlogin">{nocache}{if $_G.member.lastlogin}{dgmdate($_G.member.lastlogin, 'u')}{else}-{/if}{/nocache}</div>
 							<div class="desc">上次登录</div>
 						</div>
-						<a class="more">{nocache}{dgmdate($_G.member.lastlogin, 'dt')}{/nocache}</a>
+						<a class="more">{nocache}{if $_G.member.lastlogin}{dgmdate($_G.member.lastlogin, 'dt')}{else}无记录{/if}{/nocache}</a>
 					</div>
 				</div>
 				<!--{*<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">

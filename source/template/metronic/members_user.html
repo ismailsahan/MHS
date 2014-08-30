@@ -198,7 +198,7 @@
 								<td>{$user.league|default:'-'}</td>
 								<td>{$user.department|default:'-'}</td>
 								<td>{$user.mobile|default:'-'}</td>
-								<td data-time="{$user.lastlogin}">{dgmdate($user.lastlogin, 'u')}</td>
+								<td data-time="{$user.lastlogin}">{if $user.lastlogin}{dgmdate($user.lastlogin, 'u')}{else}-{/if}</td>
 								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">编辑</a> <a href="javascript:;" class="btn btn-xs default red-stripe">删除</a></td>
 							</tr>
 							{/foreach}
