@@ -230,7 +230,7 @@ class MembersAction extends Action {
 					} elseif(!DB::result_first(subusersqlformula(DB::table('users').'.`uid`='.intval($_POST['uid']), 'count(*)'))) {
 						$return['errno'] = 1;
 						$return['msg'] = '无法添加 UID 不存在或者你不能管理的用户';
-					} elseif(!($gid = DB::result_first('SELECT `adminid` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $_POST['uid'])))){
+					} elseif($gid = DB::result_first('SELECT `adminid` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $_POST['uid']))){
 						$return['errno'] = 1;
 						$return['msg'] = $gid==$_POST['gid'] ? '你所添加的用户已在此组中' : "你所添加的用户已另属 ID 为 {$gid} 的管理组，请先在对应的组中移除后再尝试添加";
 					} else {
