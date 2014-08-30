@@ -210,7 +210,6 @@ class MembersAction extends Action {
 			} elseif(isset($_GET['agrpmem'])) { // Manage admingroup's members
 				if(isset($_GET['gid'])) {
 					$agrp = group::getgroups('admin');
-					$_GET['gid'] = 1;
 					$users = array();
 					if(isset($agrp[intval($_GET['gid'])])) {
 						$query = DB::query('SELECT a.`uid`,a.`username`,b.`realname` FROM %t AS a, %t AS b WHERE a.`uid`=b.`uid` AND `adminid`=%d', array('users', 'users_profile', $_GET['gid']));
