@@ -30,7 +30,7 @@ class ManhourAction extends Action {
 	public function applylog(){
 		global $_G, $template;
 
-		has_permit('manhour_applylog');
+		has_permit('applylog');
 
 		if(IS_AJAX){
 			$return = array(
@@ -161,7 +161,7 @@ class ManhourAction extends Action {
 	public function checklog(){
 		global $_G, $template;
 
-		has_permit('manhour_checklog');
+		has_permit('checklog');
 
 		if(IS_AJAX){
 			$return = array(
@@ -292,7 +292,7 @@ class ManhourAction extends Action {
 	public function manage(){
 		global $_G, $template;
 
-		has_permit('manhour_manage');
+		has_permit('manage');
 
 		if(IS_AJAX){
 			$return = array(

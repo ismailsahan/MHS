@@ -43,7 +43,7 @@ class MembersAction extends Action {
 
 					if($uid == $_G['uid']) {
 						$ret['msg'] = '你不能删除自己的账号！';
-					} elseif(!DB::result_first(subusersqlformula(null, 'count(*)', null, 'AND uid='.$uid))) {
+					} elseif(!DB::result_first(subusersqlformula('AND uid='.$uid, 'count(*)'))) {
 						$ret['msg'] = '你不能删除不存在或你无权管理的用户！';
 					} else {
 						$errno = deluser($uid, $uc);
@@ -200,7 +200,80 @@ class MembersAction extends Action {
 		require_once libfile('class/group');
 
 		if(IS_AJAX) {
-			;
+			$return = array(
+				'errno' => 0,
+				'msg' => ''
+			);
+
+			if(isset($_POST['agid'])) {
+				$agrp = group::getgroups('admin');
+				if(isset($agrp[intval($_POST['agid'])])) {
+					$return = $agrp[intval($_POST['agid'])];
+					unset($return['relation']);
+					ajaxReturn($return, 'JSON');
+				}
+			} elseif(isset($_POST['id'])) {
+				$name = htmlspecialchars(remove_xss(trim($_POST['name'])));
+				$parent = intval($_POST['parent']);
+				$note = htmlspecialchars(remove_xss(trim($_POST['note'])));
+				$formula = trim($_POST['formula']);
+				$permit = $_POST['permit'];
+
+				if(empty($name)) {
+					$return['errno'] = 1;
+					$return['msg'] = '组头衔不能为空';
+				} elseif(empty($permit) || !is_array($permit)) {
+					$return['errno'] = 1;
+					$return['msg'] = '访问权限为空或非法';
+				} else {
+					$agrp = group::getgroups('admin');
+					if(!isset($agrp[$parent])) {
+						$return['errno'] = 1;
+						$return['msg'] = '父级管理组非法';
+					} elseif(strspn($formula, '()')%2 > 0) {
+						$return['errno'] = 1;
+						$return['msg'] = '公式语法错误';
+					}
+
+					$_formula = group::combineformula($formula, $agrp[$parent]['formula']);
+					unset($agrp);
+					try {
+						DB::query(subusersqlformula('', 'count(*)', null, $_formula));
+					} catch (Exception $e) {
+						framework_error::db_error($e, false, false);
+						$return['errno'] = 1;
+						$return['msg'] = '公式语法错误或存在安全威胁';
+					}
+
+					$data = array(
+						'name'    => $name,
+						'parent'  => $parent,
+						'note'    => $note,
+						'formula' => $formula,
+						'permit'  => $permit
+					);
+					try {
+						if($_POST['id']) {
+							group::editgroup('admin', intval($_POST['id']), $data);
+							$return['msg'] = '管理组 '.$name.' 已成功添加';
+						} else {
+							group::addgroup('admin', $data);
+							$return['msg'] = '已成功编辑管理组 '.$name;
+						}
+					} catch (Exception $e) {
+						$return['errno'] = 1;
+						$return['msg'] = $e->getMessage();
+					}
+				}
+				
+			}
+
+			if(empty($return['msg'])){
+				$return['errno'] = 1;
+				$return['msg'] = '非法请求';
+			}
+
+			ajaxReturn($return, 'JSON');
 		}else{
 
 			if(!$template->isCached('members_admingroup')){
@@ -210,8 +283,11 @@ class MembersAction extends Action {
 			}
 
 			$agrp = group::getgroups('admin');
+			//$pgrp = DB::fetch_first('SELECT * FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $agrp[$_G['member']['adminid']]['parent']));
 
 			$template->assign('agrp', $agrp, true);
+			//$template->assign('pgrp', $pgrp, true);
+			$template->assign('permits', getpermitlist(), true);
 			$template->display('members_admingroup');
 		}
 	}

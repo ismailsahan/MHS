@@ -343,7 +343,116 @@ var Members = function () {
 				"extra"		: 5
 			};
 
+			$("#addgrp-button").click(function() {
+				$('#grpdetail form').get(0).reset();
+				$('#grpdetail form').validate().resetForm();
+				$('#grpdetail .form-group').removeClass('has-error').removeClass('has-success');
+				$("#grpdetail input[name='id']").val("");
+				$('#grpdetail form').find(":checkbox").uniform.update();
+				$("#grpdetail").modal("show");
+			});
+			$("#users tr:gt(0)" + nthchild("extra", columns) + " > a:nth-child(1)").click(function() {
+				showloading();
+				var agid = $(this).data("gid");
+				$.post("{U members/admingroup?inajax=1}", {"agid":agid}, function(data) {
+					if(data.errno) return modalAlert(data.msg);
+					$('#grpdetail form').validate().resetForm();
+					$('#grpdetail .form-group').removeClass('has-error').removeClass('has-success');
+					$("#grpdetail input[name='id']").val(data.gid);
+					$("#grpdetail input[name='name']").val(data.name);
+					$("#grpdetail input[name='note']").val(data.note);
+					$("#grpdetail input[name='formula']").val(data.formula);
+					$("#grpdetail input[name='permit']").each(function() {
+						$(this).prop("checked", $.inArray($(this).val(), data.permit) > -1 ? true : false);
+					});
+					$("#grpdetail form :checkbox").uniform.update();
+					$("#grpdetail [name='parent']").val(data.parent);
+					$("#grpdetail").modal("show");
+				}, "json");
+			});
+			$("#users tr:gt(0)" + nthchild("extra", columns) + " > a:nth-child(2)").click(function() {
+				$("#grpuser").modal("show");
+			});
+
+			var grps = {};
+			$("#users tr:gt(0)" + nthchild("name", columns)).each(function() {
+				var t = $(this), id = t.data("gid"), v = t.html();
+				if(id!="0" && !grps[id]) grps[id] = v;
+			});
+			$('#grpdetail .select2').append($.map(grps, function(v, k) {
+				return $('<option>', {
+					val: k,
+					text: v
+				});
+			}))/*.select2({
+				minimumResultsForSearch: -1,
+				allowClear: false
+			})*/;
+
 			initDT(columns);
+
+			$('#grpdetail form').validate({
+				errorElement: 'span',
+				errorClass: 'help-block',
+				focusInvalid: false,
+				ignore: "",
+				rules: {
+					name: {
+						required: true
+					},
+					parent: {
+						required: true
+					},
+					note: {},
+					formula: {},
+					"permit[]": {
+						required: true
+					}
+				},
+
+				messages: {
+					name: {
+						required: "组头衔不能为空"
+					},
+					parent: {
+						required: "直属上级不能为空"
+					},
+					note: {},
+					formula: {},
+					"permit[]": {
+						required: "访问权限不能为空"
+					}
+				},
+
+				highlight: function(element) {
+					$(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+				},
+
+				unhighlight: function(element) {
+					$(element).closest('.form-group').removeClass('has-error');
+				},
+
+				success: function(label) {
+					label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+				},
+
+				errorPlacement: function(error, element) {
+					error.insertAfter(element.is(":checkbox") ? element.closest(".checkbox-list") : element);
+				},
+
+				submitHandler: function(form) {
+					showloading();
+					$.post($(form).attr("action"), $(form).serialize(), function(data) {
+						modalAlert(data.msg);
+						if (!data.errno) {
+							$("#activities").modal("hide");
+							$("#alert-modal").on("hide.bs.modal", function() {
+								window.location.reload();
+							});
+						}
+					});
+				}
+			});
 
 			$('#showgraph-button').click(function() {
 				if(!$(this).data('inited')) {

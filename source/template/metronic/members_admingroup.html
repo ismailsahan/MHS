@@ -1,5 +1,5 @@
 {extends 'common_main.html'}
-{block subtitle}{lang nav/user}{/block}
+{block subtitle}{lang nav/admingroup}{/block}
 {block pagestyle}
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datepicker/css/datepicker3.css" />
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-datetimepicker/css/datetimepicker.css" />
@@ -13,6 +13,8 @@
 </style>
 {/block}
 {block pageplugins}
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="assets/global/plugins/jquery-validation/js/additional-methods.min.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
@@ -36,71 +38,71 @@
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
 					<h4 class="modal-title">提示信息</h4>
 				</div>
-				<div class="modal-body">
-					<div class="row"><div class="col-md-12"></div></div>
-				</div>
+				<div class="modal-body"></div>
 				<div class="modal-footer">
 					<button type="button" data-dismiss="modal" class="btn blue">确定</button>
 				</div>
 			</div>
-			<div id="edituser" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">编辑用户审核资料</h4>
-				</div>
-				<div class="modal-body">
-					<form action="{U members/verifyuser}" class="form-horizontal">
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">活动<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10"><select class="select2 form-control" id="aid" name="aid" required><option value=""></option></select></div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">工时<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10"><input type="text" class="form-control" name="manhour" value="" required /></div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">时间<span class="required">*</span></label>
-							<div class="col-xs-9 col-sm-10">
-								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+0d">
-									<input type="text" name="time" class="form-control" required />
-									<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
+			<div id="grpdetail" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
+				<form action="{U 'members/admingroup?inajax=1'}" class="form-horizontal" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+						<h4 class="modal-title">管理组详情</h4>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="id" value="" />
+						<div class="form-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label">组头衔 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<input type="text" name="name" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">直属上级 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<select name="parent" class="select2 form-control"><option value=""></option></select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">备注 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<textarea name="note" rows="3" class="form-control" style="resize:vertical"></textarea>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">管理公式 <span class="required">&nbsp;</span></label>
+								<div class="col-md-9">
+									<textarea name="formula" rows="3" class="form-control" style="resize:vertical"></textarea>
+									<span class="help-block">系统使用公式来匹配一个组可管理的用户群。以下是几个例子: 
+									<br /><code>academy=1</code> 匹配上级管理组可管理的用户群里学院ID为1的用户；
+									<br /><code>grade=2014</code>匹配2014年入学的用户；
+									<br /><code>gender=1</code>匹配性别代号为1的用户；
+									<br /><code>specialty='材料'</code>匹配专业为材料的用户；
+									<br /><code>league='自强社'</code>匹配参加了自强社社团的用户；
+									<br /><code>academy=1 && grade=2014</code>匹配学院ID为1且2014年入学的用户；
+									<br /><code>academy=1 || class='m1301'</code>匹配学院ID为1或班级为m1301的用户；
+									<br /><code>academy IN (1,2,3,6)</code>匹配学院ID在1,2,3,6列表中的用户；
+									<br />留空则表示该管理组可管理的用户与上级管理组相同
+									<br />注意：系统不支持模糊匹配，也就是说用户未填写资料或者填写不准确时将不会被匹配到。推荐仅使用<code>academy</code>和<code>grade</code>来构造公式</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">访问权限 <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="checkbox-list">
+										{*<!--{foreach $permits as $p}<label class="checkbox"><input type="checkbox" name="permit[]" value="{$p}"{if $_G.member.adminid!=1 && !in_array($p, $agrp[$_G.member.adminid].permit)} disabled{/if} />{lang('permit', $p)}</label>{/foreach}-->*}
+										{foreach $permits as $p}{if $_G.member.adminid==1 || in_array($p, $agrp[$_G.member.adminid].permit)}<label class="checkbox"><input type="checkbox" name="permit[]" value="{$p}" />{lang('permit', $p)}</label>{/if}{/foreach}
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-2">留言<span class="required">&nbsp;</span></label>
-							<div class="col-xs-9 col-sm-10"><textarea class="form-control" name="remark" rows="4"></textarea></div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
-					<button type="button" class="btn blue">申报</button>
-				</div>
-			</div>
-			<div id="verifyuser" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-					<h4 class="modal-title">审核用户</h4>
-				</div>
-				<div class="modal-body">
-					<form action="{U members/verifyuser}" class="form-horizontal">
-						<input type="hidden" name="type" value="" />
-						<input type="hidden" name="uids" value="" />
-						<div class="form-group">
-							<label class="control-label col-xs-12"><p class="text-left">已选择用户</p></label>
-							<div class="col-xs-12"><p class="form-control-static"></p></div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-xs-12"><p class="text-left">审核附言</p></label>
-							<div class="col-xs-12"><textarea class="form-control" name="verifytext" rows="6"></textarea></div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
-					<button type="button" class="btn blue">提交</button>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+						<button type="submit" class="btn blue">确定</button>
+					</div>
+				</form>
 			</div>
 			<div id="delgrp" class="modal fade modal-scroll" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="760">
 				<div class="modal-header">
@@ -110,10 +112,10 @@
 				<div class="modal-body">
 					<div class="note note-danger">
 						<h4 class="block">警告</h4>
-						<p>删除申请记录后任何人将无法查看已删除的申请记录，确定要继续吗？</p>
+						<p>你选择删除一个或多个管理组！确定要继续吗？</p>
 					</div>
 					<div class="row">
-						<div class="col-md-12">即将删除的记录：</div>
+						<div class="col-md-12">即将删除的组：</div>
 						<div class="col-md-12" id="ready2del"></div>
 					</div>
 				</div>
@@ -136,7 +138,7 @@
 			</div>
 			<div class="portlet box blue-hoki">
 				<div class="portlet-title">
-					<div class="caption"><i class="fa fa-user"></i> 管理组</div>
+					<div class="caption"><i class="fa fa-group"></i> 管理组</div>
 				</div>
 				<div class="portlet-body">
 					<div class="table-toolbar">
@@ -149,19 +151,19 @@
 							<th scope="col" style="width:25px !important"><input type="checkbox" class="group-checkable" data-set="#users .checkboxes:enabled" /></th>
 							<th scope="col" style="width:2em">ID</th>
 							<th>组头衔</th>
-							<th>上级</th>
+							<th>直属上级</th>
 							<th>备注</th>
-							<th scope="col" style="width:16em !important">管理</th>
+							<th scope="col" style="width:11em !important">管理</th>
 						</tr></thead>
 						<tbody>
 							{foreach $agrp as $grp}
 							<tr class="odd gradeX">
 								<td><input type="checkbox" class="checkboxes" name="id[]" value="{$grp.gid}"{if $grp.gid==1||$grp.gid==$_G.member.adminid} disabled{/if} /></td>
 								<td>{$grp.gid}</td>
-								<td>{$grp.name}</td>
-								<td>{$grp.parentgrp|default:'-'}</td>
-								<td>{$grp.note|default:'-'}</td>
-								<td><a href="javascript:;" class="btn btn-xs default blue-stripe">权限详情</a>{if !$grp@first} <a href="javascript:;" class="btn btn-xs default red-stripe">编辑权限</a> <a href="javascript:;" class="btn btn-xs default green-stripe">查看成员</a>{/if}</td>
+								<td data-gid="{$grp.gid}">{$grp.name}</td>
+								<td data-parent="{$grp.parent}">{$grp.parentgrp|default:'-'}</td>
+								<td>{nl2br($grp.note)|default:'-'}</td>
+								<td>{if !$grp@first}<a href="javascript:;" class="btn btn-xs default blue-stripe" data-gid="{$grp.gid}">编辑组</a><a href="javascript:;" class="btn btn-xs default green-stripe" data-gid="{$grp.gid}">编辑成员</a>{else}-{/if}</td>
 							</tr>
 							{/foreach}
 						</tbody>

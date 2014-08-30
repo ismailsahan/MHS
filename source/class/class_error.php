@@ -111,7 +111,7 @@ class framework_error {
 		return array($phpmsg, $log);
 	}
 
-	public static function db_error($exception) {
+	public static function db_error($exception, $show = true, $halt = true) {
 		global $_G;
 
 		list($phpmsg, $logtrace) = framework_error::debug_backtrace($exception);
@@ -137,7 +137,7 @@ class framework_error {
 			$msg .= $msg_errorinfo;
 		}
 
-		framework_error::show_error($msg, $phpmsg);
+		$show && framework_error::show_error($msg, $phpmsg);
 		unset($msg, $msg_errorinfo, $phpmsg);
 
 		$errormsg = '<b>'.$title.'</b>';
@@ -148,7 +148,7 @@ class framework_error {
 		$errormsg .= '<b>PHP:</b> '.$logtrace;
 
 		framework_error::write_error_log($errormsg);
-		exit();
+		$halt && exit();
 
 	}
 

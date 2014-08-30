@@ -83,11 +83,11 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 		$_G['member'] = $_SESSION['user'];
 
 		if($redirect){
-			require_once libfile('function/nav');
-			if($_G['setting']['closed'] && !chkPermit('superlogin')) {
+			/*require_once libfile('function/nav');
+			if($_G['setting']['closed'] && !chkPermit('globalaccess')) {
 				$url = U('logging/login?siteclosed=1');
 				unset($_SESSION['user']);
-			}
+			}*/
 
 			if(IS_AJAX){
 				ajaxReturn(array(

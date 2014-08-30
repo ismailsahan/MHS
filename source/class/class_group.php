@@ -45,6 +45,8 @@ class group {
 			}
 		}
 
+		$data['formula'] = self::combineformula($data['formula'], $parent['formula']);
+
 		$data['relation'] = empty($parent['relation']) ? $parent['gid'] : $parent['relation'].','.$parent['gid'];
 		DB::query('INSERT INTO %t (`parent`, `relation`, `name`, `note`, `formula`, `permit`) VALUES (%d, %s, %s, %s, %s, %s)', array(
 			$tbl,
@@ -84,6 +86,7 @@ class group {
 
 		$data['relation'] = empty($parent['relation']) ? $parent['gid'] : $parent['relation'].','.$parent['gid'];
 		$data['permit'] = implode(',', $data['permit']);
+		$data['formula'] = self::combineformula($data['formula'], $parent['formula']);
 		if(isset($data['gid'])) unset($data['gid']);
 
 		DB::update($tbl, $data, '`gid`='.$gid);
@@ -95,6 +98,12 @@ class group {
 				$gid
 			));
 		}
+		DB::query('UPDATE %t SET `formula`=REPLACE(`formula`, %s, %s) WHERE FIND_IN_SET(%d, `relation`)', array(
+			$tbl,
+			$groups[$gid]['formula'],
+			$data['formula'],
+			$gid
+		));
 
 		Cache::delete('admingroup_'.$_G['member']['adminid']);
 	}
@@ -125,16 +134,29 @@ class group {
 
 		if($agrp === null || APP_FRAMEWORK_DEBUG) {
 			$agrp = DB::fetch_all('SELECT * FROM %t WHERE FIND_IN_SET(%d, `relation`) OR `gid`=%d', array('admingroup', $gid, $gid), 'gid');
-			
 			foreach($agrp as $k => &$grp) {
-				$grp['parentgrp'] = $grp['parent'] ? ($k==$gid ? DB::result_first('SELECT `name` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $grp['parent'])) : $agrp[$grp['parent']]['name']) : '';
+				if($k == $gid) {
+					$parentgrp = DB::fetch_first('SELECT `name`,`formula` FROM %t WHERE `gid`=%d LIMIT 1', array('admingroup', $grp['parent']));
+				}
+				$grp['parentgrp'] = $grp['parent'] ? ($k==$gid ? $parentgrp['name'] : $agrp[$grp['parent']]['name']) : '';
+				$grp['formula'] = $grp['formula'] ? ($k==$gid ? self::stripformula($grp['formula'], $parentgrp['formula']) : self::stripformula($grp['formula'], $agrp[$grp['parent']]['formula'])) : '';
+				$grp['permit'] = $grp['permit'] ? explode(',', $grp['permit']) : array();
 			}
+			if(isset($agrp[1])) $agrp[1]['permit'] = getpermitlist();
 			//trace($agrp);
 
 			Cache::set($cacheid, $agrp, 604800);
 		}
 
 		return $agrp;
+	}
+
+	public static function combineformula($formula, $parentformula) {
+		return $formula ? ($parentformula ? $parentformula.'AND ('.$formula.')' : $formula) : $parentformula;
+	}
+
+	private static function stripformula($formula, $parentformula) {
+		return $formula==$parentformula ? '' : ($parentformula ? substr(substr($formula, 0, strlen($formula)-1), strlen($parentformula)+5) : $formula);
 	}
 
 }

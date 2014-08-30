@@ -47,7 +47,7 @@ class MhdictAction extends Action {
 				$endtime = $_POST['endtime'];
 				$type = $_POST['type'] ? 1 : 0;
 				$message = htmlspecialchars(remove_xss(trim($_POST['message'])));
-				$academy = chkPermit('access_to_global_ann') && $_POST['academy']==='0' ? 0 : $_G['member']['academy'];
+				$academy = (chkPermit('access_to_global_ann') || chkPermit('manage_all_ann')) && $_POST['academy']==='0' ? 0 : $_G['member']['academy'];
 
 				if(empty($subject)) {
 					$return['errno'] = 1;
@@ -162,7 +162,7 @@ class MhdictAction extends Action {
 				$available = empty($_POST['available']) ? 0 : 1;
 				$starttime = $_POST['starttime'];
 				$endtime = $_POST['endtime'];
-				$academy = chkPermit('access_to_global_act') && $_POST['academy']==='0' ? 0 : $_G['member']['academy'];
+				$academy = (chkPermit('access_to_global_act') || chkPermit('manage_all_act')) && $_POST['academy']==='0' ? 0 : $_G['member']['academy'];
 
 				if(empty($name)) {
 					$return['errno'] = 1;

@@ -309,6 +309,9 @@ function chkPermit($idx = null) {
 	}
 
 	//trace($count++.' '.$idx);
+	// Debug - Stat
+	//$file = APP_FRAMEWORK_ROOT.'/data/log/permit.log';
+	//if(!strexists(file_get_contents($file), $idx)) file_put_contents($file, "$idx\r\n", FILE_APPEND);
 
 	if($_G['member']['adminid'] == 1 || $_G['uid']>0 && in_array($_G['uid'], $founder)) return true;	// 超级管理组，具有全部权限
 	if($_G['member']['adminid'] == 0) return false;														// 非管理组，不具备任何管理权限
@@ -343,6 +346,34 @@ function has_permit($idx) {
 		$template->display('noaccess');
 		exit;
 	}
+}
+
+function &getpermitlist() {
+	return array(
+		'global',
+		'site_info',
+		'member_access',
+		'seccheck',
+		'time',
+		'members',
+		'user',
+		'verifyuser',
+		'admingroup',
+		'tool',
+		'clearcache',
+		'mhour',
+		'applylog',
+		'checklog',
+		'manage',
+		'mhdict',
+		'activity',
+		'manage_all_act',
+		'access_to_global_act',
+		'ann',
+		'manage_all_ann',
+		'access_to_global_ann',
+		'globalaccess'
+	);
 }
 
 function &menutitle($nav) {
