@@ -68,6 +68,8 @@ class group {
 
 		if(empty($data['parent']) || !isset($groups[$data['parent']])) {
 			throw new Exception('权限不足', 1);
+		} elseif ($gid == $data['parent']) {
+			throw new Exception('直属上级不能是自身管理组', 1);
 		}
 
 		$parent = &$groups[$data['parent']];
@@ -110,8 +112,10 @@ class group {
 
 	public static function delgroup($type, $gid) {
 		global $_G;
+		static $groups = null;
 		$tbl = $type=='admin' ? 'admingroup' : 'group';
-		$groups = self::getgroups($type);
+
+		if($groups === null) $groups = self::getgroups($type);
 
 		if(empty($gid) || !isset($groups[$gid])) {
 			throw new Exception('用户组不存在或权限不足', 1);
@@ -120,7 +124,13 @@ class group {
 			throw new Exception('不能删除自己所在的用户组', 1);
 		}
 
-		DB::query('DELETE FROM %t WHERE FIND_IN_SET(%d, `relation`) OR `gid`=%d', array($tbl, $gid, $gid));
+		$gids = array();
+		$_gids = DB::fetch_all('SELECT `gid` FROM %t WHERE FIND_IN_SET(%d, `relation`) OR `gid`=%d', array($tbl, $gid, $gid));
+		foreach($_gids as $g) $gids[] = $g['gid'];
+		$gids = array_unique($gids);
+
+		DB::query('DELETE FROM %t WHERE `gid` IN (%n)', array($tbl, $gids));
+		DB::query('UPDATE %t SET `adminid`=0 WHERE `adminid` IN (%n)', array('users', $gids));
 
 		Cache::delete('admingroup_'.$_G['member']['adminid']);
 	}

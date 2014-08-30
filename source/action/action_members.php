@@ -1,10 +1,5 @@
 <?php
 
-/**
- * 主界面模块
- * SELECT * FROM `conn_users_profile` WHERE FIND_IN_SET('4', `department`)
- */
-
 !defined('IN_APP_FRAMEWORK') && exit('Access Denied');
 
 class MembersAction extends Action {
@@ -43,7 +38,7 @@ class MembersAction extends Action {
 
 					if($uid == $_G['uid']) {
 						$ret['msg'] = '你不能删除自己的账号！';
-					} elseif(!DB::result_first(subusersqlformula('AND uid='.$uid, 'count(*)'))) {
+					} elseif(!DB::result_first(subusersqlformula(DB::table('users').'.`uid`='.$uid, 'count(*)'))) {
 						$ret['msg'] = '你不能删除不存在或你无权管理的用户！';
 					} else {
 						$errno = deluser($uid, $uc);
@@ -205,14 +200,80 @@ class MembersAction extends Action {
 				'msg' => ''
 			);
 
-			if(isset($_POST['agid'])) {
+			if(isset($_POST['agid'])) { // Get admingroup info
 				$agrp = group::getgroups('admin');
 				if(isset($agrp[intval($_POST['agid'])])) {
 					$return = $agrp[intval($_POST['agid'])];
 					unset($return['relation']);
 					ajaxReturn($return, 'JSON');
 				}
-			} elseif(isset($_POST['id'])) {
+			} elseif(isset($_GET['agrpmem'])) { // Manage admingroup's members
+				if(isset($_GET['gid'])) {
+					$agrp = group::getgroups('admin');
+					$_GET['gid'] = 1;
+					$users = array();
+					if(isset($agrp[intval($_GET['gid'])])) {
+						$query = DB::query('SELECT a.`uid`,a.`username`,b.`realname` FROM %t AS a, %t AS b WHERE a.`uid`=b.`uid` AND `adminid`=%d', array('users', 'users_profile', $_GET['gid']));
+						while ($row = DB::fetch($query, MYSQL_NUM)) {
+							$users[] = $row;
+						}
+						DB::free_result($query);
+					}
+					ajaxReturn(array('data'=>$users), 'JSON');
+				} elseif($_POST['opmethod'] == 'add') {
+					$agrp = group::getgroups('admin');
+					if(!isset($agrp[intval($_POST['gid'])])) {
+						$return['errno'] = 1;
+						$return['msg'] = '管理组不存在或无权访问';
+					} elseif(intval($_POST['uid']) == $_G['uid']) {
+						$return['errno'] = 1;
+						$return['msg'] = '你不能添加你自己';
+					} elseif(!DB::result_first(subusersqlformula(DB::table('users').'.`uid`='.intval($_POST['uid']), 'count(*)'))) {
+						$return['errno'] = 1;
+						$return['msg'] = '无法添加 UID 不存在或者你不能管理的用户';
+					} elseif(!($gid = DB::result_first('SELECT `adminid` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $_POST['uid'])))){
+						$return['errno'] = 1;
+						$return['msg'] = $gid==$_POST['gid'] ? '你所添加的用户已在此组中' : "你所添加的用户已另属 ID 为 {$gid} 的管理组，请先在对应的组中移除后再尝试添加";
+					} else {
+						DB::query('UPDATE %t SET `adminid`=%d WHERE `uid`=%d LIMIT 1', array('users', $_POST['gid'], $_POST['uid']));
+						$return['msg'] = '添加成功！';
+					}
+				} elseif($_POST['opmethod'] == 'remove') {
+					$agrp = group::getgroups('admin');
+					if(!isset($agrp[intval($_POST['gid'])])) {
+						$return['errno'] = 1;
+						$return['msg'] = '管理组不存在或无权访问';
+					} elseif(intval($_POST['uid']) == $_G['uid']) {
+						$return['errno'] = 1;
+						$return['msg'] = '你不能操作你自己';
+					} elseif(!DB::result_first(subusersqlformula(DB::table('users').'.`uid`='.intval($_POST['uid']), 'count(*)'))) {
+						$return['errno'] = 1;
+						$return['msg'] = '无法移除 UID 不存在或者你不能管理的用户';
+					} else {
+						$gid = DB::result_first('SELECT `adminid` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $_POST['uid']));
+						if($gid == $_POST['gid']) {
+							DB::query('UPDATE %t SET `adminid`=0 WHERE `uid`=%d LIMIT 1', array('users', $_POST['uid']));
+							$return['msg'] = '移除成功！';
+						} else {
+							$return['errno'] = 1;
+							$return['msg'] = '该用户不在此管理组中，无法移除';
+						}
+					}
+				}
+				
+			} elseif(isset($_POST['ids']) && is_string($_POST['ids'])) { // Delete admingroups
+				$ids = explode(',', $_POST['ids']);
+				foreach($ids as &$id) $id = intval($id);
+				$ids = array_unique($ids);
+
+				try {
+					foreach($ids as $id) group::delgroup('admin', $id);
+					$return['msg'] = '所选管理组已删除';
+				} catch (Exception $e) {
+					$return['errno'] = 1;
+					$return['msg'] = $e->getMessage();
+				}
+			} elseif(isset($_POST['id'])) { // Add or edit admingroup
 				$name = htmlspecialchars(remove_xss(trim($_POST['name'])));
 				$parent = intval($_POST['parent']);
 				$note = htmlspecialchars(remove_xss(trim($_POST['note'])));
@@ -245,27 +306,28 @@ class MembersAction extends Action {
 						$return['msg'] = '公式语法错误或存在安全威胁';
 					}
 
-					$data = array(
-						'name'    => $name,
-						'parent'  => $parent,
-						'note'    => $note,
-						'formula' => $formula,
-						'permit'  => $permit
-					);
-					try {
-						if($_POST['id']) {
-							group::editgroup('admin', intval($_POST['id']), $data);
-							$return['msg'] = '管理组 '.$name.' 已成功添加';
-						} else {
-							group::addgroup('admin', $data);
-							$return['msg'] = '已成功编辑管理组 '.$name;
+					if(!$return['errno']) {
+						$data = array(
+							'name'    => $name,
+							'parent'  => $parent,
+							'note'    => $note,
+							'formula' => $formula,
+							'permit'  => $permit
+						);
+						try {
+							if($_POST['id']) {
+								group::editgroup('admin', intval($_POST['id']), $data);
+								$return['msg'] = '已成功编辑管理组 '.$name;
+							} else {
+								group::addgroup('admin', $data);
+								$return['msg'] = '管理组 '.$name.' 已成功添加';
+							}
+						} catch (Exception $e) {
+							$return['errno'] = 1;
+							$return['msg'] = $e->getMessage();
 						}
-					} catch (Exception $e) {
-						$return['errno'] = 1;
-						$return['msg'] = $e->getMessage();
 					}
 				}
-				
 			}
 
 			if(empty($return['msg'])){

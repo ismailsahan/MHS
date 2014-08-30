@@ -362,16 +362,70 @@ var Members = function () {
 					$("#grpdetail input[name='name']").val(data.name);
 					$("#grpdetail input[name='note']").val(data.note);
 					$("#grpdetail input[name='formula']").val(data.formula);
-					$("#grpdetail input[name='permit']").each(function() {
+					$("#grpdetail input[name='permit[]']").each(function() {
 						$(this).prop("checked", $.inArray($(this).val(), data.permit) > -1 ? true : false);
 					});
-					$("#grpdetail form :checkbox").uniform.update();
 					$("#grpdetail [name='parent']").val(data.parent);
+					$('#grpdetail .select2').trigger("change");
 					$("#grpdetail").modal("show");
 				}, "json");
 			});
 			$("#users tr:gt(0)" + nthchild("extra", columns) + " > a:nth-child(2)").click(function() {
-				$("#grpuser").modal("show");
+				$('#grpmem table').DataTable().ajax.url("{U members/admingroup?inajax=1&agrpmem=1&gid=}" + $(this).data("gid")).load();
+				$("#grpmem-user input[name='gid']").val($(this).data("gid"));
+				$("#grpmem").modal("show");
+			});
+			$("#grpmem button.blue, #grpmem button.red").click(function() {
+				$('#grpmem-user form').validate().resetForm();
+				$('#grpmem-user .form-group').removeClass('has-error').removeClass('has-success');
+				$("#grpmem-user input[name='uid']").val("");
+				$("#grpmem-user input[name='opmethod']").val($(this).is(".blue") ? "add" : "remove");
+				$("#grpmem-user").modal("show");
+			})
+			$('#grpmem-user form').validate({
+				errorElement: 'span',
+				errorClass: 'help-block',
+				focusInvalid: false,
+				ignore: "",
+				rules: {
+					uid: {
+						required: true,
+						digits: true,
+						min: 1
+					}
+				},
+				messages: {
+					uid: {
+						required: "UID 不能为空",
+						digits: "UID 只能是数字",
+						min: "UID 大于或等于 1"
+					}
+				},
+				highlight: function(element) {
+					$(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+				},
+				unhighlight: function(element) {
+					$(element).closest('.form-group').removeClass('has-error');
+				},
+				success: function(label) {
+					label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+				},
+				errorPlacement: function(error, element) {
+					error.insertAfter(element);
+				},
+				submitHandler: function(form) {
+					showloading();
+					$.post($(form).attr("action"), $(form).serialize(), function(data) {
+						modalAlert(data.msg);
+						if (!data.errno) {
+							$("#activities").modal("hide");
+							$("#alert-modal").on("hide.bs.modal", function() {
+								$('#grpmem table').DataTable().ajax.reload();
+								$("#alert-modal").off("hide.bs.modal");
+							});
+						}
+					});
+				}
 			});
 
 			var grps = {};
@@ -384,13 +438,29 @@ var Members = function () {
 					val: k,
 					text: v
 				});
-			}))/*.select2({
+			})).change(function() {
+				var gid = $(this).val();
+				if(gid != "") $.post("{U members/admingroup?inajax=1}", {"agid":gid}, function(data) {
+					if(data.errno) return;
+					$("#grpdetail input[name='permit[]']").each(function() {
+						if($.inArray($(this).val(), data.permit) == -1) {
+							$(this).prop("checked", false).prop("disabled", true);
+						} else {
+							$(this).prop("disabled", false);
+						}
+					});
+					$("#grpdetail form :checkbox").uniform.update();
+				}, "json");
+			})/*.select2({
 				minimumResultsForSearch: -1,
 				allowClear: false
 			})*/;
 
 			initDT(columns);
 
+			$.validator.addMethod("notEqualTo", function(value, element, param) {
+				return this.optional(element) || value != $(param).val();
+			}, "");
 			$('#grpdetail form').validate({
 				errorElement: 'span',
 				errorClass: 'help-block',
@@ -401,7 +471,8 @@ var Members = function () {
 						required: true
 					},
 					parent: {
-						required: true
+						required: true,
+						notEqualTo: "#grpdetail input[name='id']"
 					},
 					note: {},
 					formula: {},
@@ -415,7 +486,8 @@ var Members = function () {
 						required: "组头衔不能为空"
 					},
 					parent: {
-						required: "直属上级不能为空"
+						required: "直属上级不能为空",
+						notEqualTo: "直属上级不能是自身管理组"
 					},
 					note: {},
 					formula: {},
@@ -452,6 +524,30 @@ var Members = function () {
 						}
 					});
 				}
+			});
+
+			$("#delgrp-button").click(function() {
+				var e = $('td:first-child :checkbox:enabled:checked', $('#users').dataTable().fnGetNodes());
+				if(e.size() == 0) {
+					return modalAlert("请至少选择一个组");
+				}
+				$("#delgrp").modal("show");
+			});
+			$("#delgrp .modal-footer button.red").click(function () {
+				showloading();
+				var id = [];
+				$('td:first-child :checkbox:enabled:checked', $('#users').dataTable().fnGetNodes()).each(function () {
+					id.push($(this).val());
+				});
+				$.post("{U members/admingroup?inajax=1}", {ids:id.join(",")}, function (data) {
+					modalAlert(data.msg);
+					if(!data.errno) {
+						$("#delmh").modal("hide");
+						$("#alert-modal").on("hide.bs.modal", function() {
+							window.location.reload();
+						});
+					}
+				}, "json");
 			});
 
 			$('#showgraph-button').click(function() {
