@@ -418,7 +418,7 @@ var Members = function () {
 					$.post($(form).attr("action"), $(form).serialize(), function(data) {
 						modalAlert(data.msg);
 						if (!data.errno) {
-							$("#activities").modal("hide");
+							$("#grpmem-user").modal("hide");
 							$("#alert-modal").on("hide.bs.modal", function() {
 								$('#grpmem table').DataTable().ajax.reload();
 								$("#alert-modal").off("hide.bs.modal");
