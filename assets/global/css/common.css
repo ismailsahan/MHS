@@ -27,6 +27,10 @@ h3.page-title { font-family:inherit; }
 .page-header.navbar .top-menu .navbar-nav > li.dropdown-extended ul.dropdown-menu > li a span.label.label-icon { text-indent: 0; }
 .page-container .page-sidebar-wrapper ul li a span.arrow+span.badge { margin-right: 6px; }
 .page-footer {height:auto;}
+.page-header.navbar .page-logo { width: auto; }
+.page-header.navbar .page-logo > a { height: 46px; display: table-cell; vertical-align: middle; }
+.page-header.navbar .page-logo > a > img { max-height: 46px; }
+.gritter-title { font-family: inherit; }
 
 @media (max-width: 767px) {
 	.page-header.navbar .top-menu .navbar-nav > li.dropdown-notification .dropdown-menu { margin-right: -16px; }
