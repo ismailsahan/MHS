@@ -23,6 +23,7 @@ class ToolAction extends Action {
 		global $_G, $template;
 		if(IS_AJAX) {
 			clearcache('all');
+			Cache::set('CacheId', random(4));
 			ajaxReturn(array(
 				'errno' => 0,
 				'msg' => '全部缓存已清除完毕'

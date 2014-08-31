@@ -204,8 +204,8 @@ var Manhour = function() {
 								e = $(state.element);
 							markup += '<tr><td colspan="2"><h4>' + state.text + '</h4></td></tr>';
 							if (e.data("place")) markup += "<tr><td>活动地点</td><td>" + e.data("place") + "</td></tr>";
-							markup += "<tr><td>开始时间</td><td>" + getTime(e.data("starttime")) + "</td></tr>";
-							if (e.data("endtime")) markup += "<tr><td>结束时间</td><td>" + getTime(e.data("endtime")) + "</td></tr>";
+							if (e.data("starttime") != "0") markup += "<tr><td>开始时间</td><td>" + getTime(e.data("starttime")) + "</td></tr>";
+							if (e.data("endtime") != "0") markup += "<tr><td>结束时间</td><td>" + getTime(e.data("endtime")) + "</td></tr>";
 							if (e.data("sponsor")) markup += "<tr><td>主办者</td><td>" + e.data("sponsor") + "</td></tr>";
 							if (e.data("undertaker")) markup += "<tr><td>承办者</td><td>" + e.data("undertaker") + "</td></tr>";
 							if (e.data("intro")) markup += "<tr><td>活动介绍</td><td>" + nl2br(e.data("intro")) + "</td></tr>";

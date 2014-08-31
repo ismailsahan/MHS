@@ -25,7 +25,7 @@ class Dispatcher {
 			unset($_GET[$config['var_pathinfo']]);
 		}
 
-		if(!empty($config['siteurl']) && !striexists($_G['siteurl'], $config['siteurl'])) {
+		if(!empty($config['siteurl']) && !striexists($config['siteurl'], '127.0.0.1') && !striexists($config['siteurl'], 'localhost') && !striexists($_G['siteurl'], $config['siteurl'])) {
 			$pos = stripos($_G['currenturl'], 'index.php');
 			$newurl = $config['siteurl'].($pos===false ? '' : substr($_G['currenturl'], $pos));
 			header("Location: {$newurl}");

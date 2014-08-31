@@ -90,17 +90,26 @@ class StaticEngine {
 
 	public function staticfile($link, $static = false){
 		global $_G;
+		static $CacheId = null;
+		if($CacheId === null) {
+			$CacheId = Cache::get('CacheId');
+			if($CacheId === null) {
+				$CacheId = random(4);
+				Cache::set('CacheId', $CacheId);
+			}
+		}
 		if(is_array($link)) $link = $link[1];
 		if(strexists($link, 'http:') || strexists($link, 'https:') || substr($link, 0, 1) == '/') return $link;
 		$source = file_exists($link) ? $link : $this->getpath($link);
 		$ext = fileext($source);
-		$cachename = md5($_G['language'].$source).'.'.$ext;
+		//$cachename = md5($_G['language'].$source).'.'.$ext;
+		$cachename = basename($source);
 		$cache = APP_FRAMEWORK_ROOT.'/cache/'.$cachename;
 		if(APP_FRAMEWORK_DEBUG) self::$maps[$cachename] = str_replace(APP_FRAMEWORK_ROOT, '.', $source);
 		if(!file_exists($cache) || in_array($ext, array('js', 'css')) && (self::$force_compile || self::$compile_check && filemtime($cache)>filemtime($source) || self::$cache_lifetime!=-1 && filemtime($cache)>filemtime($source)+self::$cache_lifetime)){
 			$this->compile($source, $cache);
 		}
-		return ($static ? '' : 'cache/').$cachename;//str_replace('\\', '/', str_replace(APP_FRAMEWORK_ROOT.'/', '', $cache));
+		return ($static ? '' : 'cache/').$cachename.'?'.$CacheId;//str_replace('\\', '/', str_replace(APP_FRAMEWORK_ROOT.'/', '', $cache));
 	}
 
 	private function compile($source, $cache){

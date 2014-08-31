@@ -552,6 +552,7 @@ var Members = function () {
 
 			$('#showgraph-button').click(function() {
 				if(!$(this).data('inited')) {
+					showloading();
 					return $.post("{U members/agrp}", {}, function(data) {
 						$("#agrp-tree").jstree({
 							'core' : {
