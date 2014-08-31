@@ -7,8 +7,17 @@
   user-select: none;
 }
 
-.pace-inactive {
-  display: none;
+.pace-inactive .pace-progress {
+  -webkit-animation: pace-hide-animation 500ms ease;
+  -moz-animation: pace-hide-animation 500ms ease;
+  -ms-animation: pace-hide-animation 500ms ease;
+  -o-animation: pace-hide-animation 500ms ease;
+  animation: pace-hide-animation 500ms ease;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -ms-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .pace .pace-progress {
@@ -70,4 +79,25 @@
 @keyframes pace-stripe-animation {
   0% { transform: none; transform: none; }
   100% { transform: translate(-32px, 0); transform: translate(-32px, 0); }
+}
+
+@-webkit-keyframes pace-hide-animation {
+  70% { width: 100%; }
+  100% { opacity: 0; }
+}
+@-moz-keyframes pace-hide-animation {
+  70% { width: 100%; }
+  100% { opacity: 0; }
+}
+@-o-keyframes pace-hide-animation {
+  70% { width: 100%; }
+  100% { opacity: 0; }
+}
+@-ms-keyframes pace-hide-animation {
+  70% { width: 100%; }
+  100% { opacity: 0; filter: alpha(opacity=0); }
+}
+@keyframes pace-hide-animation {
+  70% { width: 100%; }
+  100% { opacity: 0; filter: alpha(opacity=0); }
 }

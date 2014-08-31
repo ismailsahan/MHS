@@ -171,6 +171,9 @@ $(document).ready(function() {
 $.ajaxSetup({
 	contentType: "application/x-www-form-urlencoded; charset=utf-8"
 });
+$(window).ajaxStart(function() {
+	if(window.Pace) Pace.restart();
+});
 
 $(document).ajaxError(function(event, jqxhr, settings, exception) {
 	var msg = jqxhr.responseText.substr(0, 1) == "{" ? $.parseJSON(jqxhr.responseText).msg : (jqxhr.responseText.indexOf('<!DOCTYPE') > -1 ? "" : (jqxhr.responseText.indexOf("\n") > -1 ? "<pre>" + jqxhr.responseText + "</pre>" : jqxhr.responseText));
