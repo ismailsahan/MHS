@@ -162,11 +162,11 @@ class group {
 	}
 
 	public static function combineformula($formula, $parentformula) {
-		return $formula ? ($parentformula ? $parentformula.'AND ('.$formula.')' : $formula) : $parentformula;
+		return $formula=='' ? $parentformula : ($parentformula=='' ? $formula : "{$parentformula} AND ({$formula})");
 	}
 
 	private static function stripformula($formula, $parentformula) {
-		return $formula==$parentformula ? '' : ($parentformula ? substr(substr($formula, 0, strlen($formula)-1), strlen($parentformula)+5) : $formula);
+		return $formula==$parentformula ? '' : ($parentformula=='' ? $formula : substr(substr($formula, 0, strlen($formula)-1), strlen($parentformula)+5));
 	}
 
 }

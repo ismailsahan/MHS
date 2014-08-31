@@ -135,9 +135,6 @@ var Members = function () {
 	}
 
 	$(document).ajaxStop($.unblockUI);
-	$(document).ajaxError(function() {
-		modalAlert("向服务器请求数据时发生了错误，请稍候再试");
-	});
 
 	return {
 
@@ -347,7 +344,7 @@ var Members = function () {
 				$('#grpdetail form').get(0).reset();
 				$('#grpdetail form').validate().resetForm();
 				$('#grpdetail .form-group').removeClass('has-error').removeClass('has-success');
-				$("#grpdetail input[name='id']").val("");
+				$("#grpdetail [name='id']").val("");
 				$('#grpdetail form').find(":checkbox").uniform.update();
 				$("#grpdetail").modal("show");
 			});
@@ -358,28 +355,29 @@ var Members = function () {
 					if(data.errno) return modalAlert(data.msg);
 					$('#grpdetail form').validate().resetForm();
 					$('#grpdetail .form-group').removeClass('has-error').removeClass('has-success');
-					$("#grpdetail input[name='id']").val(data.gid);
-					$("#grpdetail input[name='name']").val(data.name);
-					$("#grpdetail input[name='note']").val(data.note);
-					$("#grpdetail input[name='formula']").val(data.formula);
-					$("#grpdetail input[name='permit[]']").each(function() {
+					$("#grpdetail [name='id']").val(data.gid);
+					$("#grpdetail [name='name']").val(data.name);
+					$("#grpdetail [name='note']").val(data.note);
+					$("#grpdetail [name='permit[]']").each(function() {
 						$(this).prop("checked", $.inArray($(this).val(), data.permit) > -1 ? true : false);
 					});
+					$("#grpdetail [name='formula']").val(data.formula);
 					$("#grpdetail [name='parent']").val(data.parent);
 					$('#grpdetail .select2').trigger("change");
 					$("#grpdetail").modal("show");
 				}, "json");
 			});
 			$("#users tr:gt(0)" + nthchild("extra", columns) + " > a:nth-child(2)").click(function() {
+				showloading();
 				$('#grpmem table').DataTable().ajax.url("{U members/admingroup?inajax=1&agrpmem=1&gid=}" + $(this).data("gid")).load();
-				$("#grpmem-user input[name='gid']").val($(this).data("gid"));
+				$("#grpmem-user [name='gid']").val($(this).data("gid"));
 				$("#grpmem").modal("show");
 			});
 			$("#grpmem button.blue, #grpmem button.red").click(function() {
 				$('#grpmem-user form').validate().resetForm();
 				$('#grpmem-user .form-group').removeClass('has-error').removeClass('has-success');
-				$("#grpmem-user input[name='uid']").val("");
-				$("#grpmem-user input[name='opmethod']").val($(this).is(".blue") ? "add" : "remove");
+				$("#grpmem-user [name='uid']").val("");
+				$("#grpmem-user [name='opmethod']").val($(this).is(".blue") ? "add" : "remove");
 				$("#grpmem-user").modal("show");
 			})
 			$('#grpmem-user form').validate({
@@ -440,9 +438,11 @@ var Members = function () {
 				});
 			})).change(function() {
 				var gid = $(this).val();
-				if(gid != "") $.post("{U members/admingroup?inajax=1}", {"agid":gid}, function(data) {
+				if(gid == "") return;
+				showloading();
+				$.post("{U members/admingroup?inajax=1}", {"agid":gid}, function(data) {
 					if(data.errno) return;
-					$("#grpdetail input[name='permit[]']").each(function() {
+					$("#grpdetail [name='permit[]']").each(function() {
 						if($.inArray($(this).val(), data.permit) == -1) {
 							$(this).prop("checked", false).prop("disabled", true);
 						} else {
@@ -472,7 +472,7 @@ var Members = function () {
 					},
 					parent: {
 						required: true,
-						notEqualTo: "#grpdetail input[name='id']"
+						notEqualTo: "#grpdetail [name='id']"
 					},
 					note: {},
 					formula: {},

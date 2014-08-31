@@ -34,9 +34,6 @@ var Mhdict = function () {
 	}
 
 	$(document).ajaxStop($.unblockUI);
-	$(document).ajaxError(function() {
-		modalAlert("向服务器请求数据时发生了错误，请稍候再试");
-	});
 
 	return {
 
