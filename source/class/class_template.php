@@ -71,6 +71,14 @@ class template extends Smarty{
 		return parent::templateExists(strexists($template, self::$suffix) ? $template : $template.self::$suffix);
 	}
 
+	public function clearCache($template, $cache_id = null, $compile_id = null, $exp_time = null, $type = null){
+		return parent::fetch($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), /*$cache_id===null ? self::$default_cache_id : */$cache_id, $compile_id===null ? self::$default_compile_id : $compile_id, $exp_time, $type);
+	}
+
+	public function clearCompiledTemplate($template = null, $compile_id = null, $exp_time = null){
+		return parent::templateExists($template===null ? null : (strexists($template, self::$suffix) ? $template : $template.self::$suffix), $compile_id===null ? self::$default_compile_id : $compile_id, $exp_time);
+	}
+
 }
 
 class StaticEngine {

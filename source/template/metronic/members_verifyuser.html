@@ -204,7 +204,7 @@
 								<td data-time="{$user.submittime}">{dgmdate($user.submittime, 'u')}</td>
 								<td>{nl2br($user.remark)|default:'-'}</td>
 								<td data-operator="{$user.operator}">{$user.operatorname|default:'-'}</td>
-								<td data-time="{$user.verifytime}">{dgmdate($user.verifytime, 'u')}</td>
+								<td data-time="{$user.verifytime}">{if $user.verifytime}{dgmdate($user.verifytime, 'u')}{else}-{/if}</td>
 								<td>{nl2br($user.verifytext)|default:'-'}</td>
 							</tr>
 							{/foreach}

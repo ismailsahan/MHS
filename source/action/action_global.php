@@ -109,8 +109,23 @@ class GlobalAction extends Action {
 				'tos' => 's',
 				'actopen' => 'd',
 				'actclosedreason' => 's',
+				'pwdsafety' => 'd',
+				'failedlogin' => 's'
 			);
 
+			if(isset($_POST['pwdsafety'])) {
+				if(is_array($_POST['pwdsafety'])) {
+					foreach($_POST['pwdsafety'] as $k => $v) {
+						if(in_array($k, array('count', 'time'))) {
+							$_POST['pwdsafety'][$k] = abs(intval($v));
+						} else {
+							unset($_POST['pwdsafety'][$k]);
+						}
+					}
+				} else {
+					unset($_POST['pwdsafety']);
+				}
+			}
 			foreach($_POST as $k => $v) {
 				if(isset($settings[$k])) {
 					$this->_update($k, $v, $settings[$k]);
@@ -118,6 +133,10 @@ class GlobalAction extends Action {
 			}
 			if(isset($_POST['tos'])) {
 				clearcache('tos');
+			}
+			if(isset($_POST['pwdsafety'])) {
+				$template->clearCache('login');
+				$template->clearCompiledTemplate('login');
 			}
 
 			ajaxReturn(array(

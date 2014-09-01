@@ -27,6 +27,7 @@
 				<ul class="nav nav-tabs">
 					<li class="active"><a href="#reg" data-toggle="tab">注册</a></li>
 					<li><a href="#act" data-toggle="tab">激活</a></li>
+					<li><a href="#log" data-toggle="tab">登录</a></li>
 					<!--<li><a href="#acs" data-toggle="tab">访问控制</a></li>-->
 				</ul>
 				<div class="tab-content">
@@ -100,6 +101,56 @@
 											<div class="col-md-9">
 												<textarea name="actclosedreason" class="form-control" rows="3">{nocache}{$_G.setting.actclosedreason}{/nocache}</textarea>
 												<span class="help-block">当站点关闭激活时的提示信息</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-actions fluid">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="submit" class="btn green"><i class="fa fa-pencil"></i> 提交</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="log">
+						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption"><i class="fa fa-reorder"></i>登录选项</div>
+							</div>
+							<div class="portlet-body form">
+								<form action="{U global/access}" method="post" class="form-horizontal form-row-seperated">
+									<div class="form-body">
+										<div class="form-group">
+											<label class="control-label col-md-3">启用登录密码加密</label>
+											<div class="col-md-9">
+												<div class="radio-list">
+													<label class="radio-inline"><input type="radio" name="pwdsafety" value="1"{nocache}{if $_G.setting.pwdsafety} checked{/if}{/nocache} /> 是</label>
+													<label class="radio-inline"><input type="radio" name="pwdsafety" value="0"{nocache}{if !$_G.setting.pwdsafety} checked{/if}{/nocache} /> 否</label>
+												</div>
+												<span class="help-block">选择“是”，站点登录时的密码将进行加密后再传输</span>
+											</div>
+										</div>
+										<div class="form-group last">
+											<label class="control-label col-md-3">恶意登录阻止策略</label>
+											<div class="col-md-9">
+												<div class="form-group">
+													<label class="control-label col-md-3">最多错误登录数</label>
+													<div class="col-md-9">
+														<input type="text" class="form-control" name="failedlogin[count]" value="{nocache}{$_G.setting.failedlogin.count}{/nocache}" />
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="control-label col-md-3">登录锁定的时间</label>
+													<div class="col-md-9">
+														<div class="input-group"><input type="text" class="form-control" name="failedlogin[time]" value="{nocache}{$_G.setting.failedlogin.time}{/nocache}" /><span class="input-group-addon">分钟</span></div>
+													</div>
+												</div>
+												<span class="help-block">为避免有人恶意登录和暴力破解用户密码，用户在连续登录失败的次数达<code>最多错误登录数</code>时，系统会自动屏蔽恶意用户后续登录操作，直到自屏蔽起时间过去<code>登录锁定的时间</code></span>
 											</div>
 										</div>
 									</div>

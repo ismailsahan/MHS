@@ -25,8 +25,8 @@ var Inbox = function () {
 
 				loading.hide();
 				content.html(res);
-				App.fixContentHeight();
-				App.initUniform();
+				Metronic.fixContentHeight();
+				Metronic.initUniform();
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				toggleButton(el);
@@ -57,8 +57,8 @@ var Inbox = function () {
 
 				loading.hide();
 				content.html(res);
-				App.fixContentHeight();
-				App.initUniform();
+				Metronic.fixContentHeight();
+				Metronic.initUniform();
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				toggleButton(el);
@@ -122,8 +122,8 @@ var Inbox = function () {
 				initWysihtml5();
 
 				$('.inbox-wysihtml5').focus();
-				App.fixContentHeight();
-				App.initUniform();
+				Metronic.fixContentHeight();
+				Metronic.initUniform();
 			},
 			error: function(xhr, ajaxOptions, thrownError)
 			{
@@ -161,8 +161,8 @@ var Inbox = function () {
 
 				initFileupload();
 				initWysihtml5();
-				App.fixContentHeight();
-				App.initUniform();
+				Metronic.fixContentHeight();
+				Metronic.initUniform();
 			},
 			error: function(xhr, ajaxOptions, thrownError)
 			{
@@ -193,8 +193,8 @@ var Inbox = function () {
 
 				loading.hide();
 				content.html(res);
-				App.fixContentHeight();
-				App.initUniform();
+				Metronic.fixContentHeight();
+				Metronic.initUniform();
 			},
 			error: function(xhr, ajaxOptions, thrownError)
 			{
@@ -288,9 +288,9 @@ var Inbox = function () {
 			});
 
 			//handle loading content based on URL parameter
-			if (App.getURLParameter("a") === "view") {
+			if (Metronic.getURLParameter("a") === "view") {
 				loadMessage();
-			} else if (App.getURLParameter("a") === "compose") {
+			} else if (Metronic.getURLParameter("a") === "compose") {
 				loadCompose();
 			} else {
 			   $('.inbox-nav > li.inbox > a').click();

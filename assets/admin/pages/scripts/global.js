@@ -2,7 +2,7 @@ var Global = function () {
 
 	var showloading = function () {
 		$.blockUI({
-			message: '<img src="assets/img/ajax-loading.gif" />',
+			message: '<img src="assets/global/img/ajax-loading.gif" />',
 			css: {
 				border: 'none',
 				backgroundColor: 'none'
@@ -37,7 +37,7 @@ var Global = function () {
 					});
 					break;
 				case "checklist":
-					App.initUniform();
+					Metronic.initUniform();
 			}
 		});
 
@@ -71,6 +71,7 @@ var Global = function () {
 		});
 
 		$(".portlet-body form").submit(function() {
+			showloading();
 			$.post("{U global/access?inajax=1}", $(this).serialize(), function(data) {
 				modalAlert(data.msg);
 			}, "JSON");
@@ -210,7 +211,7 @@ var Global = function () {
 			},
 
 			invalidHandler: function (event, validator) { //display error alert on form submit
-				//App.scrollTo(error, -200);
+				//Metronic.scrollTo(error, -200);
 			},
 
 			highlight: function (element) { // hightlight error inputs
@@ -225,6 +226,7 @@ var Global = function () {
 			},
 
 			submitHandler: function (form) {
+				showloading();
 				$.post("{U global/seccheck?inajax=1}", $(form).serialize(), function(data) {
 					modalAlert(data.msg);
 				}, "JSON");
@@ -283,6 +285,7 @@ var Global = function () {
 		});
 
 		$(".portlet-body form").submit(function() {
+			showloading();
 			$.post("{U global/time?inajax=1}", $(this).serialize(), function(data) {
 				modalAlert(data.msg);
 			}, "JSON");

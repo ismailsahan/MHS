@@ -1,0 +1,9 @@
+{extends 'common_logging.html'}
+{block subtitle}{lang logging/find_pwd}{/block}
+{block logging}
+		<div class="note note-danger">
+			<h4 class="block">操作失败！</h4>
+			<p>{if $result==0||$result==-7}没有做任何修改{elseif $result==-8}该用户受保护无权限更改{/if}，请与管理员联系</p>
+			<p><a href="{U logging/login}">单击这里返回登录界面</a></p>
+		</div>
+{/block}

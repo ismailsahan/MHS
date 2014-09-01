@@ -1,8 +1,9 @@
 {extends 'common_logging.html'}
 {block subtitle}{lang logging/login}{/block}
+{block pageplugins prepend}{if $_G.setting.pwdsafety}<script type="text/javascript" src="assets/global/scripts/md5.js"></script>{/if}{/block}
 {block logging}
 		<!-- BEGIN LOGIN FORM -->
-		<form class="login-form" action="{nocache}{U('logging/login?referer')}{/nocache}" method="post">
+		<form class="login-form" action="{nocache}{U('logging/login?referer')}{/nocache}" method="post"{if $_G.setting.pwdsafety} data-pwdsafety="1"{/if}>
 			{$LoginToken}
 			<h3 class="form-title">{lang logging/login_heading}</h3>
 			<div class="alert alert-danger alert-block fade in{if !$errmsg} display-hide{/if}">

@@ -52,14 +52,16 @@ var Logging = function () {
 			},
 
 			submitHandler: function (form) {
-				form.submit(); // form validation success, call ajax form submit
+				if(form.data("pwdsafety")) pwmd5(".login-form [name='password']");
+				form.submit();
 			}
 		});
 
 		$('.login-form input').keypress(function (e) {
 			if (e.which == 13) {
 				if ($('.login-form').validate().form()) {
-					$('.login-form').submit(); //form validation success, call ajax form submit
+					if($('.login-form').data("pwdsafety")) pwmd5(".login-form [name='password']");
+					$('.login-form').submit();
 				}
 				return false;
 			}
