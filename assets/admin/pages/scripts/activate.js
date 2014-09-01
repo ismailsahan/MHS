@@ -246,7 +246,7 @@ var Activate = function() {
 				invalidHandler: function(event, validator) { //display error alert on form submit   
 					success.hide();
 					error.show();
-					App.scrollTo(error, -200);
+					Metronic.scrollTo(error, -200);
 				},
 
 				highlight: function(element) { // hightlight error inputs
@@ -275,7 +275,7 @@ var Activate = function() {
 
 			var displayConfirm = function() {
 				$('#tab5 .form-control-static', form).each(function() {
-					var input = $('[name="' + $(this).attr("data-display") + '"]', form);
+					var input = $('[name="' + $(this).data("display") + '"]', form);
 					if (input.is(":text") || input.is("textarea")) {
 						$(this).html(input.val().replace(/\n/g, "<br />"));
 					} else if (input.is("select")) {
@@ -284,16 +284,10 @@ var Activate = function() {
 							arr.push($(this).text());
 						})
 						$(this).html(arr.join(" , "));
-					} else if (input.is(":radio") && input.is(":checked")) {
-						$(this).html(input.attr("data-title"));
+					} else if (input.is(":radio")) {
+						$(this).html(input.filter(":checked").data("title"));
 					} else if (input.is(":checkbox") && input.is(":checked")) {
-						$(this).html(input.attr("data-title"));
-					} else if ($(this).attr("data-display") == 'payment') {
-						var payment = [];
-						$('[name="payment[]"]').each(function() {
-							payment.push($(this).attr('data-title'));
-						});
-						$(this).html(payment.join("<br>"));
+						$(this).html(input.data("title"));
 					}
 				});
 			}
@@ -301,9 +295,7 @@ var Activate = function() {
 			var handleTitle = function(tab, navigation, index) {
 				var total = navigation.find('li').length;
 				var current = index + 1;
-				// set wizard title
 				$('.step-title', $('#activate')).text('第' + (index + 1) + '步(共' + total + '步)');
-				// set done steps
 				$('li', $('#activate')).removeClass("done");
 				var li_list = navigation.find('li');
 				for (var i = 0; i < index; i++) {

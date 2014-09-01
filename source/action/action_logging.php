@@ -194,13 +194,15 @@ class LoggingAction extends Action {
 					$newpw = rand_string(16);
 					$result = edituser($username, null, $newpw, null, true);
 
-					require_once libfile('class/Mail');
-					Mail::init();
-					Mail::addAddress($email);
-					Mail::setMsg("您的密码已重置为 <b>{$newpw}</b>，请使用新密码登录，并尽快修改密码", '重置密码');
-					$error = Mail::send();
+					if($result == 1) {
+						require_once libfile('class/Mail');
+						Mail::init();
+						Mail::addAddress($email);
+						Mail::setMsg("您的密码已重置为 <b>{$newpw}</b>，请使用新密码登录，并尽快修改密码", '重置密码');
+						$error = Mail::send();
+					}
 
-					return $template->display('forgotpwd_success');
+					return $template->display($result == 1 ? 'forgotpwd_success' : 'forgotpwd_error');
 				}
 			}
 		}

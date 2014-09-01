@@ -1,8 +1,9 @@
 {extends 'common_logging.html'}
-{block subtitle}{lang logging/forgotpwd}{/block}
+{block subtitle}{lang logging/find_pwd}{/block}
 {block logging}
 		<div class="note note-success">
 			<h4 class="block">操作成功！</h4>
 			<p>系统向您的邮箱中发送了一封邮件，请按照邮件中的提示进行操作。若收件箱中没有系统发送的邮件，请不要忘记到垃圾箱中查找</p>
+			<p><a href="{U logging/login}">单击这里返回登录界面</a></p>
 		</div>
 {/block}
