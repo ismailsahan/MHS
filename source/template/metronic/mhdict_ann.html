@@ -81,7 +81,7 @@
 								<label class="col-md-3 control-label">可视范围 <span class="required">*</span></label>
 								<div class="col-md-9">
 									<div class="radio-list">
-										<label class="radio-inline"><input type="radio" name="academy" value="1" checked />{$academies[$_G.member.academy].name}</label>
+										<label class="radio-inline"><input type="radio" name="academy" value="{$_G.member.academy}" checked />{$academies[$_G.member.academy].name}</label>
 										<label class="radio-inline"><input type="radio" name="academy" value="0"{if !$access_to_global_ann} disabled{/if} />全站</label>
 									</div>
 								</div>

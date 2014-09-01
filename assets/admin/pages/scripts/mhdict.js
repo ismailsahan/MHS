@@ -126,9 +126,9 @@ var Mhdict = function () {
 			$("#addann-button").click(function() {
 				$('#anndetail form').get(0).reset();
 				$('#anndetail form').validate().resetForm();
-				$('#act-modal .form-group').removeClass('has-error').removeClass('has-success');
-				$('#anndetail form').find("[name='id']").val("");
-				$('#anndetail form').find(":radio").uniform.update();
+				$('#anndetail .form-group').removeClass('has-error').removeClass('has-success');
+				$("#anndetail form [name='id']").val("");
+				$("#anndetail form :radio").uniform.update();
 				$("#anndetail").modal("show");
 			});
 
@@ -136,7 +136,7 @@ var Mhdict = function () {
 				showloading();
 				var form = $('#anndetail form'), annid = $(this).data("id");
 				form.validate().resetForm();
-				$('#act-modal .form-group').removeClass('has-error').removeClass('has-success');
+				form.find('.form-group').removeClass('has-error').removeClass('has-success');
 				$.post("{U api/getann}", {id:annid}, function(data) {
 					form.find("[name='id']").val(annid);
 					form.find("[name='subject']").val(data.subject);
