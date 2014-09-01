@@ -190,7 +190,7 @@
 								<td>{$user.uid}</td>
 								<td>{$user.username}</td>
 								<td>{$user.realname}</td>
-								<td data-gender="{$user.gender}">-</td>
+								<td>{if $user.gender==1}男{elseif $user.gender==2}女{else}未知{/if}</td>
 								<td>{$user.qq|default:'-'}</td>
 								<td>{$user.email}</td>
 								<td data-status="{$user.status}">-</td>
