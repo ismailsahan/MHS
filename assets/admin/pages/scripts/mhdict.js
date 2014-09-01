@@ -143,6 +143,7 @@ var Mhdict = function () {
 					form.find("[name='starttime']").val(data.starttime ? data.starttime : undefined);
 					form.find("[name='endtime']").val(data.endtime ? data.endtime : undefined);
 					form.find("[name='type']").prop("checked", false).filter("[value='" + data.type + "']").prop("checked", true);
+					form.find("[name='academy']").prop("checked", false).filter("[value='" + data.academy + "']").prop("checked", true);
 					form.find(":radio").uniform.update();
 					form.find("[name='message']").val(data.message);
 					$("#anndetail").modal("show");
