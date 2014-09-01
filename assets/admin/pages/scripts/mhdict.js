@@ -303,7 +303,7 @@ var Mhdict = function () {
 				$("#delact").modal("show");
 			});
 
-			$('#activities').dataTable({
+			var table = $('#activities').dataTable({
 				"order": [],
 				"lengthMenu": [
 					[10, 25, 50],// 每页显示数目，-1表示显示全部
@@ -318,6 +318,18 @@ var Mhdict = function () {
 					"targets": [columns["checkbox"], columns["extra"]]
 				}]
 			});
+			var tt = new $.fn.dataTable.TableTools(table, {
+				"sSwfPath": "assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+				"aButtons": [
+					{
+						"sExtends": "csv",
+						"sButtonText": "导出 Excel"
+					}
+				]
+			});
+			$(tt.fnContainer()).insertBefore('#activities_wrapper');
+			$(".DTTT_container").addClass("btn-group margin-bottom-10");
+			$(".DTTT_container a").addClass("btn btn-default");
 
 			$('#column_toggler :checkbox').change(function(){
 				var oTable = $('#activities').dataTable();

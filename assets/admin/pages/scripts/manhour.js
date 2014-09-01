@@ -104,7 +104,7 @@ var Manhour = function() {
 	}
 
 	function initDT(columns, noorder) {
-		$('#manhours').dataTable({
+		var table = $('#manhours').dataTable({
 			"order": noorder ? [] : [[columns["applytime"], 'asc']],
 			"lengthMenu": [
 				[10, 25, 50],// 每页显示数目，-1表示显示全部
@@ -119,6 +119,18 @@ var Manhour = function() {
 				"targets": [columns["checkbox"], columns["extra"], columns["avatar"]]
 			}]
 		});
+		var tt = new $.fn.dataTable.TableTools(table, {
+			"sSwfPath": "assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+			"aButtons": [
+				{
+					"sExtends": "csv",
+					"sButtonText": "导出 Excel"
+				}
+			]
+		});
+		$(tt.fnContainer()).insertBefore('#manhours_wrapper');
+		$(".DTTT_container").addClass("btn-group margin-bottom-10");
+		$(".DTTT_container a").addClass("btn btn-default");
 
 		$('#column_toggler :checkbox').change(function(){
 			var oTable = $('#manhours').dataTable();
@@ -371,7 +383,7 @@ var Manhour = function() {
 				$("#checkmh").modal("show");
 			});
 
-			$('#manhours').dataTable({
+			var table = $('#manhours').dataTable({
 				"order": [],
 				"lengthMenu": [
 					[10, 25, 50], // 每页显示数目，-1表示显示全部
@@ -386,6 +398,18 @@ var Manhour = function() {
 					"targets": [0, 5]
 				}]
 			});
+			var tt = new $.fn.dataTable.TableTools(table, {
+				"sSwfPath": "assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+				"aButtons": [
+					{
+						"sExtends": "csv",
+						"sButtonText": "导出 Excel"
+					}
+				]
+			});
+			$(tt.fnContainer()).insertBefore('#manhours_wrapper');
+			$(".DTTT_container").addClass("btn-group margin-bottom-10");
+			$(".DTTT_container a").addClass("btn btn-default");
 
 			$('#manhours .group-checkable').change(function() {
 				var set = $(this).attr("data-set");
