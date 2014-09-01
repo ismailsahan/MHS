@@ -15,6 +15,7 @@ var Global = function () {
 			baseZ: 11000
 		});
 	};
+	$(document).ajaxStop($.unblockUI);
 
 	var initBaseInfo = function () {
 
