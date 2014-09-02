@@ -32,6 +32,7 @@ define('DISABLE_TRACE', TRUE);
 //note 普通的 http 通知方式
 if(!defined('IN_UC')) {
 
+	define('IN_UC', TRUE);
 	require '../source/class/class_core.php';
 	C::instance();
 
@@ -67,7 +68,7 @@ if(!defined('IN_UC')) {
 
 //note include 通知方式
 } else {
-	require '../source/class/class_core.php';
+	require dirname(__FILE__).'./../source/class/class_core.php';
 	C::instance();
 }
 

@@ -69,17 +69,17 @@ class core {
 		process('初始化输入...');
 		$this->_init_input();
 		process('初始化输出...');
-		$this->_init_output();
+		!defined('IN_UC') && $this->_init_output();
 		process('初始化数据库支撑组件...');
 		$this->_init_db();
 		process('初始化设置选项...');
 		$this->_init_setting();
 		process('初始化用户...');
-		$this->_init_user();
+		!defined('IN_UC') && $this->_init_user();
 		process('初始化会话SESSION...');
-		$this->_init_session();
+		!defined('IN_UC') && $this->_init_session();
 		process('初始化杂项...');
-		$this->_init_misc();
+		!defined('IN_UC') && $this->_init_misc();
 		process('已加载框架');
 	}
 
@@ -180,7 +180,7 @@ class core {
 
 
 		$this->config['security']['allowedentrance'] = is_string($this->config['security']['allowedentrance']) ? explode(',', $this->config['security']['allowedentrance']) : $this->config['security']['allowedentrance'];
-		if(!in_array($this->var['basefilename'], $this->config['security']['allowedentrance'])) halt('REQUEST_TAINTING');
+		if(!defined('IN_UC') && !in_array($this->var['basefilename'], $this->config['security']['allowedentrance'])) halt('REQUEST_TAINTING');
 
 		if(empty($this->config['debug']) || !$this->config['debug']) {
 			define('APP_FRAMEWORK_DEBUG', false);
@@ -235,6 +235,7 @@ class core {
 	 */
 	private function _init_lib() {
 		foreach($this->libs as $lib){
+			if(defined('IN_UC') && $lib =='class/template') continue;
 			$path = libfile($lib);
 			(!@include_once($path)) && halt('LIBRARY_FILE_LOAD_ERR', $lib);
 		}
@@ -378,8 +379,10 @@ class core {
 		$template->templates_direxception = array('test', 'document', 'documention', 'temp', 'demo');*/
 
 		//初始化模板引擎Smarty
-		global $template;
-		$template = new template;
+		if(!defined('IN_UC') && class_exists('template')) {
+			global $template;
+			$template = new template;
+		}
 	}
 
 	/**
@@ -477,7 +480,7 @@ class core {
 		dsetcookie('lastact', $lastact, 86400);
 
 		//站点关闭
-		if($this->var['setting']['closed']){
+		if($this->var['setting']['closed'] && !defined('IN_UC')){
 			if(!in_array(ACTION_NAME, array('api', 'seccode', 'logging')) || ACTION_NAME=='logging' && OPERATION_NAME!='login') {
 				if(!$this->var['uid']) {
 					redirect(U('logging/login?siteclosed=1'));

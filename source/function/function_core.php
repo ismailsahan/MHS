@@ -239,18 +239,20 @@ function striexists($string, $find) {
 	return !(stripos($string, $find) === FALSE);
 }
 
-function daddslashes($string, $force = 1) {
-	if(is_array($string)) {
-		$keys = array_keys($string);
-		foreach($keys as $key) {
-			$val = $string[$key];
-			unset($string[$key]);
-			$string[addslashes($key)] = daddslashes($val, $force);
+if(!function_exists('daddslashes')) {
+	function daddslashes($string, $force = 1) {
+		if(is_array($string)) {
+			$keys = array_keys($string);
+			foreach($keys as $key) {
+				$val = $string[$key];
+				unset($string[$key]);
+				$string[addslashes($key)] = daddslashes($val, $force);
+			}
+		} else {
+			$string = addslashes($string);
 		}
-	} else {
-		$string = addslashes($string);
+		return $string;
 	}
-	return $string;
 }
 
 /**
