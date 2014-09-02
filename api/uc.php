@@ -8,17 +8,17 @@ define('IN_API', TRUE);
 define('UC_CLIENT_VERSION', '1.6.0');	//note UCenter 版本标识
 define('UC_CLIENT_RELEASE', '20110501');
 
-define('API_DELETEUSER', 0);		//note 用户删除 API 接口开关
-define('API_RENAMEUSER', 0);		//note 用户改名 API 接口开关
-define('API_GETTAG', 0);		//note 获取标签 API 接口开关
-define('API_SYNLOGIN', 0);		//note 同步登录 API 接口开关
-define('API_SYNLOGOUT', 0);		//note 同步登出 API 接口开关
-define('API_UPDATEPW', 0);		//note 更改用户密码 开关
-define('API_UPDATEBADWORDS', 0);	//note 更新关键字列表 开关
-define('API_UPDATEHOSTS', 0);		//note 更新域名解析缓存 开关
-define('API_UPDATEAPPS', 0);		//note 更新应用列表 开关
-define('API_UPDATECLIENT', 0);		//note 更新客户端缓存 开关
-define('API_UPDATECREDIT', 0);		//note 更新用户积分 开关
+define('API_DELETEUSER', 1);		//note 用户删除 API 接口开关
+define('API_RENAMEUSER', 1);		//note 用户改名 API 接口开关
+define('API_GETTAG', 1);		//note 获取标签 API 接口开关
+define('API_SYNLOGIN', 1);		//note 同步登录 API 接口开关
+define('API_SYNLOGOUT', 1);		//note 同步登出 API 接口开关
+define('API_UPDATEPW', 1);		//note 更改用户密码 开关
+define('API_UPDATEBADWORDS', 1);	//note 更新关键字列表 开关
+define('API_UPDATEHOSTS', 1);		//note 更新域名解析缓存 开关
+define('API_UPDATEAPPS', 1);		//note 更新应用列表 开关
+define('API_UPDATECLIENT', 1);		//note 更新客户端缓存 开关
+define('API_UPDATECREDIT', 1);		//note 更新用户积分 开关
 define('API_GETCREDITSETTINGS', 0);	//note 向 UCenter 提供积分设置 开关
 define('API_GETCREDIT', 0);		//note 获取用户的某项积分 开关
 define('API_UPDATECREDITSETTINGS', 0);	//note 更新应用积分设置 开关
@@ -102,10 +102,17 @@ class uc_note {
 		!API_DELETEUSER && exit(API_RETURN_FORBIDDEN);
 		$uids = str_replace("'", '', stripslashes($get['ids']));
 		$ids = array();
-		$query = DB::query("SELECT * FROM ".DB::table('user')." WHERE uid IN ($uids)");
-		/*while($row = DB::fetch($query)) {
-			$ids[] = $row['uid'];
-		}*/
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('users', $uids));
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('manhours', $uids));
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('activation', $uids));
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('users_connect', $uids));
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('users_profile', $uids));
+		DB::query('DELETE FROM %t WHERE `uid` IN (%i)', array('users_validate', $uids));
+		$uids = str_replace(' ', '', stripslashes($uids));
+		$uids = explode(',', $uids);
+		require_once libfile('function/manhour');
+		update_user_manhour($uids);
+		update_rank();
 		return API_RETURN_SUCCEED;
 	}
 
@@ -115,7 +122,7 @@ class uc_note {
 		$uid = $get['uid'];
 		$usernameold = $get['oldusername'];
 		$usernamenew = $get['newusername'];
-		DB::query("UPDATE ".DB::table("user")." SET `username`='$usernamenew' WHERE `uid`='$uid' AND `username`='$usernameold'");
+		DB::query('UPDATE %t SET `username`=%s WHERE `uid`=%d AND `username`=%s LIMIT 1', array('users', $usernamenew, $uid, $usernameold));
 
 		return API_RETURN_SUCCEED;
 	}
@@ -139,7 +146,11 @@ class uc_note {
 		}
 
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
-		_setcookie('auth', authcode($uid."\t".$_G['authkey'], 'ENCODE'));
+		require_once libfile('function/logging');
+		$email = DB::result_first('SELECT `email` FROM %t WHERE `uid`=%d LIMIT 1', array('users', $uid));
+		if($email) login($username, null, $errmsg, $uid, $email);
+
+		return $email && !$errmsg ? API_RETURN_SUCCEED : API_RETURN_FAILED;
 	}
 
 	function synlogout($get, $post) {
@@ -149,7 +160,8 @@ class uc_note {
 
 		//note 同步登出 API 接口
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
-		_setcookie('auth', '', -86400 * 365);
+		require_once libfile('function/logging');
+		logout(false);
 	}
 
 	function updatepw($get, $post) {

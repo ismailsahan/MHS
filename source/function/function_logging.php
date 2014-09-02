@@ -108,7 +108,7 @@ function login($username, $password='', &$errmsg='', $uid=0, $email='', $redirec
 /**
  * 注销/登出
  */
-function logout(){
+function logout($redirect = true){
 	dsetcookie('auth');
 	//unset($_SESSION['user']);
 	$keys = array_keys($_SESSION);
@@ -116,14 +116,15 @@ function logout(){
 		unset($_SESSION[$k]);
 	}
 
-	if(IS_AJAX){
-		ajaxReturn(array(
-			'errno' => 0,
-			'msg' => '注销成功！'
-		));
-		exit;
-	}else{
-		redirect(U('logging/login'));
+	if($redirect) {
+		if(IS_AJAX){
+			ajaxReturn(array(
+				'errno' => 0,
+				'msg' => '注销成功！'
+			));
+		}else{
+			redirect(U('logging/login'));
+		}
 		exit;
 	}
 }
