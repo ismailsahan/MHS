@@ -201,7 +201,7 @@ function adduser($uid, $user=array(), $profile=array()){
 		$user['allowadmincp'],		// 允许进入后台
 		$user['conisbind']			// 绑定QQ状态
 	));
-	DB::query('REPLACE INTO %t (`uid`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`) VALUES (%d, %s, %d, %s, %s, %d, %d, %d, %d, %s, %s, %s)', array(
+	DB::query('REPLACE INTO %t (`uid`, `realname`, `gender`, `qq`, `studentid`, `grade`, `academy`, `specialty`, `class`, `organization`, `league`, `department`) VALUES (%d, %s, %d, %s, %s, %d, %d, %s, %s, %s, %s, %s)', array(
 		'users_profile',			// 表
 		$uid,						// 用户ID
 		$profile['realname'],		// 真实姓名
