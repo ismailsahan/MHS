@@ -472,7 +472,7 @@ class core {
 		//禁用客户端浏览器缓存
 		if(isset($this->var['setting']['nocacheheaders']) && $this->var['setting']['nocacheheaders']){
 			@header('Expires: -1');
-			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
+			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', TRUE);
 			@header('Pragma: no-cache');
 		}
 

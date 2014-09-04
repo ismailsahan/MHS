@@ -382,7 +382,7 @@ class ApiAction extends Action {
 		global $_G;
 		if($nocache && !$_G['setting']['nocacheheaders']) {
 			@header('Expires: -1');
-			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', FALSE);
+			@header('Cache-Control: no-store, private, post-check=0, pre-check=0, max-age=0', TRUE);
 			@header('Pragma: no-cache');
 		}elseif(!$nocache && $_G['setting']['nocacheheaders']){
 			@session_cache_limiter('public');
