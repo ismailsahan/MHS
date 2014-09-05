@@ -1399,10 +1399,13 @@ function clearcache($opt = 1) {
 	}
 
 	if($clearall) {
-		Cache::clean();
-		$data = Cache::stats();
-		foreach($data['data']['cache_list'] as &$v) {
-			Cache::delete($v['info']);
+		if(Cache::$storage == 'Sqlite') {
+			$data = Cache::stats();
+			foreach($data['data']['cache_list'] as &$v) {
+				Cache::set($v['info'], null);
+			}
+		} else {
+			Cache::clean();
 		}
 	} else {
 		if($options['setting']) {
