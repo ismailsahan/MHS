@@ -626,6 +626,7 @@ var Layout = function () {
         var setColor = function(color) {
             var color_ = (Metronic.isRTL() ? color + '-rtl' : color);
             $('#style_color').attr("href", Layout.getLayoutCssPath() + 'themes/' + color_ + ".css");
+            $.cookie('style_color', color_);
         };
 
         $('.toggler', panel).click(function() {
