@@ -23,6 +23,8 @@ var SelfProfile = function () {
 
 	var initProfiles = function () {
 
+		$(document).off("ajaxError");
+
 		$.fn.editableContainer.defaults.placement = "bottom";
 		//$.fn.editable.defaults.mode = 'inline';
 		$.fn.editable.defaults.inputclass = 'form-control';
