@@ -47,8 +47,8 @@ var SelfProfile = function () {
 			}
 		});
 
-		$('#grade,#academy,#specialty,#class').editable();
-		$('#email,#realname,#qq,#studentid').editable({
+		$('#qq,#academy,#specialty,#class').editable();
+		$('#email,#realname,#studentid,#grade').editable({
 			disabled: true
 		});
 		$('#mobile').editable({
