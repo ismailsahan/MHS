@@ -1,6 +1,9 @@
 var Logging = function () {
 	var handleLogin = function() {
-		$('.login-form').validate({
+		$('.login-form').submit(function() {
+			if($('.login-form').data("pwdsafety")) pwmd5(".login-form [name='password']");
+			return true;
+		}).validate({
 			errorElement: 'span', //default input error message container
 			errorClass: 'help-block', // default input error message class
 			focusInvalid: false, // do not focus the last invalid input
@@ -14,8 +17,7 @@ var Logging = function () {
 				},
 				verifycode: {
 					required: true,
-					minlength: {$_G['setting']['seccodedata']['length']}/*,
-					pattern: /^[0-9A-Za-z]{{$_G['setting']['seccodedata']['length']}}$/*/
+					minlength: {$_G['setting']['seccodedata']['length']}
 				}
 			},
 			messages: {
@@ -52,7 +54,6 @@ var Logging = function () {
 			},
 
 			submitHandler: function (form) {
-				if(form.data("pwdsafety")) pwmd5(".login-form [name='password']");
 				form.submit();
 			}
 		});
@@ -60,7 +61,6 @@ var Logging = function () {
 		$('.login-form input').keypress(function (e) {
 			if (e.which == 13) {
 				if ($('.login-form').validate().form()) {
-					if($('.login-form').data("pwdsafety")) pwmd5(".login-form [name='password']");
 					$('.login-form').submit();
 				}
 				return false;

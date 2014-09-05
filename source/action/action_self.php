@@ -31,6 +31,7 @@ class SelfAction extends Action {
 			require_once libfile('function/logging');
 			switch($name){
 				case 'email':
+					$this->_ajaxError('该字段被保护，不允许修改');
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
@@ -66,6 +67,7 @@ class SelfAction extends Action {
 					}
 					break;
 				case 'realname':
+					$this->_ajaxError('该字段被保护，不允许修改');
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
@@ -77,6 +79,7 @@ class SelfAction extends Action {
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'gender':
+					$this->_ajaxError('该字段被保护，不允许修改');
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
@@ -97,6 +100,7 @@ class SelfAction extends Action {
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'studentid':
+					$this->_ajaxError('该字段被保护，不允许修改');
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
@@ -108,6 +112,7 @@ class SelfAction extends Action {
 					login($_G['username'], '', $errmsg, $_G['uid'], '', false);
 					break;
 				case 'grade':
+					$this->_ajaxError('该字段被保护，不允许修改');
 					if(!is_string($value)){
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){

@@ -381,7 +381,7 @@ class LoggingAction extends Action {
 	public function locked($expired=false){
 		global $template, $_G;
 
-		if(empty($_SESSION['user'])) {
+		if(empty($_SESSION['user']) || empty($_SESSION['user']['uid'])) {
 			redirect(U('logging/login'));
 		}
 
