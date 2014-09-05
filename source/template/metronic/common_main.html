@@ -37,9 +37,7 @@
 			<!-- BEGIN LOGO -->
 			<div class="page-logo">
 				<a href="{U main/index}"><img src="{$_G.setting.logopath}" alt="{$_G.setting.sitename}" class="img-responsive" /></a>
-				<div class="menu-toggler sidebar-toggler hide">
-					<!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
-				</div>
+				<div class="menu-toggler sidebar-toggler hide"></div>
 			</div>
 			<!-- END LOGO -->
 			<!-- BEGIN RESPONSIVE MENU TOGGLER --> 
@@ -146,7 +144,7 @@
 					</div>
 					<!-- END SIDEBAR TOGGLER BUTTON -->
 				</li>
-				<li class="sidebar-search-wrapper">
+				<li class="sidebar-search-wrapper hide">
 					<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
 					<!-- DOC: Apply "sidebar-search-bordered" class the below search form to have bordered search box -->
 					<!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box -->
@@ -163,8 +161,9 @@
 					</form>
 					<!-- END RESPONSIVE QUICK SEARCH FORM -->
 				</li>
+				<li class="margin-bottom-10"></li>
 				{call menuItem menuArr=$sidebarMenu}
-				<li class="admin{nocache}{if !$_G.member.adminid} hidden{/if}{/nocache}"><a href="javascript:;"><i class="fa"></i><span class="title">&raquo; 管理选项 &laquo;</span></a></li>
+				{nocache}{if $_G.member.adminid}<li class="heading admin"><h3>管理选项</h3></li>{/if}{/nocache}
 				{call menuItem menuArr=$adminNav admin=1}
 			</ul>
 			<!-- END SIDEBAR MENU -->
@@ -182,50 +181,59 @@
 					<div class="theme-option theme-colors clearfix">
 						<span>{lang theme_color}</span>
 						<ul>
-							<li class="color-default current tooltips" data-style="default" data-original-title="Default"></li>
-							<li class="color-darkblue tooltips" data-style="darkblue" data-original-title="Dark Blue"></li>
-							<li class="color-blue tooltips" data-style="blue" data-original-title="Blue"></li>
-							<li class="color-grey tooltips" data-style="grey" data-original-title="Grey"></li>
-							<li class="color-light tooltips" data-style="light" data-original-title="Light"></li>
-							<li class="color-light2 tooltips" data-style="light2" data-html="true" data-original-title="Light 2"></li>
+							<li class="color-default current tooltips" data-style="default" data-container="body" data-original-title="默认"></li>
+							<li class="color-darkblue tooltips" data-style="darkblue" data-container="body" data-original-title="深蓝"></li>
+							<li class="color-blue tooltips" data-style="blue" data-container="body" data-original-title="蓝"></li>
+							<li class="color-grey tooltips" data-style="grey" data-container="body" data-original-title="灰"></li>
+							<li class="color-light tooltips" data-style="light" data-container="body" data-original-title="亮色"></li>
+							<li class="color-light2 tooltips" data-style="light2" data-container="body" data-html="true" data-original-title="亮色2"></li>
 						</ul>
 					</div>
 					{if $smarty.const.APP_FRAMEWORK_DEBUG}
 					<div class="theme-option">
-						<span>
-						Layout </span>
+						<span>Layout</span>
 						<select class="layout-option form-control input-small">
 							<option value="fluid" selected="selected">Fluid</option>
 							<option value="boxed">Boxed</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>
-						Header </span>
+						<span>Header</span>
 						<select class="page-header-option form-control input-small">
 							<option value="fixed" selected="selected">Fixed</option>
 							<option value="default">Default</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>
-						Sidebar </span>
+						<span>Sidebar Mode</span>
 						<select class="sidebar-option form-control input-small">
 							<option value="fixed">Fixed</option>
 							<option value="default" selected="selected">Default</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>
-						Sidebar Position </span>
+						<span>Sidebar Menu</span>
+						<select class="sidebar-menu-option form-control input-small">
+							<option value="accordion" selected="selected">Accordion</option>
+							<option value="hover">Hover</option>
+						</select>
+					</div>
+					<div class="theme-option">
+						<span>Sidebar Style</span>
+						<select class="sidebar-style-option form-control input-small">
+							<option value="default" selected="selected">Default</option>
+							<option value="light">Light</option>
+						</select>
+					</div>
+					<div class="theme-option">
+						<span>Sidebar Position</span>
 						<select class="sidebar-pos-option form-control input-small">
 							<option value="left" selected="selected">Left</option>
 							<option value="right">Right</option>
 						</select>
 					</div>
 					<div class="theme-option">
-						<span>
-						Footer </span>
+						<span>Footer</span>
 						<select class="page-footer-option form-control input-small">
 							<option value="fixed">Fixed</option>
 							<option value="default" selected="selected">Default</option>
@@ -236,18 +244,14 @@
 			</div>
 			<!-- END BEGIN STYLE CUSTOMIZER -->           
 			<!-- BEGIN PAGE HEADER-->
-			<div class="row">
-				<div class="col-md-12">
-					<!-- BEGIN PAGE TITLE & BREADCRUMB-->
-					<h3 class="page-title">{lang nav/{end($menuset)}} <small>{lang nav/{end($menuset)|cat:'_detail'}}</small></h3>
-					<ul class="page-breadcrumb breadcrumb">
-						<li><i class="fa fa-home"></i><a href="{U main/index}">{lang nav/home}</a>{if !(count($menuset)==1 && $menuset[0]=='home')} <i class="fa fa-angle-right"></i>{/if}</li>
-						{foreach $menuset as $menu}{if $menu=='home'}{continue}{/if}
-						<li><a href="{if $_G.navbarset.$menu}{U $_G.navbarset.$menu}{else}#{/if}">{lang nav/$menu}</a>{if !$menu@last} <i class="fa fa-angle-right"></i>{/if}</li>
-						{/foreach}
-					</ul>
-					<!-- END PAGE TITLE & BREADCRUMB-->
-				</div>
+			<h3 class="page-title">{lang nav/{end($menuset)}} <small>{lang nav/{end($menuset)|cat:'_detail'}}</small></h3>
+			<div class="page-bar">
+				<ul class="page-breadcrumb">
+					<li><i class="fa fa-home"></i><a href="{U main/index}">{lang nav/home}</a>{if !(count($menuset)==1 && $menuset[0]=='home')}<i class="fa fa-angle-right"></i>{/if}</li>
+					{foreach $menuset as $menu}{if $menu=='home'}{continue}{/if}
+					<li><a href="{if $_G.navbarset.$menu}{U $_G.navbarset.$menu}{else}#{/if}">{lang nav/$menu}</a>{if !$menu@last}<i class="fa fa-angle-right"></i>{/if}</li>
+					{/foreach}
+				</ul>
 			</div>
 			<!-- END PAGE HEADER-->
 			<!-- BEGIN PAGE CONTENT-->
@@ -261,7 +265,7 @@
 	<!-- BEGIN FOOTER -->
 	<div class="page-footer">
 		<div class="page-footer-inner">{$_G.setting.copyright}<span class="hitokoto"></span><br />{template debuginfo}</div>
-		<div class="page-footer-tools"><span class="go-top"><i class="fa fa-angle-up"></i></span></div>
+		<div class="scroll-to-top"><i class="icon-arrow-up"></i></div>
 	</div>
 	<!-- END FOOTER -->
 {/block}

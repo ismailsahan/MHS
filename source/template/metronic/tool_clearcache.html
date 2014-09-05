@@ -9,28 +9,7 @@
 		$(document).ready(function() {
 			Metronic.init();
 			Layout.init();
-			$(".panel form").submit(function() {
-				$.blockUI({
-					message: '<img src="assets/global/img/ajax-loading.gif" />',
-					css: {
-						//top: '10%',
-						border: 'none',
-						//padding: '2px',
-						backgroundColor: 'none'
-					},
-					overlayCSS: {
-						backgroundColor: '#000',
-						opacity: 0.2,
-						cursor: 'wait'
-					},
-					baseZ: 11000
-				});
-				$.post("{U 'tool/clearcache?inajax=1'}", {}, function(data) {
-					$.unblockUI();
-					modalAlert(data.msg);
-				}, "JSON");
-				return false;
-			})
+			Tool.initclearcache();
 		});
 	</script>
 {/block}

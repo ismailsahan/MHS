@@ -28,8 +28,8 @@ h3.page-title { font-family:inherit; }
 .page-container .page-sidebar-wrapper ul li a span.arrow+span.badge { margin-right: 6px; }
 .page-footer {height:auto;}
 .page-header.navbar .page-logo { width: auto; }
-.page-header.navbar .page-logo > a { height: 46px; display: table-cell; vertical-align: middle; }
-.page-header.navbar .page-logo > a > img { max-height: 46px; }
+.page-header.navbar .page-logo > a { height: 46px; line-height: 46px; display: table-cell; vertical-align: middle; }
+.page-header.navbar .page-logo > a > img { max-height: 46px; display: inline-block; }
 .gritter-title { font-family: inherit; }
 
 @media (max-width: 767px) {

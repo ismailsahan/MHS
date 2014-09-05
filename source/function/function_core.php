@@ -1399,14 +1399,7 @@ function clearcache($opt = 1) {
 	}
 
 	if($clearall) {
-		if(Cache::$storage == 'Sqlite') {
-			$data = Cache::stats();
-			foreach($data['data']['cache_list'] as &$v) {
-				Cache::set($v['info'], null);
-			}
-		} else {
-			Cache::clean();
-		}
+		Cache::clean();
 	} else {
 		if($options['setting']) {
 			Cache::delete('setting');

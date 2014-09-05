@@ -33,7 +33,7 @@ class Cache {
 		phpFastCache::$config['path'] = APP_FRAMEWORK_ROOT.'/data/cache';
 		phpFastCache::$config['securityKey'] = md5($_SERVER['HTTP_HOST'].$_SERVER['SERVER_PORT'].$_G['siteroot']);
 		self::$prefix = $_G['config']['cookie']['cookiepre'];
-		self::$object = new phpFastCache('auto');
+		self::$object = new phpFastCache(extension_loaded('pdo_sqlite') ? 'files' : 'auto');
 		//self::$object->option('path', APP_FRAMEWORK_ROOT.'/data/cache');
 		self::$storage = ucfirst(self::$object->option['storage']);
 		return self::$object;
