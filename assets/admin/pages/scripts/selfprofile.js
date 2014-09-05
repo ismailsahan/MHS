@@ -23,7 +23,8 @@ var SelfProfile = function () {
 
 	var initProfiles = function () {
 
-		$.fn.editable.defaults.mode = 'inline';
+		$.fn.editableContainer.defaults.placement = "bottom";
+		//$.fn.editable.defaults.mode = 'inline';
 		$.fn.editable.defaults.inputclass = 'form-control';
 		$.fn.editable.defaults.url = '{U self/profile?inajax=1}';
 		$.fn.editable.defaults.inputclass = 'form-control input-medium';
@@ -46,7 +47,13 @@ var SelfProfile = function () {
 			}
 		});
 
-		$('#email,#realname,#mobile,#qq,#studentid,#grade,#academy,#specialty,#class').editable();
+		$('#grade,#academy,#specialty,#class').editable();
+		$('#email,#realname,#qq,#studentid').editable({
+			disabled: true
+		});
+		$('#mobile').editable({
+			placement: "top",
+		});
 
 		$('#gender').editable({
 			inputclass: 'form-control',
@@ -58,6 +65,7 @@ var SelfProfile = function () {
 					text: '{lang female}'
 				}
 			],
+			disabled: true,
 			select2: {
 				minimumResultsForSearch:-1,
 				allowClear: false
