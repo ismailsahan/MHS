@@ -76,6 +76,7 @@ var SelfProfile = function () {
 
 		$('#league,#department').editable({
 			inputclass: 'form-control input-medium',
+			placement: "top",
 			source: [{
 					value: 1,
 					text: '{lang male}'

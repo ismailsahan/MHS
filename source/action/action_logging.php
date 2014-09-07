@@ -324,6 +324,7 @@ class LoggingAction extends Action {
 							'allowadmincp'		=> 1,
 							'conisbind'			=> 0
 						));
+						DB::query('UPDATE %t SET `status`=1, `verifytime`=%d WHERE `uid`=%d LIMIT 1', array('activation', TIMESTAMP, $_G['uid']));
 						$data['msg'] = '已通过审核';
 					}
 
