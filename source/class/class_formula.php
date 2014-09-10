@@ -16,7 +16,7 @@ class formula {
 		//FROM `conn_users`, `conn_users_profile` 
 		//WHERE `conn_users`.`uid` =1 AND `conn_users`.`uid`=`conn_users_profile`.`uid`
 
-		if($_G['member']['adminid'] > 1 || !empty($formula)){
+		if($_G['member']['adminid'] > 1 && !empty($formula)){
 			$formula = self::parse_formula($formula);
 			$sql .= $formula;
 

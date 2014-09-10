@@ -320,7 +320,7 @@ function chkPermit($idx = null) {
 		$_G['member']['adminpermit'] = empty($_G['member']['adminpermit']) ? array() : explode(',', $_G['member']['adminpermit']);
 	}
 
-	return isset($_G['member']['adminpermit'][$idx]) ? $_G['member']['adminpermit'][$idx] : false;
+	return in_array($idx, $_G['member']['adminpermit']) ? true : false;
 }
 
 /**
