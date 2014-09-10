@@ -176,10 +176,14 @@ class framework_error {
 		ob_start(getglobal('gzipcompress') ? 'ob_gzhandler' : null);
 
 		send_http_status(500);
-		if(defined('IS_AJAX') && IS_AJAX || defined('ACTION_NAME') && ACTION_NAME == 'api') ajaxReturn(array(
-			'errno' => 500,
-			'msg'	=> $errormsg
-		));
+		if(defined('IS_AJAX') && IS_AJAX || defined('ACTION_NAME') && ACTION_NAME == 'api') {
+			header('Content-Type:application/json; charset=utf-8');
+			echo(json_encode(array(
+				'errno' => 500,
+				'msg'	=> $errormsg
+			)));
+			return;
+		}
 
 		if(!defined('APP_FRAMEWORK_DEBUG') || !APP_FRAMEWORK_DEBUG) $phpmsg = '';
 		$last = is_array($phpmsg) && !empty($phpmsg) ? end($phpmsg) : array();
