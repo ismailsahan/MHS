@@ -22,7 +22,7 @@ class formula {
 
 			//FIND_IN_SET(%d, `department`)
 		}else{
-			$sql .= $_G['member']['adminid']==1 ? '1' : '0';
+			$sql .= ($_G['member']['adminid']==1 || $_G['member']['adminid']>1 && empty($formula)) ? '1' : '0';
 		}
 
 		//trace($sql);
