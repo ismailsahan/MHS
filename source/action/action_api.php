@@ -266,6 +266,8 @@ class ApiAction extends Action {
 
 		if($_G['uid']){
 			$result['errno'] = 1;
+			require_once libfile('function/nav');
+			require_once libfile('function/members');
 			if(!chkPermit('addmh')) {
 				$result['msg'] = '无权操作';
 			}elseif(empty($uid)){
@@ -312,6 +314,11 @@ class ApiAction extends Action {
 								''				// 审核留言
 							));
 						}
+
+						require_once libfile('function/manhour');
+						update_user_manhour($_G['uid']);
+						update_rank();
+
 						$result['errno'] = 0;
 						$result['msg'] = '添加成功！';
 					}
