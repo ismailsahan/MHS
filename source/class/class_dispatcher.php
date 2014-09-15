@@ -104,6 +104,8 @@ class Dispatcher {
 
 		define('ACTION_NAME', self::getAction($config['var_action']));
 		define('OPERATION_NAME', self::getOperation($config['var_operation']));
+
+		if(!preg_match('/^[a-zA-Z0-9_]+$/', ACTION_NAME) || !preg_match('/^[a-zA-Z0-9_]+$/', OPERATION_NAME)) halt('REQUEST_TAINTING');
 	}
 
 	/**
