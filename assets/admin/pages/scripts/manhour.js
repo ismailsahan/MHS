@@ -104,6 +104,9 @@ var Manhour = function() {
 	}
 
 	function initDT(columns, noorder) {
+		var utimes = [];
+		if(columns["applytime"]) utimes.push(columns["applytime"]);
+		if(columns["verifytime"]) utimes.push(columns["verifytime"]);
 		var table = $('#manhours').dataTable({
 			"order": noorder ? [] : [[columns["applytime"], 'asc']],
 			"lengthMenu": [
@@ -111,13 +114,10 @@ var Manhour = function() {
 				[10, 25, 50] // 对应的文字
 			],
 			"pageLength": 10,
-			"columnDefs": [{
-				'orderable': false,
-				'targets': [columns["checkbox"], columns["extra"], columns["avatar"]]
-			}, {
-				"searchable": false,
-				"targets": [columns["checkbox"], columns["extra"], columns["avatar"]]
-			}]
+			"columnDefs": [
+				{ orderable: false, searchable: false, targets: [columns["checkbox"], columns["extra"], columns["avatar"]] },
+				{ orderDataType: "dom-time", targets: utimes }
+			]
 		});
 		var tt = new $.fn.dataTable.TableTools(table, {
 			"sSwfPath": "assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",

@@ -166,6 +166,14 @@ $(document).ready(function() {
 			"sortDescending": ": 以降序排列此列"
 		}
 	});
+
+	if (typeof $.fn.dataTable != "undefined") $.fn.dataTable.ext.order['dom-time'] = function(settings, col) {
+		var t= this.api().column(col, {order:'index'}).nodes().map(function(td, i) {
+			var t = $(td).data("time");
+			return t===undefined ? $(td).html() : t*1;
+		});
+		return t;
+	};
 });
 
 $.ajaxSetup({

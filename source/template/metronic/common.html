@@ -16,7 +16,7 @@
 <link rel="shortcut icon" href="favicon.ico" />
 <script type="text/javascript">window.paceOptions = { ajax: { trackMethods: ['GET','POST'] } } </script>
 <script src="assets/global/plugins/pace/pace.min.js" type="text/javascript"></script>
-<link href="assets/global/plugins/pace/themes/pace-theme-barber-shop.css" rel="stylesheet" type="text/css"/>
+<link href="assets/global/plugins/pace/themes/{if $smarty.const.ACTION_NAME=='logging' && $smarty.const.OPERATION_NAME!='activate'}white/pace-theme-flash{else}pace-theme-barber-shop{/if}.css" rel="stylesheet" type="text/css"/>
 <!-- BEGIN GLOBAL MANDATORY STYLES -->
 <link href="assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <link href="assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />

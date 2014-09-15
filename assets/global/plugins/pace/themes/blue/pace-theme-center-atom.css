@@ -16,7 +16,7 @@
   height: 60px;
   width: 100px;
   margin: auto;
-  top: 0;
+  top: 0 !important;
   left: 0;
   right: 0;
   bottom: 0;
@@ -54,7 +54,7 @@
   content: ' ';
   display: block;
   position: absolute;
-  top: 0;
+  top: 0 !important;
   left: 0;
   height: 60px;
   width: 100px;
@@ -86,7 +86,7 @@
   content: ' ';
   display: block;
   position: absolute;
-  top: 0;
+  top: 0 !important;
   left: 0;
   height: 60px;
   width: 100px;
@@ -103,7 +103,7 @@
   content: ' ';
   display: block;
   position: absolute;
-  top: 0;
+  top: 0 !important;
   left: 0;
   height: 60px;
   width: 100px;

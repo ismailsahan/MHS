@@ -15,7 +15,7 @@
   background-color: #000000;
   position: fixed;
   z-index: 2000;
-  top: 0;
+  top: 0 !important;
   left: 0;
   height: 12px;
   overflow: hidden;
@@ -28,7 +28,7 @@
 
 .pace .pace-progress-inner {
   position: absolute;
-  top: 0;
+  top: 0 !important;
   left: 0;
   right: -32px;
   bottom: 0;

@@ -8,11 +8,11 @@
 }
 
 .pace-inactive .pace-progress {
-  -webkit-animation: pace-hide-animation 500ms ease;
-  -moz-animation: pace-hide-animation 500ms ease;
-  -ms-animation: pace-hide-animation 500ms ease;
-  -o-animation: pace-hide-animation 500ms ease;
-  animation: pace-hide-animation 500ms ease;
+  -webkit-animation: pace-fadeout 500ms ease;
+  -moz-animation: pace-fadeout 500ms ease;
+  -ms-animation: pace-fadeout 500ms ease;
+  -o-animation: pace-fadeout 500ms ease;
+  animation: pace-fadeout 500ms ease;
   -webkit-animation-fill-mode: forwards;
   -moz-animation-fill-mode: forwards;
   -ms-animation-fill-mode: forwards;
@@ -38,7 +38,7 @@
 
 .pace .pace-progress-inner {
   position: absolute;
-  top: 0;
+  top: 0 !important;
   left: 0;
   right: -32px;
   bottom: 0;
@@ -81,23 +81,23 @@
   100% { transform: translate(-32px, 0); transform: translate(-32px, 0); }
 }
 
-@-webkit-keyframes pace-hide-animation {
+@-webkit-keyframes pace-fadeout {
   70% { width: 100%; }
   100% { opacity: 0; }
 }
-@-moz-keyframes pace-hide-animation {
+@-moz-keyframes pace-fadeout {
   70% { width: 100%; }
   100% { opacity: 0; }
 }
-@-o-keyframes pace-hide-animation {
+@-o-keyframes pace-fadeout {
   70% { width: 100%; }
   100% { opacity: 0; }
 }
-@-ms-keyframes pace-hide-animation {
+@-ms-keyframes pace-fadeout {
   70% { width: 100%; }
   100% { opacity: 0; filter: alpha(opacity=0); }
 }
-@keyframes pace-hide-animation {
+@keyframes pace-fadeout {
   70% { width: 100%; }
   100% { opacity: 0; filter: alpha(opacity=0); }
 }

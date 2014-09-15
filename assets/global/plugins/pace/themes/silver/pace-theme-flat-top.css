@@ -11,7 +11,7 @@
   display: block;
   position: fixed;
   z-index: 2000;
-  top: 0;
+  top: 0 !important;
   left: 0;
   height: 12px;
   background: #d6d6d6;

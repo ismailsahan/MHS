@@ -14,7 +14,7 @@
 .pace .pace-progress {
   position: fixed;
   z-index: 2000;
-  top: 0;
+  top: 0 !important;
   right: 0;
   height: 5rem;
   width: 5rem;
@@ -23,7 +23,7 @@
 .pace .pace-progress:after {
   display: block;
   position: absolute;
-  top: 0;
+  top: 0 !important;
   right: .5rem;
   content: attr(data-progress-text);
   font-family: "Helvetica Neue", sans-serif;
