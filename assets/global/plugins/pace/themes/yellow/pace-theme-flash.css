@@ -27,6 +27,7 @@
   top: 0 !important;
   left: 0;
   height: 2px;
+  opacity: inherit;
 
   -webkit-transition: width 1s;
   -moz-transition: width 1s;
@@ -61,6 +62,7 @@
   border-top-color: #fcd25a;
   border-left-color: #fcd25a;
   border-radius: 10px;
+  opacity: inherit;
   -webkit-animation: pace-spinner 400ms linear infinite;
   -moz-animation: pace-spinner 400ms linear infinite;
   -ms-animation: pace-spinner 400ms linear infinite;
