@@ -3,7 +3,7 @@
 {block logging}
 		<!-- BEGIN FORGOT PASSWORD FORM -->
 		<form class="forget-form" action="{U logging/forgotpwd}" method="post">
-			{$ForgotpwdToken}
+			{$ForgotPwdToken}
 			<h3>{lang logging/find_pwd}</h3>
 			<div class="alert alert-danger alert-block fade in{if !$errmsg} display-hide{/if}">
 				<button class="close" data-close="alert"></button>
@@ -24,13 +24,12 @@
 					<input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="{lang email}" name="email" value="{$smarty.request.email|escape}" required />
 				</div>
 			</div>
-			{if need_seccode('Forgotpwd')}
+			{if need_seccode('ForgotPwd')}
 			<div class="form-group">
 				<label class="control-label visible-ie8 visible-ie9">{lang verifycode}</label>
 				<div class="input-icon verifycode">
 					<i class="fa fa-picture-o"></i>
-					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G.setting.seccodedata.length}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ForgotpwdTokenHash}" tag="{$ForgotpwdTokenHash}" required />
-					<!--{*<a href="javascript:;" style="right"><img src="{$_G['basefilename']}?action=seccode&tag={$ForgotpwdTokenHash}&width=80&height=26" width="80" height="26" alt="{lang verifycode_tip}" /></a>*}-->
+					<input class="form-control placeholder-no-fix" type="text" maxlength="{$_G.setting.seccodedata.length}" autocomplete="off" placeholder="{lang verifycode}" name="verifycode" id="verifycode" imgurl="{U 'seccode/show?tag='}{$ForgotPwdTokenHash}" tag="{$ForgotPwdTokenHash}" required />
 				</div>
 			</div>
 			{/if}

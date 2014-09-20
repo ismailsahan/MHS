@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="assets/global/plugins/backstretch/jquery.backstretch.min.js"></script>
 	<script type="text/javascript" src="assets/global/scripts/metronic.js"></script>
 	<script type="text/javascript" src="assets/admin/layout/scripts/layout.js"></script>
+	{if $_G.setting.pwdsafety}<script type="text/javascript" src="assets/global/scripts/md5.js"></script>{/if}
 	<script type="text/javascript" src="assets/admin/pages/scripts/lock.js"></script>
 {/block}
 {block pagejs}
@@ -25,7 +26,7 @@
 				<h1>{nocache}{$smarty.session.user.username}{/nocache}</h1>
 				<span class="email">{nocache}{$smarty.session.user.email}{/nocache}</span>
 				<span class="locked">{if $expired}会话超时(1440秒未活动)，请重新登录{else}{if $errmsg}{$errmsg}{else}已锁定{/if}{/if}</span>
-				<form class="form-inline" action="{U 'logging/locked?referer'}" method="post">
+				<form class="form-inline" action="{U 'logging/locked?referer'}" method="post"{if $_G.setting.pwdsafety} data-pwdsafety="1"{/if}>
 					{$LockedToken}
 					<div class="input-group input-medium">
 						<input type="password" name="password" class="form-control" placeholder="{lang password}" />

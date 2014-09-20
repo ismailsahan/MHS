@@ -363,10 +363,10 @@ var Activate = function() {
 				var url = $("#submit_form").attr("action");
 				showloading();
 				$.post(url + (url.indexOf("?") > -1 ? "&inajax=1" : "/inajax/1"), $("#submit_form").serialize(), function(data) {
+					$.unblockUI();
 					if (data.url) {
 						window.location.href(data.url);
 					} else if (data.msg) {
-						$.unblockUI();
 						modalAlert(data.msg);
 						if (data.errno) {
 							switch (data.errno) {

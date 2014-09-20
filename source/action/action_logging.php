@@ -174,7 +174,7 @@ class LoggingAction extends Action {
 		global $template;
 		$errmsg = '';
 
-		if(submitcheck('Forgotpwd', $errmsg)) {
+		if(submitcheck('ForgotPwd', $errmsg)) {
 			$username = $_POST['username'];
 			$email = $_POST['email'];
 
@@ -207,7 +207,7 @@ class LoggingAction extends Action {
 			}
 		}
 
-		setToken('Forgotpwd');
+		setToken('ForgotPwd');
 		$template->assign('errmsg', empty($errmsg) ? '' : lang('logging', $errmsg), true);
 		$template->display('forgotpwd');
 	}
@@ -244,7 +244,7 @@ class LoggingAction extends Action {
 			$errmsg = '';
 			$data = array(
 				'errno' => -1,
-				'msg' => ''
+				'msg' => '非法操作'
 			);
 			if(submitcheck('Activate', $errmsg, 1)){
 				if(empty($_POST['realname'])){																								// 空真实姓名

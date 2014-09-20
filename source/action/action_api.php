@@ -270,7 +270,7 @@ class ApiAction extends Action {
 			require_once libfile('function/members');
 			if(!chkPermit('addmh')) {
 				$result['msg'] = '无权操作';
-			}elseif(empty($uid)){
+			}elseif(empty($uids)){
 				$result['msg'] = '用户不能为空';
 			}elseif(empty($activity)){
 				$result['msg'] = '活动不能为空';
@@ -298,7 +298,7 @@ class ApiAction extends Action {
 					}else{
 						$date = explode('-', $date);
 						$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
-						foreach($uids as $uid) {
+						foreach($uids as &$uid) {
 							DB::query('INSERT INTO %t (`id`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 								'manhours',		// 表
 								$uid,			// 用户ID
@@ -316,7 +316,7 @@ class ApiAction extends Action {
 						}
 
 						require_once libfile('function/manhour');
-						update_user_manhour($_G['uid']);
+						foreach($uids as $uid) update_user_manhour($uid);
 						update_rank();
 
 						$result['errno'] = 0;

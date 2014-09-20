@@ -20,6 +20,8 @@ var Lock = function () {
 					showerr("验证码不能为空");
 					return false;
 				}
+				if($('.page-lock-info form').data("pwdsafety")) pwmd5(".page-lock-info form [name='password']");
+				return true;
 			});
 
 			$.backstretch([
