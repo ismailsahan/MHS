@@ -22,7 +22,7 @@
         easing: "swing",
         itemSelector: "li", // 列表项选择器
         mouseover: function() {},
-        mouseout: function() {},
+        mouseout: function() {}
     };
 
     var scrollers = [];
