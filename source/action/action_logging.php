@@ -2,7 +2,7 @@
 
 /**
  * 用户登录、注册、找回密码模块
- * 
+ *
  * 版本 v0.1.0
  */
 
@@ -326,6 +326,9 @@ class LoggingAction extends Action {
 						));
 						DB::query('UPDATE %t SET `status`=1, `verifytime`=%d WHERE `uid`=%d LIMIT 1', array('activation', TIMESTAMP, $_G['uid']));
 						$data['msg'] = '已通过审核';
+					}elseif($_G['setting']['autoactivate']){
+						DB::query('UPDATE %t SET `status`=1,`operator`=%d,`operatorname`=%s,`verifytime`=%d,`verifytext`=%s WHERE `uid`=%d LIMIT 1', array('activation', 0, 'System', TIMESTAMP, 'System Auto Activate', $_G['uid']));
+						$data['msg'] = '您已激活成功！<br />您可能需要先注销会话(右上角)，再重新登录才能进入系统界面';
 					}
 
 					$_POST['time'] = dgmdate(TIMESTAMP);
