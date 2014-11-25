@@ -298,10 +298,100 @@ class ApiAction extends Action {
 					}else{
 						$date = explode('-', $date);
 						$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
+						$user = DB::fetch('SELECT `realname`,`gender`,`studentid`,`academy` FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
 						foreach($uids as &$uid) {
-							DB::query('INSERT INTO %t (`id`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+							DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `academy`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+								'manhours',         // 表
+								$uid,               // 用户ID
+								$user['realname'],  // 真实名字
+								$user['gender'],    // 性别 1男 2女
+								$user['studentid'], // 学号
+								$user['academy'],   // 学院ID
+								$manhour,           // 工时数
+								1,                  // 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
+								$activity,          // 活动ID
+								$act['name'],       // 活动名称
+								$date,              // 日期
+								TIMESTAMP,          // 申请时间
+								TIMESTAMP,          // 审核时间
+								$_G['uid'],         // 审核员
+								$remark,            // 申请留言
+								''                  // 审核留言
+							));
+						}
+
+						require_once libfile('function/manhour');
+						foreach($uids as $uid) update_user_manhour($uid);
+						update_rank();
+
+						$result['errno'] = 0;
+						$result['msg'] = '添加成功！';
+					}
+				}
+			}
+		}
+
+		ajaxReturn($result, 'AUTO');
+	}
+
+	/**
+	 * 导入工时
+	 */
+	public function importmh(){
+		global $_G;
+		$result = array(
+			'errno' => -1,
+			'msg' => '未登录或会话超时'
+		);
+
+		$uids = $_POST['uid'];
+		$activity = $_POST['aid'];
+		$manhour = $_POST['manhour'];
+		$date = $_POST['time'];
+		$remark = htmlspecialchars(remove_xss($_POST['remark']));
+
+		if($_G['uid']){
+			$result['errno'] = 1;
+			require_once libfile('function/nav');
+			require_once libfile('function/members');
+			if(!chkPermit('addmh')) {
+				$result['msg'] = '无权操作';
+			}elseif(empty($uids)){
+				$result['msg'] = '用户不能为空';
+			}elseif(empty($activity)){
+				$result['msg'] = '活动不能为空';
+			}elseif(empty($manhour)){
+				$result['msg'] = '工时数不能为空';
+			}elseif(empty($date)){
+				$result['msg'] = '日期不能为空';
+			}elseif(abs(intval($manhour)) != $manhour){
+				$result['msg'] = '工时数只能为正整数';
+			}elseif(!preg_match("/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/", $date)){
+				$result['msg'] = '日期格式不正确';
+			}else{
+				$act = DB::fetch_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('activity', $activity));
+				if(empty($act['name'])){
+					$result['msg'] = '活动无效';
+				}else{
+					$uids = explode(',', $uids);
+					foreach($uids as &$uid) {
+						$uid = abs(intval($uid));
+					}
+					$uids = array_unique($uids);
+
+					if(empty($uids) || DB::result_first(subusersqlformula(DB::table('users').'.`uid` IN ('.implode(',', $uids).')', 'count(*)'))!=count($uids)) {
+						$result['msg'] = '用户为空或你无权管理部分用户';
+					}else{
+						$date = explode('-', $date);
+						$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
+						foreach($uids as &$uid) {
+							DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `academy`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 								'manhours',		// 表
 								$uid,			// 用户ID
+								$realname,		// 真实名字
+								$gender,		// 性别 1男 2女
+								$studentid,		// 学号
+								$academy,		// 学院ID
 								$manhour,		// 工时数
 								1,				// 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
 								$activity,		// 活动ID
