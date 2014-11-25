@@ -43,7 +43,7 @@ if($_SERVER['HTTP_X_GITHUB_EVENT'] == 'push') {
 
 	if(count($input['commits']) > 1) {
 		$input['commits'] = array_reverse($input['commits']);
-		foreach($input as $commit) {
+		foreach($input['commits'] as $commit) {
 			$files['update'] = array_merge($files['update'], $commit['added'], $commit['modified']);
 			$files['delete'] = array_merge($files['delete'], $commit['removed']);
 		}
