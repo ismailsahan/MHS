@@ -175,21 +175,16 @@ class LoggingAction extends Action {
 		$errmsg = '';
 
 		if(submitcheck('ForgotPwd', $errmsg)) {
-			$username = $_POST['username'];
 			$email = $_POST['email'];
 
-			if(empty($username)){							// 空用户名
-				$errmsg = 'username_required';
-			}elseif($username != addslashes($username)){	// 用户名初步安全检测不合格
-				$errmsg = 'username_illegal';
-			}elseif(empty($email)){							// 空邮箱
+			if(empty($email)){								// 空邮箱
 				$errmsg = 'email_required';
+			}elseif(!isemail($email)){						// Email 格式错误
+				$errmsg = 'email_illegal';
 			}else{
-				$user = getuser($username);
-				if(empty($user)){							// 账号不存在
-					$errmsg = 'username_email_notmatch';
-				}elseif($email !== $user[2]){				// 用户名和邮箱不匹配
-					$errmsg = 'username_email_notmatch';
+				$username = DB::result_first('SELECT `username` FROM %t WHERE `email`=%s LIMIT 1', array('users', $email));
+				if(empty($username)){						// 账号不存在
+					$errmsg = 'email_inexists';
 				}else{
 					$newpw = rand_string(16);
 					$result = edituser($username, null, $newpw, null, true);
