@@ -322,6 +322,7 @@ class LoggingAction extends Action {
 						DB::query('UPDATE %t SET `status`=1, `verifytime`=%d WHERE `uid`=%d LIMIT 1', array('activation', TIMESTAMP, $_G['uid']));
 						$data['msg'] = '已通过审核';
 					}elseif($_G['setting']['autoactivate']){
+						adduser($_G['uid']);
 						DB::query('UPDATE %t SET `status`=1,`operator`=%d,`operatorname`=%s,`verifytime`=%d,`verifytext`=%s WHERE `uid`=%d LIMIT 1', array('activation', 0, 'System', TIMESTAMP, 'System Auto Activate', $_G['uid']));
 						$data['msg'] = '您已激活成功！<br />您可能需要先注销会话(右上角)，再重新登录才能进入系统界面';
 					}
@@ -397,6 +398,26 @@ class LoggingAction extends Action {
 		$template->assign('expired', $expired, true);
 		$template->assign('errmsg', $errmsg, true);
 		$template->display('locked');
+	}
+
+	/**
+	 * 修复 BUG 的临时函数
+	 */
+	public function fixbug() {
+		$activations = DB::fetch_all('SELECT `uid` FROM %t WHERE `status`=1', array('activation'));
+		$users = DB::fetch_all('SELECT `uid` FROM %t', array('users'));
+		$uids = array_diff($activations, $users);
+		foreach($uids as $uid) adduser($uid);
+		echo '<pre>';
+		echo '$activations = ';
+		print_r($activations);
+		echo "\n\n";
+		echo '$users = ';
+		print_r($users);
+		echo "\n\n";
+		echo '$uids = ';
+		print_r($uids);
+		exit('</pre>');
 	}
 
 	/**
