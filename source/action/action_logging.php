@@ -401,33 +401,6 @@ class LoggingAction extends Action {
 	}
 
 	/**
-	 * 修复 BUG 的临时函数
-	 */
-	public function fixbug() {
-		$_activations = DB::fetch_all('SELECT `uid` FROM %t WHERE `status`=1', array('activation'));
-		$_users = DB::fetch_all('SELECT `uid` FROM %t', array('users'));
-
-		$activations = array();
-		$users = array();
-		foreach($_activations as $uid) $activations[] = $uid['uid'];
-		foreach($_users as $uid) $users[] = $uid['uid'];
-
-		unset($_activations, $_users);
-		$uids = array_diff($activations, $users);
-		foreach($uids as $uid) adduser($uid);
-		echo '<pre>';
-		echo '$activations = ';
-		print_r($activations);
-		echo "\n\n";
-		echo '$users = ';
-		print_r($users);
-		echo "\n\n";
-		echo '$uids = ';
-		print_r($uids);
-		exit('</pre>');
-	}
-
-	/**
 	 * 发送激活邮件
 	 */
 	public function sendeml() {
