@@ -409,8 +409,8 @@ class LoggingAction extends Action {
 
 		$activations = array();
 		$users = array();
-		foreach($_activations as $uid) $activations[] = $uid;
-		foreach($_users as $uid) $users[] = $uid;
+		foreach($_activations as $uid) $activations[] = $uid['uid'];
+		foreach($_users as $uid) $users[] = $uid['uid'];
 
 		unset($_activations, $_users);
 		$uids = array_diff($activations, $users);
