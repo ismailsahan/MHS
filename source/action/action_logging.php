@@ -404,8 +404,15 @@ class LoggingAction extends Action {
 	 * 修复 BUG 的临时函数
 	 */
 	public function fixbug() {
-		$activations = DB::fetch_all('SELECT `uid` FROM %t WHERE `status`=1', array('activation'));
-		$users = DB::fetch_all('SELECT `uid` FROM %t', array('users'));
+		$_activations = DB::fetch_all('SELECT `uid` FROM %t WHERE `status`=1', array('activation'));
+		$_users = DB::fetch_all('SELECT `uid` FROM %t', array('users'));
+
+		$activations = array();
+		$users = array();
+		foreach($_activations as $uid) $activations[] = $uid;
+		foreach($_users as $uid) $users[] = $uid;
+
+		unset($_activations, $_users);
 		$uids = array_diff($activations, $users);
 		foreach($uids as $uid) adduser($uid);
 		echo '<pre>';
