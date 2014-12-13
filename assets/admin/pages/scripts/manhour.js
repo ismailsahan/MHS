@@ -807,6 +807,9 @@ var Manhour = function() {
 					},
 					time: {
 						required: true
+					},
+					mh_excel: {
+						required: true
 					}
 				},
 
@@ -816,6 +819,9 @@ var Manhour = function() {
 					},
 					time: {
 						required: "请选择您所添加工时对应的日期"
+					},
+					mh_excel: {
+						required: "请选择需要导入的电子表格"
 					}
 				},
 
