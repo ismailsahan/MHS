@@ -355,7 +355,7 @@ class ApiAction extends Action {
 			require_once libfile('function/members');
 			$actname = empty($activity) ? '' : DB::result_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('activity', $activity));
 
-			if(!chkPermit('addmh')) {
+			if(!chkPermit('importmh')) {
 				$result['msg'] = '无权操作';
 			} elseif(empty($actname)) {
 				$result['msg'] = '活动为空或无效';

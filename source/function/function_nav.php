@@ -239,6 +239,18 @@ function &adminNav(){
 					'icon' => '',
 					'children' => array()
 				),
+				array(
+					'title' => 'importmh',
+					'link' => 'manhour/importmh',
+					'icon' => '',
+					'children' => array()
+				),
+				array(
+					'title' => 'mhall',
+					'link' => 'manhour/grantall',
+					'icon' => '',
+					'children' => array()
+				),
 			)
 		),
 		array(
@@ -278,7 +290,7 @@ function &adminNav(){
 
 /**
  * 检查管理权限（模板用）
- * 
+ *
  * @param string $idx 菜单/权限索引
  * @return mixed
  */
@@ -327,7 +339,7 @@ function chkPermit($idx = null) {
  * 检查管理权限（后台用）
  * 若未登录则显示未登录提示
  * 若无权限则显示拒绝访问
- * 
+ *
  * @param string $idx 菜单/权限索引
  * @return mixed
  */
