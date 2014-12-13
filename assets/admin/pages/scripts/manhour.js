@@ -746,6 +746,105 @@ var Manhour = function() {
 			});
 		},
 
+		importmh: function() {
+			showloading();
+
+			$('.date-picker').datepicker({
+				rtl: Metronic.isRTL(),
+				language: "zh-CN",
+				keyboardNavigation: true,
+				forceParse: true,
+				autoclose: true,
+				todayHighlight: true
+			}).on("hide", function() {
+				$('#importmh form').validate().element($(this));
+			});
+
+			$.get("{U api/activity}", {}, function(data) {
+				$('#aid').append($.map(data, function(v) {
+					return $('<option>', {
+						val: v.id,
+						text: v.name
+					}).data("place", v.place)
+					.data("starttime", v.starttime)
+					.data("endtime", v.endtime)
+					.data("sponsor", v.sponsor)
+					.data("undertaker", v.undertaker)
+					.data("intro", v.intro);
+				}));
+			}, 'json');
+
+			$("#aid").select2({
+				formatResult: function(state) {
+					var markup = "<table class='select-table'><tbody>",
+						e = $(state.element);
+					markup += '<tr><td colspan="2"><h4>' + state.text + '</h4></td></tr>';
+					if (e.data("place")) markup += "<tr><td>活动地点</td><td>" + e.data("place") + "</td></tr>";
+					if (e.data("starttime") != "0") markup += "<tr><td>开始时间</td><td>" + getTime(e.data("starttime")) + "</td></tr>";
+					if (e.data("endtime") != "0") markup += "<tr><td>结束时间</td><td>" + getTime(e.data("endtime")) + "</td></tr>";
+					if (e.data("sponsor")) markup += "<tr><td>主办者</td><td>" + e.data("sponsor") + "</td></tr>";
+					if (e.data("undertaker")) markup += "<tr><td>承办者</td><td>" + e.data("undertaker") + "</td></tr>";
+					if (e.data("intro")) markup += "<tr><td>活动介绍</td><td>" + nl2br(e.data("intro")) + "</td></tr>";
+					markup += "</tbody></table>";
+					return markup;
+				},
+				dropdownCssClass: "bigdrop",
+				escapeMarkup: function(m) {
+					return m;
+				}
+			}).change(function() {
+				$('#importmh form').validate().element($(this));
+			});
+
+			$('#importmh form').validate({
+				errorElement: 'span', //default input error message container
+				errorClass: 'help-block', // default input error message class
+				focusInvalid: false, // do not focus the last invalid input
+				ignore: "",
+				rules: {
+					aid: {
+						required: true
+					},
+					time: {
+						required: true
+					}
+				},
+
+				messages: {
+					aid: {
+						required: "请选择一个活动！"
+					},
+					time: {
+						required: "请选择您所添加工时对应的日期"
+					}
+				},
+
+				highlight: function(element) { // hightlight error inputs
+					$(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+				},
+
+				unhighlight: function(element) { // revert the change done by hightlight
+					$(element).closest('.form-group').removeClass('has-error'); // set error class to the control group
+				},
+
+				success: function(label) {
+					label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+				},
+
+				errorPlacement: function(error, element) {
+					if (element.attr("name") == "time") return error.insertAfter(element.parent());
+					error.insertAfter(element);
+				},
+
+				submitHandler: function(form) {
+					showloading();
+					$.post($(form).attr("action"), $(form).serialize(), function(data) {
+						modalAlert(data.msg);
+					});
+				}
+			});
+		},
+
 		grantall: function() {
 			var columns = {
 				"checkbox"  : 0,
