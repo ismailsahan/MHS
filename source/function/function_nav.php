@@ -377,6 +377,8 @@ function &getpermitlist() {
 		'applylog',
 		'checklog',
 		'manage',
+		'importmh',
+		'mhall',
 		'mhdict',
 		'activity',
 		'manage_all_act',
