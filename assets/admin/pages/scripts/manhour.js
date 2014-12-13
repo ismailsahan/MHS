@@ -809,7 +809,8 @@ var Manhour = function() {
 						required: true
 					},
 					mh_excel: {
-						required: true
+						required: true,
+						accept: "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 					}
 				},
 
@@ -821,7 +822,8 @@ var Manhour = function() {
 						required: "请选择您所添加工时对应的日期"
 					},
 					mh_excel: {
-						required: "请选择需要导入的电子表格"
+						required: "请选择需要导入的电子表格文件",
+						accept: "所选文件类型不被支持，请重新选择"
 					}
 				},
 

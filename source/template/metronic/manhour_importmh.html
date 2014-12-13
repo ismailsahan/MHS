@@ -40,7 +40,7 @@
 				<div class="portlet-title">
 					<div class="caption"><i class="fa fa-user"></i> 导入工时</div>
 				</div>
-				<div class="portlet-body" id="importmh">
+				<div class="portlet-body form" id="importmh">
 					<form action="{U 'api/importmh?inajax=1'}" class="form-horizontal">
 						<div class="form-group">
 							<label class="control-label col-md-3">活动<span class="required">*</span></label>
@@ -60,6 +60,13 @@
 							<div class="col-md-5">
 								<input type="file" id="mh_excel" name="mh_excel" accept=".xls,.xlsx" required />
 								<span class="help-block">仅支持 Excel 电子表格 (.xls, .xlsx)，内容布局与指定的电子表格一致</span>
+							</div>
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-md-offset-3 col-md-9">
+									<button type="submit" class="btn blue">提交</button>
+								</div>
 							</div>
 						</div>
 					</form>
