@@ -40,6 +40,8 @@ $lang = array(
 	'applylog'             => '工时-&gt;申报记录',
 	'checklog'             => '工时-&gt;复查记录',
 	'manage'               => '工时-&gt;工时管理',
+	'importmh'             => '工时-&gt;导入工时',
+	'mhall'                => '工时-&gt;管理系统全部工时',
 
 	/* 内容 */
 	'activity'             => '内容-&gt;活动列表',
