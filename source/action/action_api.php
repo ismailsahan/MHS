@@ -298,15 +298,17 @@ class ApiAction extends Action {
 					}else{
 						$date = explode('-', $date);
 						$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
-						$user = DB::fetch('SELECT `realname`,`gender`,`studentid`,`academy` FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
+						$user = DB::fetch('SELECT `realname`,`gender`,`studentid`,`academy`,`specialty`,`class` FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
+						$zybj = trim($user['specialty'].' '.$user['class']);
 						foreach($uids as &$uid) {
-							DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `academy`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+							DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 								'manhours',         // 表
 								$uid,               // 用户ID
 								$user['realname'],  // 真实名字
 								$user['gender'],    // 性别 1男 2女
 								$user['studentid'], // 学号
 								$user['academy'],   // 学院ID
+								$zybj,              // 专业班级
 								$manhour,           // 工时数
 								1,                  // 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
 								$activity,          // 活动ID
@@ -344,28 +346,86 @@ class ApiAction extends Action {
 			'msg' => '未登录或会话超时'
 		);
 
-		$uids = $_POST['uid'];
 		$activity = $_POST['aid'];
-		$manhour = $_POST['manhour'];
 		$date = $_POST['time'];
-		$remark = htmlspecialchars(remove_xss($_POST['remark']));
 
 		if($_G['uid']){
 			$result['errno'] = 1;
 			require_once libfile('function/nav');
 			require_once libfile('function/members');
+			$actname = '';
+
 			if(!chkPermit('addmh')) {
 				$result['msg'] = '无权操作';
-			} elseif(empty($_FILES['mhtable']) || empty($_FILES['mhtable']['size']) || $_FILES['mhtable']['error']!=UPLOAD_ERR_OK) {
+			} elseif(empty($activity)) {
+				$result['msg'] = '活动不能为空';
+			} elseif(empty($actname = DB::result_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('activity', $activity)))) {
+				$result['msg'] = '活动无效';
+			} elseif(empty($date)) {
+				$result['msg'] = '日期不能为空';
+			} elseif(!preg_match("/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/", $date)) {
+				$result['msg'] = '日期格式不正确';
+			} elseif(empty($_FILES['mh_excel']) || empty($_FILES['mh_excel']['size']) || $_FILES['mh_excel']['error']!=UPLOAD_ERR_OK) {
 				$result['msg'] = '没有文件被上传或上传失败';
-			}  elseif(fileext($_FILES['mhtable']['name']) != 'csv') {
-				$result['msg'] = '没有文件被上传或上传失败';
+			} elseif(!in_array(fileext($_FILES['mh_excel']['name']), array('xls', 'xlsx'))) {
+				$result['msg'] = '文件不受支持';
 			} else {
-				$data = file($_FILES['mhtable']['tmp_name'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-				foreach($data as &$line) {
-					$line = mb_convert_encoding($line, 'UTF-8');
+				require_once APP_FRAMEWORK_ROOT.'/source/plugin/PHPExcel.php';
+				require_once APP_FRAMEWORK_ROOT.'/source/plugin/PHPExcel/IOFactory.php';
+				$objPHPExcel = PHPExcel_IOFactory::load($_FILES['mh_excel']['tmp_name']);
+				$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+
+				$date = explode('-', $date);
+				$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
+				$uids = array();
+				$counter = 0;
+
+				foreach($sheetData as $k => $v) {
+					if($k < 5 || empty($v['A'])) continue;
+					$sno      = &$v['A'];
+					$realname = &$v['C'];
+					$gender   = $v['D'] == '男' ? 1 : 2;
+					$zybj     = &$v['E'];
+					$manhour  = intval($v['F']);
+					$note     = htmlspecialchars(trim($v['G']));
+
+					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `sno`=%d LIMIT 1', array('users_profile', $sno));
+					if(empty($uid)) {
+						$uid = 0;
+					} else {
+						$uid = intval($uid);
+						$uids[] = $uid;
+					}
+
+					DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `zybj`, `academy`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+						'manhours',   // 表
+						$uid,         // 用户ID
+						$realname,    // 真实名字
+						$gender,      // 性别 1男 2女
+						$sno,         // 学号
+						0,            // 学院ID
+						$zybj,        // 专业班级
+						$manhour,     // 工时数
+						1,            // 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
+						$activity,    // 活动ID
+						$actname,     // 活动名称
+						$date,        // 日期
+						TIMESTAMP,    // 申请时间
+						TIMESTAMP,    // 审核时间
+						$_G['uid'],   // 审核员
+						$note,        // 申请留言
+						''            // 审核留言
+					));
+
+					$counter++;
 				}
 
+				require_once libfile('function/manhour');
+				foreach($uids as $uid) update_user_manhour($uid);
+				update_rank();
+
+				$result['errno'] = 0;
+				$result['msg'] = "已导入 $counter 个工时条目";
 			}
 		}
 
