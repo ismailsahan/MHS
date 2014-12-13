@@ -353,14 +353,12 @@ class ApiAction extends Action {
 			$result['errno'] = 1;
 			require_once libfile('function/nav');
 			require_once libfile('function/members');
-			$actname = '';
+			$actname = empty($activity) ? '' : DB::result_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('activity', $activity));
 
 			if(!chkPermit('addmh')) {
 				$result['msg'] = '无权操作';
-			} elseif(empty($activity)) {
-				$result['msg'] = '活动不能为空';
-			} elseif(empty($actname = DB::result_first('SELECT `name` FROM %t WHERE `id`=%d LIMIT 1', array('activity', $activity)))) {
-				$result['msg'] = '活动无效';
+			} elseif(empty($actname)) {
+				$result['msg'] = '活动为空或无效';
 			} elseif(empty($date)) {
 				$result['msg'] = '日期不能为空';
 			} elseif(!preg_match("/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/", $date)) {
