@@ -746,7 +746,7 @@ var Manhour = function() {
 			});
 		},
 
-		importmh: function() {
+		initimportmh: function() {
 			showloading();
 
 			$('.date-picker').datepicker({
