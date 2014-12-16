@@ -267,6 +267,25 @@ var Mhdict = function () {
 				$('#act-modal form').validate().element($(this));
 			});
 
+			var et = $('#act-modal form select[name="academy"]');
+			if(et.size() > 0) {
+				$.get("{U api/profile}", {
+					type: "academy"
+				}, function(data) {
+					et.append($.map(data, function(v, i) {
+						return $('<option>', {
+							val: i,
+							text: v
+						});
+					}));
+				}, 'json');
+
+				et.select2({
+					minimumResultsForSearch: -1,
+					allowClear: false
+				});
+			}
+
 			$("#addact-button").click(function() {
 				$('#act-modal form').get(0).reset();
 				$('#act-modal form').validate().resetForm();

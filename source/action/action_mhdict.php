@@ -162,7 +162,7 @@ class MhdictAction extends Action {
 				$available = empty($_POST['available']) ? 0 : 1;
 				$starttime = $_POST['starttime'];
 				$endtime = $_POST['endtime'];
-				$academy = (chkPermit('access_to_global_act') || chkPermit('manage_all_act')) && $_POST['academy']==='0' ? 0 : $_G['member']['academy'];
+				$academy = (chkPermit('access_to_global_act') || chkPermit('manage_all_act')) ? intval($_POST['academy']) : $_G['member']['academy'];
 
 				if(empty($name)) {
 					$return['errno'] = 1;
@@ -233,6 +233,7 @@ class MhdictAction extends Action {
 
 			$template->assign('activities', $activities, true);
 			$template->assign('academies', $academies, true);
+			$template->assign('manage_all_act', $manage_all_act, true);
 			$template->assign('access_to_global_act', $access_to_global_act, true);
 			$template->display('mhdict_activity');
 		}
