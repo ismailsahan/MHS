@@ -560,7 +560,17 @@ class ManhourAction extends Action {
 
 			ajaxReturn($return, 'JSON');
 		}else{
-			$manhours = DB::fetch_all('SELECT * FROM %t ORDER BY `applytime` DESC', array('manhours'));
+			$academy = getAcademyAccess();
+			$accessAll = $academy==-1 || chkPermit('access_to_global_act') || chkPermit('manage_all_act') ? 1 : 0;
+			$activities = array(0);
+			if(!$accessAll) {
+				$query = DB::query('SELECT `id` FROM %t WHERE `academy`=%d', array('activity', $academy));
+				while ($row = DB::fetch($query)) {
+					$activities[] = $row['id'];
+				}
+				DB::free_result($query);
+			}
+			$manhours = DB::fetch_all('SELECT * FROM %t WHERE %i OR `aid` IN (%n) ORDER BY `applytime` DESC', array('manhours', $accessAll, $activities));
 
 			if(!$template->isCached('manhour_all')){
 				$template->assign('sidebarMenu', defaultNav());
