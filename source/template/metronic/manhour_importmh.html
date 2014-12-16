@@ -41,16 +41,16 @@
 					<div class="caption"><i class="fa fa-user"></i> 导入工时</div>
 				</div>
 				<div class="portlet-body form" id="importmh">
-					<div class="note note-warning" style="margin:6px">
-						<h4 class="block">注意</h4>
-						<ul>
-							<li>一次只能导入一个表格</li>
-							<li>一个电子表格记录的必须是同一个活动的工时</li>
-							<li>上传的电子表格单元格布局必须与样表一致</li>
-						</ul>
-					</div>
 					<form action="{U 'api/importmh?inajax=1'}" class="form-horizontal">
 						<div class="form-body">
+							<div class="note note-warning">
+								<h4 class="block">注意</h4>
+								<ul>
+									<li>一次只能导入一个表格</li>
+									<li>一个电子表格记录的必须是同一个活动的工时</li>
+									<li>上传的电子表格单元格布局必须与样表一致</li>
+								</ul>
+							</div>
 							<div class="form-group">
 								<label class="control-label col-md-3">活动<span class="required">*</span></label>
 								<div class="col-md-5">

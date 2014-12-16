@@ -3,7 +3,7 @@
 /**
  * class_core.php
  * 核心类库
- * 
+ *
  * @copyright WHUT-SIA
  * @version   0.3.2
  * @package   class
@@ -464,7 +464,7 @@ class core {
 			'time' => dgmdate(TIMESTAMP),
 			'offset' => $timeoffset >= 0 ? ($timeoffset == 0 ? '' : '+'.$timeoffset) : $timeoffset
 		);
-		
+
 		//表单令牌
 		//$this->var['formhash'] = formhash();
 		//define('FORMHASH', $this->var['formhash']);
@@ -535,7 +535,7 @@ class core {
 
 	/**
 	 * 检查是否有 XSS 攻击
-	 * 
+	 *
 	 * @return boolean
 	 */
 	private function _xss_check() {
@@ -797,7 +797,7 @@ class core {
 				case E_PARSE:
 				case E_CORE_ERROR:
 				case E_COMPILE_ERROR:
-				case E_USER_ERROR:  
+				case E_USER_ERROR:
 					$errmsg = $e['message']. ' in <b>'.str_replace(APP_FRAMEWORK_ROOT, '.', $e['file']).'</b> on line <b>'.$e['line'].'</b>';
 					if(class_exists('framework_error')) {
 						list($phpmsg, $logtrace) = framework_error::debug_backtrace();
