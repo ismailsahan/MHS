@@ -69,6 +69,15 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="control-label col-md-3">强行新增<span class="required">&nbsp;</span></label>
+								<div class="col-md-5">
+									<div class="checkbox-list">
+										<label class="checkbox-inline"><input type="checkbox" id="force_insert" name="force_insert" value="1" /></label>
+									</div>
+									<span class="help-block">若未勾选，系统将会检查是否存在相同的工时记录，若存在，则更新之，若不存在则新增；若勾选此复选框，系统将不会检查相同工时记录是否存已录入，直接新增（导入完成后您可能需要进入管理页面核对工时记录）</span>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="control-label col-md-3">文件<span class="required">*</span></label>
 								<div class="col-md-5">
 									<input type="file" id="mh_excel" name="mh_excel" accept=".xls,.xlsx" required />

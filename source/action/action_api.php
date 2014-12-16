@@ -387,7 +387,7 @@ class ApiAction extends Action {
 					$manhour  = intval($v['F']);
 					$note     = htmlspecialchars(trim($v['G']));
 
-					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `studentid`=%d LIMIT 1', array('users_profile', $sno));
+					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `studentid`=%s LIMIT 1', array('users_profile', $sno));
 					if(empty($uid)) {
 						$uid = 0;
 					} else {
@@ -395,8 +395,20 @@ class ApiAction extends Action {
 						$uids[] = $uid;
 					}
 
-					DB::query('INSERT INTO %t (`id`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %s, %d, %d, %d, %s, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+					$oldid = 'NULL';
+					if(empty($_POST['force_insert'])) {
+						$oldid = DB::result_first('SELECT `id` FROM %t WHERE `studentid`=%s AND `aid`=%d AND `time`=%d LIMIT 1', array(
+							'manhours',   // 表
+							$sno,         // 学号
+							$activity,    // 活动ID
+							$date         // 日期
+						));
+						$oldid = $oldid ? $oldid : 'NULL';
+					}
+
+					DB::query('REPLACE INTO %t (`id`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (%i, %s, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 						'manhours',   // 表
+						$oldid,       // 表中已有的相同工时记录 ID
 						$realname,    // 真实名字
 						$gender,      // 性别 1男 2女
 						$sno,         // 学号

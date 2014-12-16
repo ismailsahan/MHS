@@ -180,7 +180,7 @@
 								<td><img alt="" src="{$smarty.const.UC_API|replace:'127.0.0.1':$smarty.server.HTTP_HOST}/avatar.php?uid={$manhour.uid}&size=small" width="48" height="48" /></td>
 								<td>{$manhour.realname}</td>
 								<td>{if $manhour.gender==1}男{else}女{/if}</td>
-								<td>{$manhour.sno}</td>
+								<td>{$manhour.studentid}</td>
 								<td>{$manhour.zybj}</td>
 								<td><a href="javascript:;" data-aid="{$manhour.aid}">{$manhour.actname}</a></td>
 								<td data-time="{$manhour.time}">{dgmdate($manhour.time, 'd')}</td>
