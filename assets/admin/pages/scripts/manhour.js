@@ -203,6 +203,7 @@ var Manhour = function() {
 							}).data("place", v.place)
 							.data("starttime", v.starttime)
 							.data("endtime", v.endtime)
+							.data("academy", v.academy)
 							.data("sponsor", v.sponsor)
 							.data("undertaker", v.undertaker)
 							.data("intro", v.intro);
@@ -214,6 +215,7 @@ var Manhour = function() {
 							var markup = "<table class='select-table'><tbody>",
 								e = $(state.element);
 							markup += '<tr><td colspan="2"><h4>' + state.text + '</h4></td></tr>';
+							markup += "<tr><td>活动社团</td><td>" + e.data("academy") + "</td></tr>";
 							if (e.data("place")) markup += "<tr><td>活动地点</td><td>" + e.data("place") + "</td></tr>";
 							if (e.data("starttime") != "0") markup += "<tr><td>开始时间</td><td>" + getTime(e.data("starttime")) + "</td></tr>";
 							if (e.data("endtime") != "0") markup += "<tr><td>结束时间</td><td>" + getTime(e.data("endtime")) + "</td></tr>";
@@ -768,6 +770,7 @@ var Manhour = function() {
 					}).data("place", v.place)
 					.data("starttime", v.starttime)
 					.data("endtime", v.endtime)
+					.data("academy", v.academy)
 					.data("sponsor", v.sponsor)
 					.data("undertaker", v.undertaker)
 					.data("intro", v.intro);
@@ -779,6 +782,7 @@ var Manhour = function() {
 					var markup = "<table class='select-table'><tbody>",
 						e = $(state.element);
 					markup += '<tr><td colspan="2"><h4>' + state.text + '</h4></td></tr>';
+					markup += "<tr><td>活动社团</td><td>" + e.data("academy") + "</td></tr>";
 					if (e.data("place")) markup += "<tr><td>活动地点</td><td>" + e.data("place") + "</td></tr>";
 					if (e.data("starttime") != "0") markup += "<tr><td>开始时间</td><td>" + getTime(e.data("starttime")) + "</td></tr>";
 					if (e.data("endtime") != "0") markup += "<tr><td>结束时间</td><td>" + getTime(e.data("endtime")) + "</td></tr>";

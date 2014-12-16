@@ -244,7 +244,11 @@ class ApiAction extends Action {
 			//require_once libfile('function/members');
 			//$result = DB::result_all(subusersqlformula(null, '`id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro`', 'activity').' AND %t.`status` IN (0,3,5)', array('manhours'));
 			$accessAll = chkPermit('manage_all_act') ? 1 : 0;
-			$result = DB::fetch_all('SELECT `id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro` FROM %t WHERE `available`=1 AND (%i OR `academy`=%d) ORDER BY `id` DESC', array('activity', $accessAll, $_G['member']['academy']));
+			$academies = DB::fetch_all('SELECT * FROM %t', array('profile_academies'), 'id');
+			$result = DB::fetch_all('SELECT `id`,`name`,`place`,`starttime`,`endtime`,`academy`,`sponsor`,`undertaker`,`intro` FROM %t WHERE `available`=1 AND (%i OR `academy`=%d) ORDER BY `id` DESC', array('activity', $accessAll, $_G['member']['academy']));
+			foreach($result as $k=>$act) {
+				$result[$k]['academy'] = $act['academy'] ? $academies[ $act['academy'] ]['name'] : '总社';
+			}
 		}
 
 		ajaxReturn($result, 'AUTO');
