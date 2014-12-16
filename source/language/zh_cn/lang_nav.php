@@ -86,11 +86,9 @@ $lang = array(
 	'checklog'				=> '复查记录',
 	'checklog_detail'		=> '',
 	'manage'				=> '工时管理',
-	'manage_detail'			=> '这里列出的工时不包括未注册用户',
+	'manage_detail'			=> '',
 	'importmh'				=> '导入工时',
 	'importmh_detail'		=> '',
-	'mhall'					=> '查询全部',
-	'mhall_detail'			=> '',
 
 	/* 内容 */
 	'activity'				=> '活动列表',

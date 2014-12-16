@@ -244,13 +244,7 @@ function &adminNav(){
 					'link' => 'manhour/importmh',
 					'icon' => '',
 					'children' => array()
-				),
-				array(
-					'title' => 'mhall',
-					'link' => 'manhour/grantall',
-					'icon' => '',
-					'children' => array()
-				),
+				)
 			)
 		),
 		array(
@@ -378,7 +372,6 @@ function &getpermitlist() {
 		'checklog',
 		'manage',
 		'importmh',
-		'mhall',
 		'mhdict',
 		'activity',
 		'manage_all_act',

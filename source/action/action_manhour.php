@@ -411,7 +411,18 @@ class ManhourAction extends Action {
 
 			ajaxReturn($return, 'JSON');
 		}else{
-			$manhours = DB::fetch_all(subusersqlformula(null, 'id,'.DB::table('manhours').'.uid,'.DB::table('manhours').'.status,aid,username,'.DB::table('manhours').'.realname,'.DB::table('manhours').'.studentid,'.DB::table('manhours').'.academy,'.DB::table('manhours').'.gender,'.DB::table('manhours').'.manhour,zybj,aid,actname,time,applytime,verifytime,operator,remark,verifytext', 'manhours').' ORDER BY `applytime` DESC');
+			$academy = getAcademyAccess();
+			$accessAll = $academy==-1 || chkPermit('access_to_global_act') || chkPermit('manage_all_act') ? 1 : 0;
+			$activities = array(0);
+			$users = array();
+			if(!$accessAll) {
+				$query = DB::query('SELECT `id` FROM %t WHERE `academy`=%d', array('activity', $academy));
+				while ($row = DB::fetch($query)) {
+					$activities[] = $row['id'];
+				}
+				DB::free_result($query);
+			}
+			$manhours = DB::fetch_all('SELECT * FROM %t WHERE %i OR `aid` IN (%n) ORDER BY `time` DESC', array('manhours', $accessAll, $activities));
 
 			if(!$template->isCached('manhour_manage')){
 				$template->assign('sidebarMenu', defaultNav());
@@ -436,151 +447,6 @@ class ManhourAction extends Action {
 		}
 
 		$template->display('manhour_importmh');
-	}
-
-	public function grantall() {
-		global $_G, $template;
-
-		has_permit('mhall');
-
-		if(IS_AJAX){
-			$return = array(
-				'errno' => 1,
-				'msg' => ''
-			);
-
-			if($_POST['type'] === 'pass') {
-				if(empty($_POST['ids'])) {
-					$return['msg'] = '请至少选择一个工时条目';
-				}else{
-					$_POST['verifytext'] = htmlspecialchars(remove_xss(trim($_POST['verifytext'])));
-					$ids = explode(',', $_POST['ids']);
-					foreach($ids as $k=>$id) {
-						$ids[$k] = intval($id);
-					}
-
-					DB::query('UPDATE %t SET `status`=1,`operator`=%d,`verifytime`=%d,`verifytext`=%s WHERE `id` IN (%n) AND `status`<>1', array('manhours', $_G['uid'], TIMESTAMP, $_POST['verifytext'], $ids));
-					$return['errno'] = 0;
-					$return['msg'] = '已通过 '.DB::affected_rows().' 个工时申报条目';
-
-					$_uids = DB::fetch_all('SELECT `uid` FROM %t WHERE `id` IN (%n)', array('manhours', $ids));
-					$uids = array();
-					foreach($_uids as $u) {
-						$uids[] = $u['uid'];
-					}
-
-					require_once libfile('function/manhour');
-					update_user_manhour($uids);
-					update_rank();
-
-					$emls = DB::fetch_all('SELECT `email` FROM %t WHERE `uid` IN (%n)', array('users', $uids));
-					if(!empty($emls)){
-						$time = dgmdate(TIMESTAMP);
-						$text = '您提交的一个或多个工时申报已于 '.$time.' 通过审核<br />';
-						if(!empty($_POST['verifytext'])) $text .= '审核理由：'.nl2br($_POST['verifytext']).'<br />';
-
-						require_once libfile('class/Mail');
-						Mail::init();
-						foreach($emls as $eml) Mail::addAddress($eml['email']);
-						Mail::setMsg($text, '工时申报已通过审核');
-						$errno = Mail::send();
-					}
-
-					if($errno) $return['msg'] .= '，但在向用户发送邮件时出现了以下问题：<br />'.$errno;
-				}
-			}elseif($_POST['type'] === 'reject') {
-				if(empty($_POST['ids'])) {
-					$return['msg'] = '请至少选择一个工时条目';
-				}elseif(empty($_POST['verifytext'])) {
-					$return['msg'] = '拒绝时理由不能留空';
-				}else{
-					$_POST['verifytext'] = htmlspecialchars($_POST['verifytext']);
-					$ids = explode(',', $_POST['ids']);
-					foreach($ids as $k=>$id) {
-						$ids[$k] = intval($id);
-					}
-					$rejectstatus = empty($_POST['rejtype']) ? 4 : 5;
-
-					DB::query("UPDATE %t SET `status`={$rejectstatus},`operator`=%d,`verifytime`=%d,`verifytext`=%s WHERE `id` IN (%n) AND `status`<>{$rejectstatus}", array('manhours', $_G['uid'], TIMESTAMP, $_POST['verifytext'], $ids));
-					$return['errno'] = 0;
-					$return['msg'] = '已拒绝 '.DB::affected_rows().' 个工时条目';
-
-					$_uids = DB::fetch_all('SELECT `uid` FROM %t WHERE `id` IN (%n)', array('manhours', $ids));
-					$uids = array();
-					foreach($_uids as $u) {
-						$uids[] = $u['uid'];
-					}
-
-					require_once libfile('function/manhour');
-					update_user_manhour($uids);
-					update_rank();
-
-					$emls = DB::fetch_all('SELECT `email` FROM %t WHERE `uid` IN (%n)', array('users', $uids));
-					if(!empty($emls)){
-						$time = dgmdate(TIMESTAMP);
-						$text = '您提交的一个或多个工时申报记录于 '.$time.' 被拒绝，详情：<br />';
-						$text .= nl2br($_POST['verifytext']).'<br />';
-						$text .= '如有疑问，请尝试重新申请、复查此记录或与管理员联系';
-
-						require_once libfile('class/Mail');
-						Mail::init();
-						foreach($emls as $eml) Mail::addAddress($eml['email']);
-						Mail::setMsg($text, '工时申报未能通过审核');
-						$errno = Mail::send();
-					}
-
-					if($errno) $return['msg'] .= '，但在向用户发送邮件时出现了以下问题：<br />'.$errno;
-				}
-			}elseif($_POST['type'] === 'edit') {
-				$return['msg'] = '出于对用户的考虑，不允许管理员直接编辑数据';
-			}elseif($_POST['type'] === 'del') {
-				if(empty($_POST['ids'])) {
-					$return['msg'] = '请至少选择一个工时条目';
-				}else{
-					$ids = explode(',', $_POST['ids']);
-					foreach($ids as &$id) {
-						$id = intval($id);
-					}
-					DB::query('DELETE FROM %t WHERE `id` IN (%n)', array('manhours', $ids));
-					$return['errno'] = 0;
-					$return['msg'] = '已删除 '.DB::affected_rows().' 个工时申报条目';
-
-					require_once libfile('function/manhour');
-					$_uids = DB::fetch_all('SELECT `uid` FROM %t WHERE `id` IN (%n)', array('manhours', $ids));
-					$uids = array();
-					foreach($_uids as $u) $uids[] = $u['uid'];
-					update_user_manhour($uids);
-					update_rank();
-				}
-			}
-
-			if(empty($return['msg'])){
-				$return['msg'] = '非法请求';
-			}
-
-			ajaxReturn($return, 'JSON');
-		}else{
-			$academy = getAcademyAccess();
-			$accessAll = $academy==-1 || chkPermit('access_to_global_act') || chkPermit('manage_all_act') ? 1 : 0;
-			$activities = array(0);
-			if(!$accessAll) {
-				$query = DB::query('SELECT `id` FROM %t WHERE `academy`=%d', array('activity', $academy));
-				while ($row = DB::fetch($query)) {
-					$activities[] = $row['id'];
-				}
-				DB::free_result($query);
-			}
-			$manhours = DB::fetch_all('SELECT * FROM %t WHERE %i OR `aid` IN (%n) ORDER BY `applytime` DESC', array('manhours', $accessAll, $activities));
-
-			if(!$template->isCached('manhour_all')){
-				$template->assign('sidebarMenu', defaultNav());
-				$template->assign('adminNav', adminNav());
-				$template->assign('menuset', array('mhour', 'mhall'));
-			}
-
-			$template->assign('manhours', $manhours, true);
-			$template->display('manhour_all');
-		}
 	}
 
 }

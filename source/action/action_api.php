@@ -372,6 +372,7 @@ class ApiAction extends Action {
 				require_once APP_FRAMEWORK_ROOT.'/source/plugin/PHPExcel/IOFactory.php';
 				$objPHPExcel = PHPExcel_IOFactory::load($_FILES['mh_excel']['tmp_name']);
 				$sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+				$result['errno'] = 0;
 
 				$date = explode('-', $date);
 				$date = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
@@ -380,12 +381,20 @@ class ApiAction extends Action {
 
 				foreach($sheetData as $k => $v) {
 					if($k < 5 || empty($v['A'])) continue;
-					$sno      = &$v['A'];
-					$realname = &$v['C'];
-					$gender   = $v['D'] == '男' ? 1 : 2;
-					$zybj     = &$v['E'];
-					$manhour  = intval($v['F']);
+					$sno      = trim($v['A']);
+					$realname = trim($v['C']);
+					$gender   = trim($v['D']) == '男' ? 1 : 2;
+					$zybj     = trim($v['E']);
+					$manhour  = intval(trim($v['F']));
 					$note     = htmlspecialchars(trim($v['G']));
+
+					if(empty($sno) || empty($realname)) continue;
+
+					if(!preg_match('/^\d{13}$/', $sno)) {
+						$result['errno'] = 1;
+						$result['msg'] = "导入失败！第 {$k} 行的学号无效！第 {$k} 行前的工时均已正确导入";
+						break;
+					}
 
 					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `studentid`=%s LIMIT 1', array('users_profile', $sno));
 					if(empty($uid)) {
@@ -423,8 +432,8 @@ class ApiAction extends Action {
 						TIMESTAMP,    // 申请时间
 						TIMESTAMP,    // 审核时间
 						$_G['uid'],   // 审核员
-						$note,        // 申请留言
-						''            // 审核留言
+						'(工时导入)', // 申请留言
+						$note         // 审核留言
 					));
 
 					$counter++;
@@ -434,8 +443,7 @@ class ApiAction extends Action {
 				foreach($uids as $uid) update_user_manhour($uid);
 				update_rank();
 
-				$result['errno'] = 0;
-				$result['msg'] = "已导入 $counter 个工时条目";
+				if(!$result['errno']) $result['msg'] = "已导入 $counter 个工时条目";
 			}
 		}
 

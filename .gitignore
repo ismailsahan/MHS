@@ -14,6 +14,7 @@ uc_client/data/cache/**
 !data/tmp/index.htm
 !data/log/index.htm
 !data/cache/index.htm
+*.dmp
 *_bak
 *.bak
 *.bak.php

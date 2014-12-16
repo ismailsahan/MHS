@@ -645,15 +645,17 @@ var Manhour = function() {
 				"username"  : 2,
 				"realname"  : 3,
 				"gender"    : 4,
-				"actname"   : 5,
-				"time"      : 6,
-				"manhour"   : 7,
-				"applytime" : 8,
-				"status"    : 9,
-				"remark"    : 10,
-				"operator"  : 11,
-				"verifytime": 12,
-				"verifytext": 13
+				"sno"       : 5,
+				"zybj"      : 6,
+				"actname"   : 7,
+				"time"      : 8,
+				"manhour"   : 9,
+				"applytime" : 10,
+				"status"    : 11,
+				"remark"    : 12,
+				"operator"  : 13,
+				"verifytime": 14,
+				"verifytext": 15
 			};
 
 			/*$("#manhours tr:gt(0)" + nthchild("time", columns) + ", #manhours tr:gt(0)" + nthchild("applytime", columns) + ", #manhours tr:gt(0)" + nthchild("verifytime", columns)).each(function() {
@@ -673,7 +675,7 @@ var Manhour = function() {
 
 			$("#passmh-button, #rejectmh-button").click(function() {
 				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
-				if(e.size() == 0) {
+				if(e.size() === 0) {
 					return modalAlert("请至少选择一个工时记录");
 				}
 				var id = [], type = $(this).prop("id").substr(0, 4)=="pass" ? "pass" : "reject";
@@ -691,7 +693,7 @@ var Manhour = function() {
 			});
 			$("#delmh-button").click(function() {
 				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
-				if(e.size() == 0) {
+				if(e.size() === 0) {
 					return modalAlert("请至少选择一个工时记录");
 				}
 				$("#delmh").modal("show");
@@ -703,7 +705,7 @@ var Manhour = function() {
 					statusid = 1;
 				} else {
 					statusid = $("#verifymh .radio-list :radio:checked").val()=="0" ? 4 : 5;
-					if($("#verifymh textarea").val() == "") {
+					if($("#verifymh textarea").val() === "") {
 						modalAlert("请填写拒绝理由");
 						return false;
 					}
@@ -855,111 +857,6 @@ var Manhour = function() {
 						}
 					});
 				}
-			});
-		},
-
-		grantall: function() {
-			var columns = {
-				"checkbox"  : 0,
-				"avatar"    : 1,
-				"realname"  : 2,
-				"gender"    : 3,
-				"sno"       : 4,
-				"zybj"      : 5,
-				"actname"   : 6,
-				"time"      : 7,
-				"manhour"   : 8,
-				"applytime" : 9,
-				"status"    : 10,
-				"remark"    : 11,
-				"operator"  : 12,
-				"verifytime": 13,
-				"verifytext": 14
-			};
-
-			$('#manhours tr:gt(0)' + nthchild("status", columns)).each(function() {
-				var t = $(this).data("status");
-				$(this).html(statusLabel(t));
-			});
-
-			$('#manhours tr:gt(0)' + nthchild("actname", columns) + " a").click(function() {
-				detail("activity", $(this).data("aid"));
-			});
-
-			initDT(columns, 1);
-
-			$("#passmh-button, #rejectmh-button").click(function() {
-				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
-				if(e.size() == 0) {
-					return modalAlert("请至少选择一个工时记录");
-				}
-				var id = [], type = $(this).prop("id").substr(0, 4)=="pass" ? "pass" : "reject";
-				e.each(function () {
-					id.push($(this).val());
-				});
-				$("#verifymh input[name='type']").val(type);
-				$("#verifymh input[name='ids']").val(id.join(","));
-				if(type == "pass") {
-					$("#verifymh .radio-list").closest(".form-group").hide();
-				} else {
-					$("#verifymh .radio-list").closest(".form-group").show();
-				}
-				$("#verifymh").modal("show");
-			});
-			$("#delmh-button").click(function() {
-				var e = $('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes());
-				if(e.size() == 0) {
-					return modalAlert("请至少选择一个工时记录");
-				}
-				$("#delmh").modal("show");
-			});
-
-			$("#verifymh form").submit(function () {
-				var statusid = 0;
-				if($("#verifymh input[name='type']").val() == "pass") {
-					statusid = 1;
-				} else {
-					statusid = $("#verifymh .radio-list :radio:checked").val()=="0" ? 4 : 5;
-					if($("#verifymh textarea").val() == "") {
-						modalAlert("请填写拒绝理由");
-						return false;
-					}
-				}
-
-				showloading();
-				$.post("{U manhour/manage?inajax=1}", $("#verifymh form").serialize(), function (data) {
-					modalAlert(data.msg);
-					if(!data.errno) {
-						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
-						if(statusid) e.closest("tr").each(function() {
-							$('#manhours').dataTable().fnUpdate(statusLabel(statusid, status), this, columns["status"]);
-						});
-						e.prop("checked", false).prop("disabled", true).uniform.update();
-						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
-						$("#verifymh").modal("hide");
-					}
-				}, "json");
-
-				return false;
-			});
-			$("#delmh .modal-footer button.red").click(function () {
-				showloading();
-				var id = [];
-				$('td:first-child :checkbox:enabled:checked', $('#manhours').dataTable().fnGetNodes()).each(function () {
-					id.push($(this).val());
-				});
-				$.post("{U manhour/manage?inajax=1}", {type:"del",ids:id.join(",")}, function (data) {
-					modalAlert(data.msg);
-					if(!data.errno) {
-						var e = $('td:first-child :checkbox:checked', $('#manhours').dataTable().fnGetNodes());
-						e.closest("tr").each(function() {
-							$('#manhours').DataTable().row(this).remove();
-						});
-						$('#manhours').DataTable().draw();
-						$('#manhours th:first :checkbox').prop("checked", false).uniform.update();
-						$("#delmh").modal("hide");
-					}
-				}, "json");
 			});
 		}
 
