@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css" />
 {/block}
 {block pageplugins}
+	<script type="text/javascript" src="assets/global/plugins/jquery.form.min.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/select2/select2_locale_zh-CN.js"></script>
 	<script type="text/javascript" src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
@@ -41,7 +42,7 @@
 					<div class="caption"><i class="fa fa-user"></i> 导入工时</div>
 				</div>
 				<div class="portlet-body form" id="importmh">
-					<form action="{U 'api/importmh?inajax=1'}" class="form-horizontal">
+					<form action="{U 'api/importmh?inajax=1'}" class="form-horizontal" enctype="multipart/form-data">
 						<div class="form-body">
 							<div class="note note-warning">
 								<h4 class="block">注意</h4>
@@ -62,7 +63,7 @@
 								<label class="control-label col-md-3">时间<span class="required">*</span></label>
 								<div class="col-md-5">
 									<div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="-6m" data-date-end-date="+1d">
-										<input type="text" name="time" class="form-control" required />
+										<input type="text" id="time" name="time" class="form-control" required />
 										<span class="input-group-btn"><button class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
 									</div>
 								</div>

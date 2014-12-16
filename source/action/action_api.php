@@ -387,7 +387,7 @@ class ApiAction extends Action {
 					$manhour  = intval($v['F']);
 					$note     = htmlspecialchars(trim($v['G']));
 
-					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `sno`=%d LIMIT 1', array('users_profile', $sno));
+					$uid = DB::result_first('SELECT `uid` FROM %t WHERE `studentid`=%d LIMIT 1', array('users_profile', $sno));
 					if(empty($uid)) {
 						$uid = 0;
 					} else {
@@ -395,14 +395,14 @@ class ApiAction extends Action {
 						$uids[] = $uid;
 					}
 
-					DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `zybj`, `academy`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+					DB::query('INSERT INTO %t (`id`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %s, %d, %d, %d, %s, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 						'manhours',   // 表
-						$uid,         // 用户ID
 						$realname,    // 真实名字
 						$gender,      // 性别 1男 2女
 						$sno,         // 学号
 						0,            // 学院ID
 						$zybj,        // 专业班级
+						$uid,         // 用户ID
 						$manhour,     // 工时数
 						1,            // 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
 						$activity,    // 活动ID

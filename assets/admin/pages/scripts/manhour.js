@@ -846,8 +846,13 @@ var Manhour = function() {
 
 				submitHandler: function(form) {
 					showloading();
-					$.post($(form).attr("action"), $(form).serialize(), function(data) {
-						modalAlert(data.msg);
+					$(form).ajaxSubmit({
+						type: "post",
+						dataType: "json",
+						success: function(data) {
+							$.unblockUI();
+							modalAlert(data.msg);
+						}
 					});
 				}
 			});
