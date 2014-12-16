@@ -111,12 +111,11 @@ var Members = function () {
 		});
 		var tt = new $.fn.dataTable.TableTools(table, {
 			"sSwfPath": "assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
-			"aButtons": [
-				{
-					"sExtends": "csv",
-					"sButtonText": "导出 Excel"
-				}
-			]
+			"aButtons": [{
+				"sExtends": "csv",
+				"sButtonText": "导出 Excel",
+				"bBomInc": true
+			}]
 		});
 		$(tt.fnContainer()).insertBefore('#users_wrapper');
 		$(".DTTT_container").addClass("btn-group margin-bottom-10");

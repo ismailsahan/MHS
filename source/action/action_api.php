@@ -240,6 +240,7 @@ class ApiAction extends Action {
 		if($id > 0){
 			$result = DB::fetch_first('SELECT * FROM %t WHERE `id`=%d LIMIT 1', array('activity', $id));
 		}else{
+			require_once libfile('function/nav');
 			//require_once libfile('function/members');
 			//$result = DB::result_all(subusersqlformula(null, '`id`,`name`,`place`,`starttime`,`endtime`,`sponsor`,`undertaker`,`intro`', 'activity').' AND %t.`status` IN (0,3,5)', array('manhours'));
 			$accessAll = chkPermit('manage_all_act') ? 1 : 0;
