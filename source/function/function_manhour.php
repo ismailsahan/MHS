@@ -39,7 +39,7 @@ function update_rank() {
 	foreach($count as $tmp) {
 		$data[$rank] = array_slice($uids, $offset, $tmp);
 		$offset += $tmp;
-		$rank++;
+		$rank += $tmp;
 	}
 
 	foreach($data as $rank => $user) {
