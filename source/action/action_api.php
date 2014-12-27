@@ -307,14 +307,14 @@ class ApiAction extends Action {
 						$user = DB::fetch('SELECT `realname`,`gender`,`studentid`,`academy`,`specialty`,`class` FROM %t WHERE `uid`=%d LIMIT 1', array('users_profile', $uid));
 						$zybj = trim($user['specialty'].' '.$user['class']);
 						foreach($uids as &$uid) {
-							DB::query('INSERT INTO %t (`id`, `uid`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
+							DB::query('INSERT INTO %t (`id`, `realname`, `gender`, `studentid`, `academy`, `zybj`, `uid`, `manhour`, `status`, `aid`, `actname`, `time`, `applytime`, `verifytime`, `operator`, `remark`, `verifytext`) VALUES (NULL, %s, %d, %s, %d, %s, %d, %d, %d, %d, %s, %d, %d, %d, %d, %s, %s)', array(
 								'manhours',         // 表
-								$uid,               // 用户ID
 								$user['realname'],  // 真实名字
 								$user['gender'],    // 性别 1男 2女
 								$user['studentid'], // 学号
 								$user['academy'],   // 学院ID
 								$zybj,              // 专业班级
+								$uid,               // 用户ID
 								$manhour,           // 工时数
 								1,                  // 状态 0无效，1有效，2审核中，3复查中，4审核失败，5复查失败，其他 错误
 								$activity,          // 活动ID
