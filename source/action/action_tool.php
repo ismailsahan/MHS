@@ -24,6 +24,13 @@ class ToolAction extends Action {
 		if(IS_AJAX) {
 			clearcache('all');
 			Cache::set('CacheId', random(4));
+
+			$query = DB::query('SELECT `uid` FROM %t', array('users'));
+			while($row = DB::fetch($query)) {
+				update_user_manhour($row['uid']);
+			}
+			update_rank();
+
 			ajaxReturn(array(
 				'errno' => 0,
 				'msg' => '全部缓存已清除完毕'
