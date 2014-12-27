@@ -25,6 +25,8 @@ class ToolAction extends Action {
 			clearcache('all');
 			Cache::set('CacheId', random(4));
 
+			require_once libfile('function/manhour');
+
 			$query = DB::query('SELECT `uid` FROM %t', array('users'));
 			while($row = DB::fetch($query)) {
 				update_user_manhour($row['uid']);
