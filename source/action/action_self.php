@@ -105,7 +105,7 @@ class SelfAction extends Action {
 						$this->_ajaxError('参数错误');
 					}elseif(empty($value)){
 						$this->_ajaxError('学号不能为空');
-					}elseif(!preg_match("/^0121[0-9]{9}$/", $value)){
+					}elseif(!preg_match("/^\d{13}$/", $value)){
 						$this->_ajaxError('学号格式有误');
 					}
 					$this->_update('studentid', $value, 's');

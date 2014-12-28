@@ -252,7 +252,7 @@ class LoggingAction extends Action {
 					$errmsg = 'qq_illeagal';
 				}elseif(empty($_POST['studentid'])){																						// 空学号
 					$errmsg = 'studentid_required';
-				}elseif(!preg_match("/^0121[0-9]{9}$/", $_POST['studentid'])){																// 学号不合法
+				}elseif(!preg_match("/^\d{13}$/", $_POST['studentid'])){																	// 学号不合法
 					$errmsg = 'studentid_illeagal';
 				}elseif(empty($_POST['grade'])){																							// 空年级
 					$errmsg = 'grade_required';
